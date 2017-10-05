@@ -57,6 +57,18 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
+import android.widget.ImageView;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Using location settings.
@@ -157,12 +169,28 @@ public class MainActivity extends AppCompatActivity {
      */
     private String mLastUpdateTime;
 
+    private static final String EXTRA_FILENAME="com.edumet.observacions.EXTRA_FILENAME";
+    private static final int CONTENT_REQUEST=1337;
+    private static final String AUTHORITY=
+            BuildConfig.APPLICATION_ID+".provider";
+    private static final String PHOTOS="photos";
+    private File output=null;
+    private ImageView imatge;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        final Button Foto=(Button)findViewById(R.id.btnFoto);
+        Foto.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                fesFoto();
+            }
+        });
+        imatge=(ImageView)findViewById(R.id.imgFoto);
 
         // Locate the UI widgets.
         mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
@@ -294,6 +322,12 @@ public class MainActivity extends AppCompatActivity {
                         mRequestingLocationUpdates = false;
                         updateUI();
                         break;
+                }
+                break;
+            case CONTENT_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    galleryAddPic();
+                    setPic();
                 }
                 break;
         }
@@ -460,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable(EXTRA_FILENAME, output);
     }
 
     /**
@@ -564,4 +599,84 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void fesFoto() {
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "foto_" + timeStamp;
+        output=new File(new File(getFilesDir(), PHOTOS), imageFileName);
+        if (output.exists()) {
+            output.delete();
+        }
+        else {
+            output.getParentFile().mkdirs();
+        }
+        Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Uri outputUri=FileProvider.getUriForFile(this, AUTHORITY, output);
+
+        i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+            i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        else if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN) {
+            ClipData clip=
+                    ClipData.newUri(getContentResolver(), "A photo", outputUri);
+
+            i.setClipData(clip);
+            i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+        else {
+            List<ResolveInfo> resInfoList=
+                    getPackageManager()
+                            .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
+
+            for (ResolveInfo resolveInfo : resInfoList) {
+                String packageName = resolveInfo.activityInfo.packageName;
+                grantUriPermission(packageName, outputUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+        }
+
+        try {
+            startActivityForResult(i, CONTENT_REQUEST);
+        }
+        catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.msg_no_camera, Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(output.getAbsolutePath());
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
+    private void setPic() {
+        // Get the dimensions of the View
+        int targetW = imatge.getWidth();
+        int targetH = imatge.getHeight();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
+        imatge.setImageBitmap(bitmap);
+    }
+
 }
