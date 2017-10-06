@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -224,6 +225,12 @@ public class MainActivity extends AppCompatActivity {
         startLocationUpdates();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        imatge.setImageBitmap(bitmap);
+        Log.i(TAG, "Orientació");
+    }
     /**
      * Updates fields based on data stored in the bundle.
      *
