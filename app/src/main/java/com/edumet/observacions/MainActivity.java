@@ -32,6 +32,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,6 +55,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -67,6 +73,9 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.widget.ImageView;
+
+import org.json.JSONObject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -178,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
     private File output=null;
     private ImageView imatge;
     private Boolean tenimLloc=false;
-
     Bitmap bitmap;
 
     @Override
@@ -189,9 +197,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Button Foto=(Button)findViewById(R.id.btnFoto);
+        final Button Envia=(Button)findViewById(R.id.btnEnvia);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
+            }
+        });
+        Envia.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendPost();
             }
         });
         imatge=(ImageView)findViewById(R.id.imgFoto);
@@ -702,4 +716,53 @@ public class MainActivity extends AppCompatActivity {
         imatge.setImageBitmap(bitmap);
     }
 
+    public void sendPost() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Bitmap bm = BitmapFactory.decodeFile(output.getAbsolutePath());
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] fotografia = baos.toByteArray();
+
+                    String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
+
+                    URL url = new URL("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                    conn.setRequestProperty("Accept","application/json");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+
+
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("fitxer",encodedFoto);
+                    jsonParam.put("usuari",43900018);
+                    jsonParam.put("lat", 41.3985);
+                    jsonParam.put("lon", 2.1398);
+                    jsonParam.put("id_feno", "Aus--Oreneta");
+                    jsonParam.put("descripcio", "una observació");
+                    jsonParam.put("tab", "");
+
+                    Log.i("JSON", jsonParam.toString());
+                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                    os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                    os.writeBytes(jsonParam.toString());
+
+                    os.flush();
+                    os.close();
+
+                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                    Log.i("MSG" , conn.getResponseMessage());
+
+                    conn.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
 }
