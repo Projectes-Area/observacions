@@ -502,16 +502,16 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
-        savedInstanceState.putParcelable("BitmapImage", bitmap);
+        //savedInstanceState.putParcelable("BitmapImage", bitmap);
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
     }
 
-    @Override
+/*    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
         bitmap = savedInstanceState.getParcelable("BitmapImage");
         imatge.setImageBitmap(bitmap);
-    }
+    }*/
 
     /**
      * Shows a {@link Snackbar}.
