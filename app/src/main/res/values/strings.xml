@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <resources>
-    <string name="app_name">Getting Location Updates</string>
+    <string name="app_name">Edumet-Observacions</string>
 
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
@@ -24,12 +24,11 @@
     <string name="start_updates">Start updates</string>
     <string name="stop_updates">Stop updates</string>
 
-    <string name="location_settings_inadequate_warning">The location settings on the device are not
-        adequate to run this sample. Fix in Settings.</string>
+    <string name="location_settings_inadequate_warning">S\'ha d\'activar la localització en els ajustos d\'aquest dispositiu"</string>
 
-    <string name="permission_rationale">Location permission is needed for core functionality</string>
-    <string name="permission_denied_explanation">Permission was denied, but is needed for core
-        functionality.</string>
-    <string name="settings">Settings</string>
+    <string name="permission_rationale">Aquesta App necesita el permís de localització</string>
+    <string name="permission_denied_explanation">S\'ha denegat el permís de localització, però és necessari.</string>
+    <string name="settings">Ajustaments</string>
     <string name="msg_no_camera">No hi ha cap càmera instal·lada</string>
+    <string name="encara_sense_lloc">Encara no hi ha dades de localització. Si us plau, espera.</string>
 </resources>

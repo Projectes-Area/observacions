@@ -176,6 +176,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String PHOTOS="photos";
     private File output=null;
     private ImageView imatge;
+    private Boolean tenimLloc=false;
+
+    Bitmap bitmap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -326,8 +329,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    galleryAddPic();
                     setPic();
+                    galleryAddPic();
+                    Log.i(TAG, "Added to gallery.");
                 }
                 break;
         }
@@ -428,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
+    /**1º
      * Sets the value of the UI fields for the location latitude, longitude and last update time.
      */
     private void updateLocationUI() {
@@ -439,6 +443,11 @@ public class MainActivity extends AppCompatActivity {
                     mCurrentLocation.getLongitude()));
             mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
                     mLastUpdateTimeLabel, mLastUpdateTime));
+            if(!tenimLloc) {
+                stopLocationUpdates();
+                Log.d(TAG, "Aturem localització");
+                tenimLloc=true;
+            }
         }
     }
 
@@ -493,8 +502,15 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
+        savedInstanceState.putParcelable("BitmapImage", bitmap);
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        bitmap = savedInstanceState.getParcelable("BitmapImage");
+        imatge.setImageBitmap(bitmap);
     }
 
     /**
@@ -601,49 +617,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fesFoto() {
+        if (tenimLloc) {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String imageFileName = "foto_" + timeStamp + ".jpg";
+            output = new File(new File(getFilesDir(), PHOTOS), imageFileName);
+            if (output.exists()) {
+                output.delete();
+            } else {
+                output.getParentFile().mkdirs();
+            }
+            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            Uri outputUri = FileProvider.getUriForFile(this, AUTHORITY, output);
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "foto_" + timeStamp;
-        output=new File(new File(getFilesDir(), PHOTOS), imageFileName);
-        if (output.exists()) {
-            output.delete();
-        }
-        else {
-            output.getParentFile().mkdirs();
-        }
-        Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri outputUri=FileProvider.getUriForFile(this, AUTHORITY, output);
+            i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
-        i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                ClipData clip =
+                        ClipData.newUri(getContentResolver(), "A photo", outputUri);
 
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
-            i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
-        else if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN) {
-            ClipData clip=
-                    ClipData.newUri(getContentResolver(), "A photo", outputUri);
+                i.setClipData(clip);
+                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } else {
+                List<ResolveInfo> resInfoList =
+                        getPackageManager()
+                                .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
 
-            i.setClipData(clip);
-            i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        }
-        else {
-            List<ResolveInfo> resInfoList=
-                    getPackageManager()
-                            .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    grantUriPermission(packageName, outputUri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+            }
 
-            for (ResolveInfo resolveInfo : resInfoList) {
-                String packageName = resolveInfo.activityInfo.packageName;
-                grantUriPermission(packageName, outputUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            try {
+                startActivityForResult(i, CONTENT_REQUEST);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.msg_no_camera, Toast.LENGTH_LONG).show();
+                finish();
             }
         }
-
-        try {
-            startActivityForResult(i, CONTENT_REQUEST);
-        }
-        catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.msg_no_camera, Toast.LENGTH_LONG).show();
-            finish();
+        else {
+            Toast.makeText(this, R.string.encara_sense_lloc, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -675,7 +691,7 @@ public class MainActivity extends AppCompatActivity {
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
+        bitmap = BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
         imatge.setImageBitmap(bitmap);
     }
 
