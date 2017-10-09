@@ -31,4 +31,6 @@
     <string name="settings">Ajustaments</string>
     <string name="msg_no_camera">No hi ha cap càmera instal·lada</string>
     <string name="encara_sense_lloc">Sense dades de localització. Si us plau, toca el botó LOCALITZA.</string>
+    <string name="no_geocoder_available">no_geocoder_available</string>
+    <string name="address_found">address_found</string>
 </resources>
