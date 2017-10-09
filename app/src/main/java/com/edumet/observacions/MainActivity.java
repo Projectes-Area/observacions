@@ -186,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String PHOTOS="photos";
     private File output=null;
     private ImageView imatge;
-    private Boolean tenimLloc=false;
     Bitmap bitmap;
 
     @Override
@@ -236,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-        startLocationUpdates();
+        //startLocationUpdates();
     }
 
     @Override
@@ -464,11 +463,6 @@ public class MainActivity extends AppCompatActivity {
                     mCurrentLocation.getLongitude()));
             mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
                     mLastUpdateTimeLabel, mLastUpdateTime));
-            if(!tenimLloc) {
-                stopLocationUpdates();
-                Log.d(TAG, "Aturem localització");
-                tenimLloc=true;
-            }
         }
     }
 
@@ -511,9 +505,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         // Remove location updates to save battery.
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
 
     /**
@@ -523,16 +516,9 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
-        //savedInstanceState.putParcelable("BitmapImage", bitmap);
-        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
+        super.onSaveInstanceState(savedInstanceState);
     }
-
-/*    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
-        bitmap = savedInstanceState.getParcelable("BitmapImage");
-        imatge.setImageBitmap(bitmap);
-    }*/
 
     /**
      * Shows a {@link Snackbar}.
@@ -638,7 +624,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fesFoto() {
-        if (tenimLloc) {
+        if (mCurrentLocation != null) {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String imageFileName = "foto_" + timeStamp + ".jpg";
             output = new File(new File(getFilesDir(), PHOTOS), imageFileName);
@@ -721,9 +707,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Bitmap bm = BitmapFactory.decodeFile(output.getAbsolutePath());
+                    //Bitmap bm = BitmapFactory.decodeFile(output.getAbsolutePath());
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] fotografia = baos.toByteArray();
 
                     String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
@@ -735,7 +721,6 @@ public class MainActivity extends AppCompatActivity {
                     conn.setRequestProperty("Accept","application/json");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
-
 
                     JSONObject jsonParam = new JSONObject();
                     jsonParam.put("fitxer",encodedFoto);
