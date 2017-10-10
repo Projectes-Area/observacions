@@ -85,8 +85,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import android.location.Address;
-
 /**
  * Using location settings.
  * <p/>
@@ -169,7 +167,7 @@ public class MainActivity extends AppCompatActivity  {
     /**
      * Displays the location address.
      */
-    private TextView mLocationAddressTextView;
+    //private TextView mLocationAddressTextView;
 
     /**
      * Visible while the address is being fetched.
@@ -205,7 +203,7 @@ public class MainActivity extends AppCompatActivity  {
 
         mResultReceiver = new AddressResultReceiver(new Handler());
 
-        mLocationAddressTextView = (TextView) findViewById(R.id.location_address_view);
+        //mLocationAddressTextView = (TextView) findViewById(R.id.location_address_view);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mFetchAddressButton = (Button) findViewById(R.id.fetch_address_button);
 
@@ -230,8 +228,8 @@ public class MainActivity extends AppCompatActivity  {
         // Locate the UI widgets.
         mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
         mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
-        mLatitudeTextView = (TextView) findViewById(R.id.latitude_text);
-        mLongitudeTextView = (TextView) findViewById(R.id.longitude_text);
+        mLatitudeTextView = (TextView) findViewById(R.id.lat_long);
+        mLongitudeTextView = (TextView) findViewById(R.id.adressa);
         mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
 
         // Set labels.
@@ -392,7 +390,7 @@ public class MainActivity extends AppCompatActivity  {
      * Updates the address in the UI.
      */
     private void displayAddressOutput() {
-        mLocationAddressTextView.setText(mAddressOutput);
+        mLongitudeTextView.setText(mAddressOutput);
     }
 
     /**

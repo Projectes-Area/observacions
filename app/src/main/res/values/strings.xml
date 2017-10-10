@@ -21,7 +21,7 @@
     <string name="longitude_label">Longitud</string>
     <string name="last_update_time_label">Last location update time</string>
 
-    <string name="start_updates">LOCALITZA</string>
+    <string name="start_updates">LLOC</string>
     <string name="stop_updates">Stop updates</string>
 
     <string name="location_settings_inadequate_warning">S\'ha d\'activar la localització en els ajustos d\'aquest dispositiu"</string>
