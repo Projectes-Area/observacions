@@ -394,10 +394,8 @@ public class MainActivity extends AppCompatActivity  {
     private void updateUIWidgets() {
         if (mAddressRequested) {
             mProgressBar.setVisibility(ProgressBar.VISIBLE);
-            //mFetchAddressButton.setEnabled(false);
         } else {
             mProgressBar.setVisibility(ProgressBar.GONE);
-            //mFetchAddressButton.setEnabled(true);
         }
     }
 
@@ -559,7 +557,6 @@ public class MainActivity extends AppCompatActivity  {
 
         } else {
             mStartUpdatesButton.setEnabled(true);
-
         }
     }
 
@@ -872,14 +869,18 @@ public class MainActivity extends AppCompatActivity  {
 
                     conn.disconnect();
                     mProgressBar.setVisibility(ProgressBar.GONE);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         thread.start();
-        showToast(getString(R.string.dades_enviades));
+        try {
+            thread.join();
+            showToast(getString(R.string.dades_enviades));}
+        catch (InterruptedException e)         {
+            e.printStackTrace();
+        }
     }
 
     private class AddressResultReceiver extends ResultReceiver {
