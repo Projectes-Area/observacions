@@ -70,8 +70,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
-
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.pm.ResolveInfo;
@@ -87,8 +85,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import static android.os.Environment.getExternalStorageDirectory;
 
 /**
  * Using location settings.
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity  {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 100000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 600000;
 
     private static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
     private static final String LOCATION_ADDRESS_KEY = "location-address";
@@ -137,14 +133,11 @@ public class MainActivity extends AppCompatActivity  {
     // UI Widgets.
     private Button mStartUpdatesButton;
     private Button mStopUpdatesButton;
-    private TextView mLastUpdateTimeTextView;
     private TextView mLatitudeTextView;
     private TextView mLongitudeTextView;
 
     // Labels.
     private String mLatitudeLabel;
-    private String mLongitudeLabel;
-    private String mLastUpdateTimeLabel;
 
     private Boolean mRequestingLocationUpdates;
 
@@ -197,7 +190,8 @@ public class MainActivity extends AppCompatActivity  {
     private static final String PHOTOS="photos";
     private File output=null;
     private ImageView imatge;
-    private boolean tenimAdressa=false;
+    Button Foto;
+    Button Envia;
     Bitmap bitmap;
 
     @Override
@@ -217,8 +211,8 @@ public class MainActivity extends AppCompatActivity  {
         mAddressRequested = false;
         mAddressOutput = "";
 
-        final Button Foto=(Button)findViewById(R.id.btnFoto);
-        final Button Envia=(Button)findViewById(R.id.btnEnvia);
+        Foto=(Button)findViewById(R.id.btnFoto);
+        Envia=(Button)findViewById(R.id.btnEnvia);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
@@ -233,15 +227,11 @@ public class MainActivity extends AppCompatActivity  {
 
         // Locate the UI widgets.
         mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
         mLatitudeTextView = (TextView) findViewById(R.id.lat_long);
         mLongitudeTextView = (TextView) findViewById(R.id.adressa);
-        mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
 
         // Set labels.
         mLatitudeLabel = getResources().getString(R.string.latitude_label);
-        mLongitudeLabel = getResources().getString(R.string.longitude_label);
-        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
@@ -371,7 +361,7 @@ public class MainActivity extends AppCompatActivity  {
 
                         // Determine whether a Geocoder is available.
                         if (!Geocoder.isPresent()) {
-                            showSnackbar(getString(R.string.no_geocoder_available));
+                            showToast(getString(R.string.no_geocoder_available));
                             return;
                         }
 
@@ -492,6 +482,7 @@ public class MainActivity extends AppCompatActivity  {
                     setPic();
                     galleryAddPic();
                     Log.i(TAG, "Added to gallery.");
+                    Envia.setEnabled(true);
                 }
                 break;
         }
@@ -565,16 +556,17 @@ public class MainActivity extends AppCompatActivity  {
     private void setButtonsEnabledState() {
         if (mRequestingLocationUpdates) {
             mStartUpdatesButton.setEnabled(false);
-            mStopUpdatesButton.setEnabled(true);
+
         } else {
             mStartUpdatesButton.setEnabled(true);
-            mStopUpdatesButton.setEnabled(false);
+
         }
     }
 
      private void updateLocationUI() {
         if (mCurrentLocation != null) {
             mLatitudeTextView.setText(mLatitudeLabel+mCurrentLocation.getLatitude()+","+mCurrentLocation.getLongitude());
+            Foto.setEnabled(true);
                 if (mLastLocation != null) {
                     startIntentService();
                     return;
@@ -659,11 +651,6 @@ public class MainActivity extends AppCompatActivity  {
                 .setAction(getString(actionStringId), listener).show();
     }
 
-
-
-    /**
-     * Return the current state of the permissions needed.
-     */
     private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -892,7 +879,7 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
         thread.start();
-        //showToast(getString(R.string.dades_enviades));
+        showToast(getString(R.string.dades_enviades));
     }
 
     private class AddressResultReceiver extends ResultReceiver {
@@ -911,20 +898,12 @@ public class MainActivity extends AppCompatActivity  {
             displayAddressOutput();
 
             // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
+/*            if (resultCode == Constants.SUCCESS_RESULT) {
                 showToast(getString(R.string.address_found));
-            }
-
+            }*/
             // Reset. Enable the Fetch Address button and stop showing the progress bar.
             mAddressRequested = false;
             updateUIWidgets();
-        }
-    }
-
-    private void showSnackbar(final String text) {
-        View container = findViewById(android.R.id.content);
-        if (container != null) {
-            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
 }
