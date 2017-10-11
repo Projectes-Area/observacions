@@ -489,8 +489,8 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    galleryAddPic();
                     setPic();
+                    galleryAddPic();
                     Log.i(TAG, "Added to gallery.");
                 }
                 break;
@@ -572,32 +572,18 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    /**1º
-     * Sets the value of the UI fields for the location latitude, longitude and last update time.
-     */
-    private void updateLocationUI() {
+     private void updateLocationUI() {
         if (mCurrentLocation != null) {
-/*            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
-                    mCurrentLocation.getLatitude(),"  ",mCurrentLocation.getLongitude()));*/
             mLatitudeTextView.setText(mLatitudeLabel+mCurrentLocation.getLatitude()+","+mCurrentLocation.getLongitude());
-            //mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
-            //        mCurrentLocation.getLongitude()));
-            //mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
-            //        mLastUpdateTimeLabel, mLastUpdateTime));
-            //if(!tenimAdressa) {
                 if (mLastLocation != null) {
                     startIntentService();
                     return;
                 }
-
                 // If we have not yet retrieved the user location, we process the user's request by setting
                 // mAddressRequested to true. As far as the user is concerned, pressing the Fetch Address button
                 // immediately kicks off the process of getting the address.
                 mAddressRequested = true;
                 updateUIWidgets();
-                // tenimAdressa=true;
-          //  }
-
         }
     }
 
@@ -644,9 +630,6 @@ public class MainActivity extends AppCompatActivity  {
         stopLocationUpdates();
     }
 
-    /**
-     * Stores activity data in the Bundle.
-     */
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
@@ -768,47 +751,45 @@ public class MainActivity extends AppCompatActivity  {
 
     private void fesFoto() {
         if (mCurrentLocation != null) {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "foto_" + timeStamp + ".jpg";
-            output = new File(new File(getFilesDir(), PHOTOS), imageFileName);
-
-            //
-            //output = new File(getDir(Environment.DIRECTORY_PICTURES, Context.MODE_PRIVATE), imageFileName);
-            if (output.exists()) {
-                output.delete();
-            } else {
-                output.getParentFile().mkdirs();
-            }
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            Uri outputUri = FileProvider.getUriForFile(this, AUTHORITY, output);
 
-            i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                ClipData clip =
-                        ClipData.newUri(getContentResolver(), "A photo", outputUri);
-
-                i.setClipData(clip);
-                i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            } else {
-                List<ResolveInfo> resInfoList =
-                        getPackageManager()
-                                .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
-
-                for (ResolveInfo resolveInfo : resInfoList) {
-                    String packageName = resolveInfo.activityInfo.packageName;
-                    grantUriPermission(packageName, outputUri,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                //File photoFile = null;
+                try {
+                    output = createImageFile();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
                 }
-            }
+                if (output != null) {
+                    Uri outputUri = FileProvider.getUriForFile(this,"com.edumet.observacions",output);
+                    i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        ClipData clip =
+                                ClipData.newUri(getContentResolver(), "A photo", outputUri);
 
-            try {
-                startActivityForResult(i, CONTENT_REQUEST);
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, R.string.msg_no_camera, Toast.LENGTH_LONG).show();
-                finish();
+                        i.setClipData(clip);
+                        i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    } else {
+                        List<ResolveInfo> resInfoList =
+                                getPackageManager()
+                                        .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
+
+                        for (ResolveInfo resolveInfo : resInfoList) {
+                            String packageName = resolveInfo.activityInfo.packageName;
+                            grantUriPermission(packageName, outputUri,
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        }
+                    }
+                    try {
+                        startActivityForResult(i, CONTENT_REQUEST);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(this, R.string.msg_no_camera, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
             }
         }
         else {
@@ -816,9 +797,23 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                timeStamp,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(output.getAbsolutePath());
+        File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
@@ -854,7 +849,6 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void run() {
                 try {
-                    //Bitmap bm = BitmapFactory.decodeFile(output.getAbsolutePath());
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] fotografia = baos.toByteArray();
@@ -927,21 +921,12 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    /**
-     * Shows a {@link Snackbar} using {@code text}.
-     *
-     * @param text The Snackbar text.
-     */
     private void showSnackbar(final String text) {
         View container = findViewById(android.R.id.content);
         if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
-
-
-
-
 }
 
 

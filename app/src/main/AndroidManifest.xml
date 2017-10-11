@@ -23,6 +23,8 @@ limitations under the License.
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
 
 
@@ -51,18 +53,29 @@ limitations under the License.
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.edumet.observacions"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <!-- Service to asynchronously fetch a location address using a Geocoder. Setting the
-        android:exported attribute to "false" stops other apps from starting this
-        service, even when using an explicit intent. -->
+
+        <!--      <provider
+                 android:name="android.support.v4.content.FileProvider"
+                 android:authorities="${applicationId}.provider"
+                 android:exported="false"
+                 android:grantUriPermissions="true">
+
+                 <meta-data
+                     android:name="android.support.FILE_PROVIDER_PATHS"
+                     android:resource="@xml/provider_paths" />
+             </provider> -->
+
+             <!-- Service to asynchronously fetch a location address using a Geocoder. Setting the
+             android:exported attribute to "false" stops other apps from starting this
+             service, even when using an explicit intent. -->
         <service
             android:name=".FetchAddressIntentService"
             android:exported="false"/>
