@@ -18,6 +18,7 @@ package com.edumet.observacions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -26,6 +27,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
@@ -62,6 +64,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -85,6 +88,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static android.os.Environment.getExternalStorageDirectory;
+
 /**
  * Using location settings.
  * <p/>
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity  {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 100000;
 
     private static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
     private static final String LOCATION_ADDRESS_KEY = "location-address";
@@ -192,6 +197,7 @@ public class MainActivity extends AppCompatActivity  {
     private static final String PHOTOS="photos";
     private File output=null;
     private ImageView imatge;
+    private boolean tenimAdressa=false;
     Bitmap bitmap;
 
     @Override
@@ -248,7 +254,6 @@ public class MainActivity extends AppCompatActivity  {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-
         updateUIWidgets();
     }
 
@@ -399,10 +404,10 @@ public class MainActivity extends AppCompatActivity  {
     private void updateUIWidgets() {
         if (mAddressRequested) {
             mProgressBar.setVisibility(ProgressBar.VISIBLE);
-            mFetchAddressButton.setEnabled(false);
+            //mFetchAddressButton.setEnabled(false);
         } else {
             mProgressBar.setVisibility(ProgressBar.GONE);
-            mFetchAddressButton.setEnabled(true);
+            //mFetchAddressButton.setEnabled(true);
         }
     }
 
@@ -454,6 +459,7 @@ public class MainActivity extends AppCompatActivity  {
                 mCurrentLocation = locationResult.getLastLocation();
                 mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
                 updateLocationUI();
+
             }
         };
     }
@@ -483,8 +489,8 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    setPic();
                     galleryAddPic();
+                    setPic();
                     Log.i(TAG, "Added to gallery.");
                 }
                 break;
@@ -571,12 +577,27 @@ public class MainActivity extends AppCompatActivity  {
      */
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
-            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
-                    mCurrentLocation.getLatitude()));
-            mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
-                    mCurrentLocation.getLongitude()));
-            mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
-                    mLastUpdateTimeLabel, mLastUpdateTime));
+/*            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
+                    mCurrentLocation.getLatitude(),"  ",mCurrentLocation.getLongitude()));*/
+            mLatitudeTextView.setText(mLatitudeLabel+mCurrentLocation.getLatitude()+","+mCurrentLocation.getLongitude());
+            //mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
+            //        mCurrentLocation.getLongitude()));
+            //mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
+            //        mLastUpdateTimeLabel, mLastUpdateTime));
+            //if(!tenimAdressa) {
+                if (mLastLocation != null) {
+                    startIntentService();
+                    return;
+                }
+
+                // If we have not yet retrieved the user location, we process the user's request by setting
+                // mAddressRequested to true. As far as the user is concerned, pressing the Fetch Address button
+                // immediately kicks off the process of getting the address.
+                mAddressRequested = true;
+                updateUIWidgets();
+                // tenimAdressa=true;
+          //  }
+
         }
     }
 
@@ -607,11 +628,11 @@ public class MainActivity extends AppCompatActivity  {
         super.onResume();
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
-        if (mRequestingLocationUpdates && checkPermissions()) {
+/*        if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
             requestPermissions();
-        }
+        }*/
 
         updateUI();
     }
@@ -620,7 +641,7 @@ public class MainActivity extends AppCompatActivity  {
     protected void onPause() {
         super.onPause();
         // Remove location updates to save battery.
-        //stopLocationUpdates();
+        stopLocationUpdates();
     }
 
     /**
@@ -750,6 +771,9 @@ public class MainActivity extends AppCompatActivity  {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String imageFileName = "foto_" + timeStamp + ".jpg";
             output = new File(new File(getFilesDir(), PHOTOS), imageFileName);
+
+            //
+            //output = new File(getDir(Environment.DIRECTORY_PICTURES, Context.MODE_PRIVATE), imageFileName);
             if (output.exists()) {
                 output.delete();
             } else {
@@ -825,6 +849,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void sendPost() {
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -865,12 +890,15 @@ public class MainActivity extends AppCompatActivity  {
                     Log.i("MSG" , conn.getResponseMessage());
 
                     conn.disconnect();
+                    mProgressBar.setVisibility(ProgressBar.GONE);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
         thread.start();
+        //showToast(getString(R.string.dades_enviades));
     }
 
     private class AddressResultReceiver extends ResultReceiver {

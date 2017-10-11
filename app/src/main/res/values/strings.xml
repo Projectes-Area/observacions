@@ -17,7 +17,7 @@
 <resources>
     <string name="app_name">Observacions</string>
 
-    <string name="latitude_label">Latitud</string>
+    <string name="latitude_label">GPS:</string>
     <string name="longitude_label">Longitud</string>
     <string name="last_update_time_label">Last location update time</string>
 
@@ -32,5 +32,6 @@
     <string name="msg_no_camera">No hi ha cap càmera instal·lada</string>
     <string name="encara_sense_lloc">Sense dades de localització. Si us plau, toca el botó LOCALITZA.</string>
     <string name="no_geocoder_available">no_geocoder_available</string>
-    <string name="address_found">address_found</string>
+    <string name="address_found">Adreça trobada</string>
+    <string name="dades_enviades">Observació enviada OK !</string>
 </resources>
