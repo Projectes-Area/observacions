@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private Location mCurrentLocation;
 
     // UI Widgets.
-    private Button mStartUpdatesButton;
+    private Button Localitza;
     private Button Foto;
     private Button Envia;
     private TextView GPS;
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         });
         imatge = (ImageView) findViewById(R.id.imgFoto);
         // Locate the UI widgets.
-        mStartUpdatesButton = (Button) findViewById(R.id.btnGPS);
+        Localitza = (Button) findViewById(R.id.btnGPS);
         GPS = (TextView) findViewById(R.id.txtGPS);
         Adressa = (TextView) findViewById(R.id.txtAdressa);
         mGPSLabel = getResources().getString(R.string.latitude_label);
@@ -362,10 +362,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setButtonsEnabledState() {
         if (mRequestingLocationUpdates) {
-            mStartUpdatesButton.setEnabled(false);
+            Localitza.setEnabled(false);
 
         } else {
-            mStartUpdatesButton.setEnabled(true);
+            Localitza.setEnabled(true);
         }
     }
 

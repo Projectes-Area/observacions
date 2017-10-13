@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.edumet.observacions;
 
 import android.app.IntentService;
@@ -31,11 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Asynchronously handles an intent using a worker thread. Receives a ResultReceiver object and a
- * location through an intent. Tries to fetch the address for the location using a Geocoder, and
- * sends the result to the ResultReceiver.
- */
 public class FetchAddressIntentService extends IntentService {
     private static final String TAG = "FetchAddressIS";
 
@@ -53,15 +32,6 @@ public class FetchAddressIntentService extends IntentService {
         super(TAG);
     }
 
-    /**
-     * Tries to get the location address using a Geocoder. If successful, sends an address to a
-     * result receiver. If unsuccessful, sends an error message instead.
-     * Note: We define a {@link android.os.ResultReceiver} in * MainActivity to process content
-     * sent from this service.
-     *
-     * This service calls this method from the default worker thread with the intent that started
-     * the service. When this method returns, the service automatically stops.
-     */
     @Override
     protected void onHandleIntent(Intent intent) {
         String errorMessage = "";
@@ -86,25 +56,12 @@ public class FetchAddressIntentService extends IntentService {
             return;
         }
 
-        // Errors could still arise from using the Geocoder (for example, if there is no
-        // connectivity, or if the Geocoder is given illegal location data). Or, the Geocoder may
-        // simply not have an address for a location. In all these cases, we communicate with the
-        // receiver using a resultCode indicating failure. If an address is found, we use a
-        // resultCode indicating success.
-
-        // The Geocoder used in this sample. The Geocoder's responses are localized for the given
-        // Locale, which represents a specific geographical or linguistic region. Locales are used
-        // to alter the presentation of information such as numbers or dates to suit the conventions
-        // in the region they describe.
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         // Address found using the Geocoder.
         List<Address> addresses = null;
 
         try {
-            // Using getFromLocation() returns an array of Addresses for the area immediately
-            // surrounding the given latitude and longitude. The results are a best guess and are
-            // not guaranteed to be accurate.
             addresses = geocoder.getFromLocation(
                     location.getLatitude(),
                     location.getLongitude(),
@@ -133,15 +90,6 @@ public class FetchAddressIntentService extends IntentService {
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<>();
 
-            // Fetch the address lines using {@code getAddressLine},
-            // join them, and send them to the thread. The {@link android.location.address}
-            // class provides other options for fetching address details that you may prefer
-            // to use. Here are some examples:
-            // getLocality() ("Mountain View", for example)
-            // getAdminArea() ("CA", for example)
-            // getPostalCode() ("94043", for example)
-            // getCountryCode() ("US", for example)
-            // getCountryName() ("United States", for example)
             for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
                 addressFragments.add(address.getAddressLine(i));
             }
@@ -151,9 +99,6 @@ public class FetchAddressIntentService extends IntentService {
         }
     }
 
-    /**
-     * Sends a resultCode and message to the receiver.
-     */
     private void deliverResultToReceiver(int resultCode, String message) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
