@@ -469,7 +469,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     output = createImageFile();
                 } catch (IOException ex) {
-                    // Error occurred while creating the File
+                    Toast.makeText(this, R.string.fitxer_error, Toast.LENGTH_LONG).show();
+                    finish();
                 }
                 if (output != null) {
                     Uri outputUri = FileProvider.getUriForFile(this, "com.edumet.observacions", output);
@@ -478,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
                         i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         ClipData clip =
-                                ClipData.newUri(getContentResolver(), "A photo", outputUri);
+                                ClipData.newUri(getContentResolver(), "Una foto", outputUri);
 
                         i.setClipData(clip);
                         i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -542,6 +543,8 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
+    Boolean hihaerror=false;
+
     public void sendPost() {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         Thread thread = new Thread(new Runnable() {
@@ -579,12 +582,17 @@ public class MainActivity extends AppCompatActivity {
                     os.flush();
                     os.close();
 
+                    if (conn.getResponseCode()!=200) {
+                        hihaerror=true;
+                    }
+
                     Log.i("STATUS", String.valueOf(conn.getResponseCode()));
                     Log.i("MSG", conn.getResponseMessage());
 
                     conn.disconnect();
                     mProgressBar.setVisibility(ProgressBar.GONE);
                 } catch (Exception e) {
+                    hihaerror=true;
                     e.printStackTrace();
                 }
             }
@@ -592,9 +600,16 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
         try {
             thread.join();
-            showToast(getString(R.string.dades_enviades));
+            if (hihaerror) {
+                mProgressBar.setVisibility(ProgressBar.GONE);
+                showToast(getString(R.string.error_connexio));
+            } else {
+                showToast(getString(R.string.dades_enviades));
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            mProgressBar.setVisibility(ProgressBar.GONE);
+            showToast(getString(R.string.error_connexio));
         }
     }
 
@@ -616,7 +631,7 @@ public class MainActivity extends AppCompatActivity {
     //
 
     private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
     private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
