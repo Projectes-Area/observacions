@@ -102,31 +102,28 @@ public class MainActivity extends AppCompatActivity {
     private LocationSettingsRequest mLocationSettingsRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
+
     // UI Widgets.
     private Button mStartUpdatesButton;
+    private Button Foto;
+    private Button Envia;
     private TextView GPS;
     private TextView Adressa;
-    // Labels.
-    private String mGPSLabel;
-    private Boolean mRequestingLocationUpdates;
-
-    private Location mLastLocation;
-    private boolean mAddressRequested;
-    private String mAddressOutput;
-    private AddressResultReceiver mResultReceiver;
-
+    private ImageView imatge;
     private ProgressBar mProgressBar;
 
-    private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
+    private String mGPSLabel;
+    private String mAddressOutput;
+    private Boolean mRequestingLocationUpdates;
+    private Location mLastLocation;
+    private boolean mAddressRequested;
+    private AddressResultReceiver mResultReceiver;
+
     private static final int CONTENT_REQUEST = 1337;
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
-    private static final String PHOTOS = "fotos";
+    private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
+    private String mCurrentPhotoPath;
     private File output = null;
-    private ImageView imatge;
-    Button Foto;
-    Button Envia;
-    Bitmap bitmap;
-    String mCurrentPhotoPath;
+    private Bitmap bitmap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -152,9 +149,9 @@ public class MainActivity extends AppCompatActivity {
         });
         imatge = (ImageView) findViewById(R.id.imgFoto);
         // Locate the UI widgets.
-        mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        GPS = (TextView) findViewById(R.id.lat_long);
-        Adressa = (TextView) findViewById(R.id.adressa);
+        mStartUpdatesButton = (Button) findViewById(R.id.btnGPS);
+        GPS = (TextView) findViewById(R.id.txtGPS);
+        Adressa = (TextView) findViewById(R.id.txtAdressa);
         mGPSLabel = getResources().getString(R.string.latitude_label);
         mRequestingLocationUpdates = false;
         updateValuesFromBundle(savedInstanceState);
@@ -165,7 +162,16 @@ public class MainActivity extends AppCompatActivity {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-        updateUIWidgets();
+        updateProgressBar();
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        savedInstanceState.putSerializable(EXTRA_FILENAME, output);
+        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
+        savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -176,6 +182,18 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getAddress();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
     }
 
     @Override
@@ -203,6 +221,10 @@ public class MainActivity extends AppCompatActivity {
             updateUI();
         }
     }
+    
+    //
+    // LOCALITZACIÓ
+    //
 
     private void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -237,18 +259,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "getLastLocation:onFailure", e);
                     }
                 });
-    }
-
-    private void updateUIWidgets() {
-        if (mAddressRequested) {
-            mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        } else {
-            mProgressBar.setVisibility(ProgressBar.GONE);
-        }
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void createLocationRequest() {
@@ -368,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             mAddressRequested = true;
-            updateUIWidgets();
+            updateProgressBar();
         }
     }
 
@@ -385,34 +395,6 @@ public class MainActivity extends AppCompatActivity {
                         setButtonsEnabledState();
                     }
                 });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
-        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
-        savedInstanceState.putSerializable(EXTRA_FILENAME, output);
-        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
-        savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
-        Snackbar.make(
-                findViewById(android.R.id.content),
-                getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
     }
 
     private boolean checkPermissions() {
@@ -433,8 +415,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             // Request permission
                             ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_PERMISSIONS_REQUEST_CODE);
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
                     });
         } else {
@@ -476,6 +457,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    //
+    // FOTOGRAFIA
+    //
 
     private void fesFoto() {
         if (mCurrentLocation != null) {
@@ -553,6 +538,10 @@ public class MainActivity extends AppCompatActivity {
         imatge.setImageBitmap(bitmap);
     }
 
+    //
+    // ENVIA AL SERVIDOR EDUMET
+    //
+
     public void sendPost() {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         Thread thread = new Thread(new Runnable() {
@@ -618,7 +607,30 @@ public class MainActivity extends AppCompatActivity {
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             Adressa.setText(mAddressOutput);
             mAddressRequested = false;
-            updateUIWidgets();
+            updateProgressBar();
+        }
+    }
+
+    //
+    // GENERAL
+    //
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
+        Snackbar.make(
+                findViewById(android.R.id.content),
+                getString(mainTextStringId),
+                Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
+    }
+
+    private void updateProgressBar() {
+        if (mAddressRequested) {
+            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        } else {
+            mProgressBar.setVisibility(ProgressBar.GONE);
         }
     }
 }
