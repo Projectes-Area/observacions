@@ -62,12 +62,21 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.widget.ImageView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Using location settings.
@@ -543,9 +552,74 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    Boolean hihaerror=false;
+    Boolean hihaerror;
+
+    public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     public void sendPost() {
+        hihaerror=false;
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] fotografia = baos.toByteArray();
+
+        String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
+
+        final OkHttpClient client = new OkHttpClient();
+
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("fitxer", encodedFoto);
+            jsonParam.put("usuari", 43900018);
+            jsonParam.put("lat", 41.3985);
+            jsonParam.put("lon", 2.1398);
+            jsonParam.put("id_feno", "Aus--Oreneta");
+            jsonParam.put("descripcio", "una observació");
+            jsonParam.put("tab", "");
+
+        } catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        Log.i("JSON", jsonParam.toString());
+
+        RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
+
+        final Request request = new Request.Builder()
+                .url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Your Token")
+                .addHeader("cache-control", "no-cache")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                    //mProgressBar.setVisibility(ProgressBar.GONE);
+                    //showToast(getString(R.string.error_connexio));
+                hihaerror=true;
+;            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //mProgressBar.setVisibility(ProgressBar.GONE);
+                Log.i("RESPONSE", response.toString());
+            }
+        }
+        );
+        mProgressBar.setVisibility(ProgressBar.GONE);
+        if (hihaerror) {
+            showToast(getString(R.string.error_connexio));
+        } else {
+            showToast(getString(R.string.dades_enviades));
+        }
+    }
+
+
+
+
+    /*public void sendPost() {
+        hihaerror=false;
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -556,7 +630,7 @@ public class MainActivity extends AppCompatActivity {
                     byte[] fotografia = baos.toByteArray();
 
                     String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
-
+                    //URL url = new URL("http://tecnologia.isantandreu.net/prova.php");
                     URL url = new URL("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
@@ -589,6 +663,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("STATUS", String.valueOf(conn.getResponseCode()));
                     Log.i("MSG", conn.getResponseMessage());
 
+
                     conn.disconnect();
                     mProgressBar.setVisibility(ProgressBar.GONE);
                 } catch (Exception e) {
@@ -611,7 +686,7 @@ public class MainActivity extends AppCompatActivity {
             mProgressBar.setVisibility(ProgressBar.GONE);
             showToast(getString(R.string.error_connexio));
         }
-    }
+    }*/
 
     private class AddressResultReceiver extends ResultReceiver {
         AddressResultReceiver(Handler handler) {
