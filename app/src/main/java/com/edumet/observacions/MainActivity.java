@@ -548,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
+         //bmOptions.inPurgeable = true;
         bitmap = BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
         imatge.setImageBitmap(bitmap);
     }
