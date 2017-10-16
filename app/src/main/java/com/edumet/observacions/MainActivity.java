@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 100000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 60000;
     private static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
     private static final String LOCATION_ADDRESS_KEY = "location-address";
     //The fastest rate for active location updates. Exact. Updates will never be more frequent than this value.
@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     private Location mCurrentLocation;
 
     // UI Widgets.
-    private Button Localitza;
     private Button Foto;
     private Button Envia;
     private TextView GPS;
@@ -160,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         });
         imatge = (ImageView) findViewById(R.id.imgFoto);
         // Locate the UI widgets.
-        Localitza = (Button) findViewById(R.id.btnGPS);
         GPS = (TextView) findViewById(R.id.txtGPS);
         Adressa = (TextView) findViewById(R.id.txtAdressa);
         mGPSLabel = getResources().getString(R.string.latitude_label);
@@ -173,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-        updateProgressBar();
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -190,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if (!checkPermissions()) {
             requestPermissions();
-        } else {
         }
         startLocationUpdates();
     }
@@ -198,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        updateUI();
+        updateLocationUI();
     }
 
     @Override
@@ -229,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
                 Adressa.setText(mAddressOutput);
             }
-            updateUI();
+            updateLocationUI();
         }
     }
 
@@ -256,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mLastLocation = location;
                         if (!Geocoder.isPresent()) {
-                            showToast(getString(R.string.no_geocoder_available));
+                            Toast.makeText(MainActivity.this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
                             return;
                         }
                         if (mAddressRequested) {
@@ -307,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
-                        updateUI();
+                        updateLocationUI();
                         break;
                 }
                 break;
@@ -325,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
     public void startUpdatesButtonHandler(View view) {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
-            setButtonsEnabledState();
             startLocationUpdates();
         }
         getAddress();
@@ -339,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "All location settings are satisfied.");
                         //noinspection MissingPermission
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                        updateUI();
+                        updateLocationUI();
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -362,24 +357,11 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
-                        updateUI();
+                        updateLocationUI();
                     }
                 });
     }
 
-    private void updateUI() {
-        setButtonsEnabledState();
-        updateLocationUI();
-    }
-
-    private void setButtonsEnabledState() {
-        if (mRequestingLocationUpdates) {
-            Localitza.setEnabled(false);
-
-        } else {
-            Localitza.setEnabled(true);
-        }
-    }
 
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
@@ -390,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             mAddressRequested = true;
-            //updateProgressBar();
         }
     }
 
@@ -404,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         mRequestingLocationUpdates = false;
-                        setButtonsEnabledState();
                     }
                 });
     }
@@ -449,7 +429,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    //startLocationUpdates();
                 }
             } else {
                 showSnackbar(R.string.permission_denied_explanation,
@@ -466,6 +445,19 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
             }
+        }
+    }
+
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            Adressa.setText(mAddressOutput);
+            mAddressRequested = false;
         }
     }
 
@@ -545,7 +537,6 @@ public class MainActivity extends AppCompatActivity {
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        //bmOptions.inPurgeable = true;
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         bitmapgran = BitmapFactory.decodeFile(mCurrentPhotoPath);
         imatge.setImageBitmap(bitmap);
@@ -555,12 +546,9 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    //Boolean hihaerror;
-
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     public void sendPost() {
-        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmapgran.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] fotografia = baos.toByteArray();
@@ -580,7 +568,6 @@ public class MainActivity extends AppCompatActivity {
             jsonParam.put("tab", "");
 
         } catch (JSONException e) {
-            //hihaerror = true;
             e.printStackTrace();
         }
 
@@ -595,20 +582,41 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("Authorization", "Your Token")
                 .addHeader("cache-control", "no-cache")
                 .build();
+
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
         client.newCall(request).enqueue(new Callback() {
                                             @Override
                                             public void onFailure(Call call, IOException e) {
+                                                runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Toast.makeText(getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
                                                 Log.i("Servidor", getString(R.string.error_connexio));
-                                                ;
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
+
                                                 Log.i("RESPONSE", response.toString());
                                                 if (response.isSuccessful()) {
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
                                                     Log.i("Servidor", getString(R.string.dades_enviades));
                                                 } else {
-                                                    Log.i("Servidor", getString(R.string.error_connexio));
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("Servidor", getString(R.string.error_servidor));
                                                 }
                                             }
                                         }
@@ -685,27 +693,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }*/
 
-    private class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Adressa.setText(mAddressOutput);
-            mAddressRequested = false;
-            //updateProgressBar();
-        }
-    }
-
     //
     // GENERAL
     //
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
 
     private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
@@ -713,15 +703,8 @@ public class MainActivity extends AppCompatActivity {
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
     }
-
-    private void updateProgressBar() {
-        if (mAddressRequested) {
-            mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        } else {
-            mProgressBar.setVisibility(ProgressBar.GONE);
-        }
-    }
 }
+
 
 
 
