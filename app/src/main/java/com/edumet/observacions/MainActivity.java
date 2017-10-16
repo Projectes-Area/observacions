@@ -2,6 +2,7 @@ package com.edumet.observacions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
+    private Bitmap bitmapgran;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -189,8 +191,8 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermissions()) {
             requestPermissions();
         } else {
-            getAddress();
         }
+        startLocationUpdates();
     }
 
     @Override
@@ -230,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             updateUI();
         }
     }
-    
+
     //
     // LOCALITZACIÓ
     //
@@ -326,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
             setButtonsEnabledState();
             startLocationUpdates();
         }
+        getAddress();
     }
 
     private void startLocationUpdates() {
@@ -387,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             mAddressRequested = true;
-            updateProgressBar();
+            //updateProgressBar();
         }
     }
 
@@ -444,10 +447,9 @@ public class MainActivity extends AppCompatActivity {
                 // receive empty arrays.
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getAddress();
                 if (mRequestingLocationUpdates) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    startLocationUpdates();
+                    //startLocationUpdates();
                 }
             } else {
                 showSnackbar(R.string.permission_denied_explanation,
@@ -537,14 +539,15 @@ public class MainActivity extends AppCompatActivity {
         int targetH = imatge.getHeight();
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-         //bmOptions.inPurgeable = true;
-        bitmap = BitmapFactory.decodeFile(output.getAbsolutePath(), bmOptions);
+        //bmOptions.inPurgeable = true;
+        bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        bitmapgran = BitmapFactory.decodeFile(mCurrentPhotoPath);
         imatge.setImageBitmap(bitmap);
     }
 
@@ -552,15 +555,14 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    Boolean hihaerror;
+    //Boolean hihaerror;
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     public void sendPost() {
-        hihaerror=false;
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmapgran.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] fotografia = baos.toByteArray();
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
@@ -577,7 +579,8 @@ public class MainActivity extends AppCompatActivity {
             jsonParam.put("descripcio", "una observació");
             jsonParam.put("tab", "");
 
-        } catch(JSONException e){
+        } catch (JSONException e) {
+            //hihaerror = true;
             e.printStackTrace();
         }
 
@@ -593,30 +596,24 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("cache-control", "no-cache")
                 .build();
         client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                    //mProgressBar.setVisibility(ProgressBar.GONE);
-                    //showToast(getString(R.string.error_connexio));
-                hihaerror=true;
-;            }
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                Log.i("Servidor", getString(R.string.error_connexio));
+                                                ;
+                                            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                //mProgressBar.setVisibility(ProgressBar.GONE);
-                Log.i("RESPONSE", response.toString());
-            }
-        }
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                Log.i("RESPONSE", response.toString());
+                                                if (response.isSuccessful()) {
+                                                    Log.i("Servidor", getString(R.string.dades_enviades));
+                                                } else {
+                                                    Log.i("Servidor", getString(R.string.error_connexio));
+                                                }
+                                            }
+                                        }
         );
-        mProgressBar.setVisibility(ProgressBar.GONE);
-        if (hihaerror) {
-            showToast(getString(R.string.error_connexio));
-        } else {
-            showToast(getString(R.string.dades_enviades));
-        }
     }
-
-
-
 
     /*public void sendPost() {
         hihaerror=false;
@@ -692,12 +689,13 @@ public class MainActivity extends AppCompatActivity {
         AddressResultReceiver(Handler handler) {
             super(handler);
         }
+
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             Adressa.setText(mAddressOutput);
             mAddressRequested = false;
-            updateProgressBar();
+            //updateProgressBar();
         }
     }
 
