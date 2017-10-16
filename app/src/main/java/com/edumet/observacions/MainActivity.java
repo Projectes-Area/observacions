@@ -547,6 +547,8 @@ public class MainActivity extends AppCompatActivity {
     //
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
+    public static final MediaType MEDIA_TYPE_MARKDOWN= MediaType.parse("text/x-markdown; charset=utf-8");
+
 
     public void sendPost() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -554,6 +556,8 @@ public class MainActivity extends AppCompatActivity {
         byte[] fotografia = baos.toByteArray();
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
+
+
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -565,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
             jsonParam.put("lon", 2.1398);
             jsonParam.put("id_feno", "Aus--Oreneta");
             jsonParam.put("descripcio", "una observació");
-            jsonParam.put("tab", "");
+            jsonParam.put("tab", "salvarFenoApp");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -576,7 +580,9 @@ public class MainActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
         final Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
+                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
+                //.url("http://tecnologia.isantandreu.net/prova.php")
+                .url("https://edumet.cat/edumet/meteo_2/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Your Token")
@@ -594,13 +600,13 @@ public class MainActivity extends AppCompatActivity {
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
-                                                Log.i("Servidor", getString(R.string.error_connexio));
+                                                Log.i("APP", getString(R.string.error_connexio));
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
                                                 Log.i("RESPONSE", response.toString());
+                                                Log.i("CONTENT", response.body().string());
                                                 if (response.isSuccessful()) {
                                                     runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -608,7 +614,7 @@ public class MainActivity extends AppCompatActivity {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("Servidor", getString(R.string.dades_enviades));
+                                                    Log.i("APP", getString(R.string.dades_enviades));
                                                 } else {
                                                     runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -616,82 +622,12 @@ public class MainActivity extends AppCompatActivity {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("Servidor", getString(R.string.error_servidor));
+                                                    Log.i("APP", getString(R.string.error_servidor));
                                                 }
                                             }
                                         }
         );
     }
-
-    /*public void sendPost() {
-        hihaerror=false;
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] fotografia = baos.toByteArray();
-
-                    String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
-                    //URL url = new URL("http://tecnologia.isantandreu.net/prova.php");
-                    URL url = new URL("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-
-                    JSONObject jsonParam = new JSONObject();
-                    jsonParam.put("fitxer", encodedFoto);
-                    jsonParam.put("usuari", 43900018);
-                    jsonParam.put("lat", 41.3985);
-                    jsonParam.put("lon", 2.1398);
-                    jsonParam.put("id_feno", "Aus--Oreneta");
-                    jsonParam.put("descripcio", "una observació");
-                    jsonParam.put("tab", "");
-
-                    Log.i("JSON", jsonParam.toString());
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
-                    os.writeBytes(jsonParam.toString());
-
-                    os.flush();
-                    os.close();
-
-                    if (conn.getResponseCode()!=200) {
-                        hihaerror=true;
-                    }
-
-                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-                    Log.i("MSG", conn.getResponseMessage());
-
-
-                    conn.disconnect();
-                    mProgressBar.setVisibility(ProgressBar.GONE);
-                } catch (Exception e) {
-                    hihaerror=true;
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-        try {
-            thread.join();
-            if (hihaerror) {
-                mProgressBar.setVisibility(ProgressBar.GONE);
-                showToast(getString(R.string.error_connexio));
-            } else {
-                showToast(getString(R.string.dades_enviades));
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            mProgressBar.setVisibility(ProgressBar.GONE);
-            showToast(getString(R.string.error_connexio));
-        }
-    }*/
 
     //
     // GENERAL
