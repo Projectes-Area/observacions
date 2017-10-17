@@ -32,6 +32,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView GPS;
     private TextView Adressa;
     private ImageView imatge;
+    private EditText observacio;
     private ProgressBar mProgressBar;
     private String mGPSLabel;
     private String mAddressOutput;
@@ -152,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         imatge = (ImageView) findViewById(R.id.imgFoto);
+        observacio= (EditText) findViewById(R.id.txtObservacions);
         // Locate the UI widgets.
         GPS = (TextView) findViewById(R.id.txtGPS);
         Adressa = (TextView) findViewById(R.id.txtAdressa);
@@ -522,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
         imatge.setImageBitmap(bitmap);
     }
 
-    private void setPicEnv() {
+    private void setPicEnv() {  // només si cal reduir la mida del fitxer
         int targetW = 600;
         int targetH = 600;
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -566,10 +569,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             jsonParam.put("fitxer", encodedFoto);
             jsonParam.put("usuari", 43900018);
-            jsonParam.put("lat", 41.3985);
-            jsonParam.put("lon", 2.1398);
+            jsonParam.put("lat", mCurrentLocation.getLatitude());
+            jsonParam.put("lon", mCurrentLocation.getLongitude());
             jsonParam.put("id_feno", "Aus--Oreneta");
-            jsonParam.put("descripcio", "una observació");
+            jsonParam.put("descripcio",observacio.getText());
             jsonParam.put("tab", "salvarFenoApp");
 
         } catch (JSONException e) {
