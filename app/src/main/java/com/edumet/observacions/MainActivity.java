@@ -31,10 +31,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imatge;
     private EditText observacio;
     private ProgressBar mProgressBar;
+
     private String mGPSLabel;
     private String mAddressOutput;
     private Boolean mRequestingLocationUpdates;
@@ -130,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
     private File output = null;
     private Bitmap bitmap;
     private Bitmap bitmapEnv;
+    private int num_fenomen=0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -159,6 +165,13 @@ public class MainActivity extends AppCompatActivity {
         GPS = (TextView) findViewById(R.id.txtGPS);
         Adressa = (TextView) findViewById(R.id.txtAdressa);
         mGPSLabel = getResources().getString(R.string.latitude_label);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.fenomens, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
         mRequestingLocationUpdates = false;
         updateValuesFromBundle(savedInstanceState);
 
@@ -565,13 +578,29 @@ public class MainActivity extends AppCompatActivity {
 
         final OkHttpClient client = new OkHttpClient();
 
+        int codi_fenomen=2;
+        switch (num_fenomen) {
+            case 0:
+                codi_fenomen=2; // Aus--Oreneta
+                break;
+            case 1:
+                codi_fenomen=3; // Floracions--Ametller
+                break;
+            case 2:
+                codi_fenomen=4; // Floracions--Cirerer
+                break;
+            case 3:
+                codi_fenomen=1; // Insectes--Papallona
+                break;
+        }
+
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
             jsonParam.put("usuari", 43900018);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
             jsonParam.put("lon", mCurrentLocation.getLongitude());
-            jsonParam.put("id_feno", "Aus--Oreneta");
+            jsonParam.put("id_feno", codi_fenomen);
             jsonParam.put("descripcio",observacio.getText());
             jsonParam.put("tab", "salvarFenoApp");
 
@@ -655,6 +684,17 @@ public class MainActivity extends AppCompatActivity {
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             Adressa.setText(mAddressOutput);
             mAddressRequested = false;
+        }
+    }
+
+    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
+        public void onItemSelected(AdapterView<?> parent, View view,int pos, long id) {
+            // An item was selected. You can retrieve the selected item using
+            // parent.getItemAtPosition(pos)
+            num_fenomen=pos;
+        }
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Another interface callback
         }
     }
 }

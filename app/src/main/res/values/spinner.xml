@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fenomens">
+        <item>Oreneta</item>
+        <item>Ametller</item>
+        <item>Cirerer</item>
+        <item>Papallona</item>
+    </string-array>
+</resources>
