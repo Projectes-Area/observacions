@@ -2,29 +2,37 @@ package com.edumet.observacions;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,29 +53,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Date;
-
-import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.widget.ImageView;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -106,13 +102,15 @@ public class MainActivity extends AppCompatActivity {
     // Keys for storing activity state in the Bundle.
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final static String KEY_LOCATION = "location";
+    private static final int CONTENT_REQUEST = 1337;
+    private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
+    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
     private FusedLocationProviderClient mFusedLocationClient;
     private SettingsClient mSettingsClient;
     private LocationRequest mLocationRequest;
     private LocationSettingsRequest mLocationSettingsRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
-
     // UI Widgets.
     private Button Foto;
     private Button Envia;
@@ -120,16 +118,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView Adressa;
     private ImageView imatge;
     private ProgressBar mProgressBar;
-
     private String mGPSLabel;
     private String mAddressOutput;
     private Boolean mRequestingLocationUpdates;
     private Location mLastLocation;
     private boolean mAddressRequested;
     private AddressResultReceiver mResultReceiver;
-
-    private static final int CONTENT_REQUEST = 1337;
-    private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
@@ -209,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
         imatge.setImageBitmap(bitmap);
     }
 
+    //
+    // LOCALITZACIÓ
+    //
+
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
@@ -228,10 +226,6 @@ public class MainActivity extends AppCompatActivity {
             updateLocationUI();
         }
     }
-
-    //
-    // LOCALITZACIÓ
-    //
 
     private void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -362,7 +356,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
             GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
@@ -448,19 +441,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Adressa.setText(mAddressOutput);
-            mAddressRequested = false;
-        }
-    }
-
     //
     // FOTOGRAFIA
     //
@@ -527,7 +507,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void setPic() {
         int targetW = imatge.getWidth();
         int targetH = imatge.getHeight();
@@ -561,13 +540,23 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
+    private void sendPost() {
+        //ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
+        //setPicEnv();
+        //bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
+        //byte[] fotografia = baosEnv.toByteArray();
 
-    public void sendPost() {
-        ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicEnv();
-        bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
-        byte[] fotografia = baosEnv.toByteArray();
+        byte[] fotografia;
+        fotografia = new byte[(int) output.length()];
+        try {
+            InputStream is = new FileInputStream(output);
+            is.read(fotografia);
+            is.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
@@ -614,6 +603,7 @@ public class MainActivity extends AppCompatActivity {
                                                 });
                                                 Log.i("APP", getString(R.string.error_connexio));
                                             }
+
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
@@ -641,15 +631,28 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    //
-    // GENERAL
-    //
-
     private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
+    }
+
+    //
+    // GENERAL
+    //
+
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            Adressa.setText(mAddressOutput);
+            mAddressRequested = false;
+        }
     }
 }
 
