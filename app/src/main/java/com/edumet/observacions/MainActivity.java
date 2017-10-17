@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
-    private Bitmap bitmapgran;
+    private Bitmap bitmapEnv;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -526,6 +526,8 @@ public class MainActivity extends AppCompatActivity {
         this.sendBroadcast(mediaScanIntent);
     }
 
+
+
     private void setPic() {
         int targetW = imatge.getWidth();
         int targetH = imatge.getHeight();
@@ -538,8 +540,21 @@ public class MainActivity extends AppCompatActivity {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        bitmapgran = BitmapFactory.decodeFile(mCurrentPhotoPath);
         imatge.setImageBitmap(bitmap);
+    }
+
+    private void setPicEnv() {
+        int targetW = 600;
+        int targetH = 600;
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
     //
@@ -547,17 +562,14 @@ public class MainActivity extends AppCompatActivity {
     //
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
-    public static final MediaType MEDIA_TYPE_MARKDOWN= MediaType.parse("text/x-markdown; charset=utf-8");
-
 
     public void sendPost() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmapgran.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] fotografia = baos.toByteArray();
+        ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
+        setPicEnv();
+        bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
+        byte[] fotografia = baosEnv.toByteArray();
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
-
-
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -581,11 +593,11 @@ public class MainActivity extends AppCompatActivity {
 
         final Request request = new Request.Builder()
                 //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                //.url("http://tecnologia.isantandreu.net/prova.php")
-                .url("https://edumet.cat/edumet/meteo_2/prova.php")
+                .url("http://tecnologia.isantandreu.net/prova.php")
+                //url("https://edumet.cat/edumet/meteo_2/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Your Token")
+                .addHeader("Authorization", "auth")
                 .addHeader("cache-control", "no-cache")
                 .build();
 
