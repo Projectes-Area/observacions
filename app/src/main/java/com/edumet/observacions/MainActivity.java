@@ -220,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions();
         } else {
             startLocationUpdates();
+            getAddress();
         }
 
     }
@@ -460,6 +461,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
                     startLocationUpdates();
+                    getAddress();
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
                 }
             } else {
