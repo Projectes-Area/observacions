@@ -11,16 +11,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DadesHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + DadesEstructura.PendentsEntry.TABLE_NAME + " (" +
-                    DadesEstructura.PendentsEntry._ID + " INTEGER PRIMARY KEY," +
-                    DadesEstructura.PendentsEntry.COLUMN_NAME_LATITUD + " TEXT," +
-                    DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD + " TEXT," +
-                    DadesEstructura.PendentsEntry.COLUMN_NAME_FENOMEN + " TEXT," +
-                    DadesEstructura.PendentsEntry.COLUMN_NAME_DESCRIPCIO + " TEXT," +
-                    DadesEstructura.PendentsEntry.COLUMN_NAME_PATH + " TEXT)";
+            "CREATE TABLE " + DadesEstructura.Parametres.TABLE_NAME + " (" +
+                    DadesEstructura.Parametres._ID + " INTEGER PRIMARY KEY," +
+                    DadesEstructura.Parametres.COLUMN_NAME_LATITUD + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_LONGITUD + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_FENOMEN + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + DadesEstructura.PendentsEntry.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + DadesEstructura.Parametres.TABLE_NAME;
 
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
@@ -33,8 +33,7 @@ public class DadesHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_ENTRIES);
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
+        // This database is only a cache for online data, so its upgrade policy is to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }

@@ -83,7 +83,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 /**
  * Using location settings.
  * <p/>
@@ -199,6 +198,12 @@ public class MainActivity extends AppCompatActivity {
         buildLocationSettingsRequest();
     }
 
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
@@ -213,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if (!checkPermissions()) {
             requestPermissions();
+        } else {
+            startLocationUpdates();
         }
-        startLocationUpdates();
 
     }
 
@@ -417,15 +423,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissions() {
         boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
+                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
@@ -455,6 +459,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
+                    startLocationUpdates();
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
                 }
             } else {
@@ -474,7 +479,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private class AddressResultReceiver extends ResultReceiver {
         AddressResultReceiver(Handler handler) {
@@ -554,9 +558,7 @@ public class MainActivity extends AppCompatActivity {
         this.sendBroadcast(mediaScanIntent);
     }
 
-
     private void setPic() {
-
         int targetW = imatge.getWidth();
         int targetH = imatge.getHeight();
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -570,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imatge.setImageBitmap(bitmap);
     }
-
+/*
     private void setPicEnv() {  // només si cal reduir la mida del fitxer
         int targetW = 600;
         int targetH = 600;
@@ -583,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-    }
+    }*/
 
     //
     // ENVIA AL SERVIDOR EDUMET
@@ -672,7 +674,6 @@ public class MainActivity extends AppCompatActivity {
                                                 });
                                                 Log.i("APP", getString(R.string.error_connexio));
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
@@ -700,19 +701,23 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    //
+    // DESA
+    //
+
     private void desa() {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
     // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
-        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
-        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_FENOMEN, getNumFenomen());
-        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
-        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_PATH, mCurrentPhotoPath);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
 
     // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(DadesEstructura.PendentsEntry.TABLE_NAME, null, values);
+        long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
 
@@ -721,23 +726,23 @@ public class MainActivity extends AppCompatActivity {
 
     // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
-                DadesEstructura.PendentsEntry._ID,
-                DadesEstructura.PendentsEntry.COLUMN_NAME_LATITUD,
-                DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD,
-                DadesEstructura.PendentsEntry.COLUMN_NAME_FENOMEN,
-                DadesEstructura.PendentsEntry.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.PendentsEntry.COLUMN_NAME_PATH
+                DadesEstructura.Parametres._ID,
+                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
+                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
+                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
+                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
+                DadesEstructura.Parametres.COLUMN_NAME_PATH
         };
 
-    // Filter results WHERE "ID" = '2'
-        String selection = DadesEstructura.PendentsEntry._ID + " = ?";
+    // Filter results WHERE "ID" = '1'
+        String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {"1"};
 
     // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD+ " DESC";
+                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD+ " DESC";
         Cursor cursor = db.query(
-                DadesEstructura.PendentsEntry.TABLE_NAME,                     // The table to query
+                DadesEstructura.Parametres.TABLE_NAME,    // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 selectionArgs,                            // The values for the WHERE clause
@@ -749,7 +754,7 @@ public class MainActivity extends AppCompatActivity {
         List itemIds = new ArrayList<>();
         while(cursor.moveToNext()) {
             long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.PendentsEntry._ID));
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
             itemIds.add(itemId);
         }
         cursor.close();
@@ -773,18 +778,9 @@ public class MainActivity extends AppCompatActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
             num_fenomen = pos;
         }
-
         public void onNothingSelected(AdapterView<?> parent) {
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
-    }
-
-
 }
 
 
