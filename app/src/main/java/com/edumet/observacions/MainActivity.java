@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Geocoder;
@@ -61,13 +64,13 @@ import com.google.android.gms.tasks.Task;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +82,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 
 /**
  * Using location settings.
@@ -119,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
     // UI Widgets.
     private Button Foto;
     private Button Envia;
+    private Button Desa;
     private TextView GPS;
     private TextView Adressa;
     private ImageView imatge;
@@ -135,12 +140,17 @@ public class MainActivity extends AppCompatActivity {
     private File output = null;
     private Bitmap bitmap;
     private Bitmap bitmapEnv;
-    private int num_fenomen=0;
+    private int num_fenomen = 0;
+
+    DadesHelper mDbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        mDbHelper = new DadesHelper(super.getApplicationContext());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mResultReceiver = new AddressResultReceiver(new Handler());
@@ -149,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         mAddressOutput = "";
         Foto = (Button) findViewById(R.id.btnFoto);
         Envia = (Button) findViewById(R.id.btnEnvia);
+        Desa = (Button) findViewById(R.id.btnDesa);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
@@ -159,8 +170,13 @@ public class MainActivity extends AppCompatActivity {
                 sendPost();
             }
         });
+        Desa.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                desa();
+            }
+        });
         imatge = (ImageView) findViewById(R.id.imgFoto);
-        observacio= (EditText) findViewById(R.id.txtObservacions);
+        observacio = (EditText) findViewById(R.id.txtObservacions);
         // Locate the UI widgets.
         GPS = (TextView) findViewById(R.id.txtGPS);
         Adressa = (TextView) findViewById(R.id.txtAdressa);
@@ -199,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions();
         }
         startLocationUpdates();
+
     }
 
     @Override
@@ -224,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
     //
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
+
         if (savedInstanceState != null) {
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
@@ -321,8 +339,8 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     setPic();
                     galleryAddPic();
-                    Log.i(TAG, "Added to gallery.");
                     Envia.setEnabled(true);
+                    Desa.setEnabled(true);
                 }
                 break;
         }
@@ -362,9 +380,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.e(TAG, errorMessage);
-                                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                                //String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
+                                Log.e(TAG, "Location settings are inadequate, and cannot be fixed here. Fix in Settings.");
+                                Toast.makeText(MainActivity.this, R.string.location_settings_inadequate_warning, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
                         updateLocationUI();
@@ -457,6 +475,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            Adressa.setText(mAddressOutput);
+            mAddressRequested = false;
+        }
+    }
+
     //
     // FOTOGRAFIA
     //
@@ -524,6 +556,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setPic() {
+
         int targetW = imatge.getWidth();
         int targetH = imatge.getHeight();
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -556,6 +589,25 @@ public class MainActivity extends AppCompatActivity {
     // ENVIA AL SERVIDOR EDUMET
     //
 
+    private int getNumFenomen() {
+        int codi_fenomen = 2;
+        switch (num_fenomen) {
+            case 0:
+                codi_fenomen = 2; // Aus--Oreneta
+                break;
+            case 1:
+                codi_fenomen = 3; // Floracions--Ametller
+                break;
+            case 2:
+                codi_fenomen = 4; // Floracions--Cirerer
+                break;
+            case 3:
+                codi_fenomen = 1; // Insectes--Papallona
+                break;
+        }
+        return codi_fenomen;
+    }
+
     private void sendPost() {
         //ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         //setPicEnv();
@@ -578,30 +630,14 @@ public class MainActivity extends AppCompatActivity {
 
         final OkHttpClient client = new OkHttpClient();
 
-        int codi_fenomen=2;
-        switch (num_fenomen) {
-            case 0:
-                codi_fenomen=2; // Aus--Oreneta
-                break;
-            case 1:
-                codi_fenomen=3; // Floracions--Ametller
-                break;
-            case 2:
-                codi_fenomen=4; // Floracions--Cirerer
-                break;
-            case 3:
-                codi_fenomen=1; // Insectes--Papallona
-                break;
-        }
-
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
             jsonParam.put("usuari", 43900018);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
             jsonParam.put("lon", mCurrentLocation.getLongitude());
-            jsonParam.put("id_feno", codi_fenomen);
-            jsonParam.put("descripcio",observacio.getText());
+            jsonParam.put("id_feno", getNumFenomen());
+            jsonParam.put("descripcio", observacio.getText());
             jsonParam.put("tab", "salvarFenoApp");
 
         } catch (JSONException e) {
@@ -613,9 +649,10 @@ public class MainActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
         final Request request = new Request.Builder()
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
                 //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                .url("http://tecnologia.isantandreu.net/prova.php")
-                //url("https://edumet.cat/edumet/meteo_2/prova.php")
+                //.url("http://tecnologia.isantandreu.net/prova.php")
+                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "auth")
@@ -663,6 +700,67 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    private void desa() {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+    // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
+        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
+        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_FENOMEN, getNumFenomen());
+        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
+        values.put(DadesEstructura.PendentsEntry.COLUMN_NAME_PATH, mCurrentPhotoPath);
+
+    // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(DadesEstructura.PendentsEntry.TABLE_NAME, null, values);
+        String strLong = Long.toString(newRowId);
+        Log.i("SQL", strLong);
+
+     // Ara llegim
+         db = mDbHelper.getReadableDatabase();
+
+    // Define a projection that specifies which columns from the database you will actually use after this query.
+        String[] projection = {
+                DadesEstructura.PendentsEntry._ID,
+                DadesEstructura.PendentsEntry.COLUMN_NAME_LATITUD,
+                DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD,
+                DadesEstructura.PendentsEntry.COLUMN_NAME_FENOMEN,
+                DadesEstructura.PendentsEntry.COLUMN_NAME_DESCRIPCIO,
+                DadesEstructura.PendentsEntry.COLUMN_NAME_PATH
+        };
+
+    // Filter results WHERE "ID" = '2'
+        String selection = DadesEstructura.PendentsEntry._ID + " = ?";
+        String[] selectionArgs = {"1"};
+
+    // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                DadesEstructura.PendentsEntry.COLUMN_NAME_LONGITUD+ " DESC";
+        Cursor cursor = db.query(
+                DadesEstructura.PendentsEntry.TABLE_NAME,                     // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        List itemIds = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.PendentsEntry._ID));
+            itemIds.add(itemId);
+        }
+        cursor.close();
+
+        Toast.makeText(this, itemIds.get(0).toString(), Toast.LENGTH_LONG).show();
+    }
+
+    //
+    // GENERAL
+    //
+
     private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
                 findViewById(android.R.id.content),
@@ -670,34 +768,26 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
     }
 
-    //
-    // GENERAL
-    //
-
-    private class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Adressa.setText(mAddressOutput);
-            mAddressRequested = false;
-        }
-    }
 
     public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
-        public void onItemSelected(AdapterView<?> parent, View view,int pos, long id) {
-            // An item was selected. You can retrieve the selected item using
-            // parent.getItemAtPosition(pos)
-            num_fenomen=pos;
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            num_fenomen = pos;
         }
+
         public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
+
 }
+
+
 
 
 
