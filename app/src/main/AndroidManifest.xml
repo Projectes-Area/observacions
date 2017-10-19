@@ -43,9 +43,8 @@
             </meta-data>
         </provider>
 
-        <service
+<!--        <service
             android:name=".FetchAddressIntentService"
-            android:exported="false"/>
-
+            android:exported="false"/>-->
     </application>
 </manifest>
