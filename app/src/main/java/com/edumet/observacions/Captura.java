@@ -32,6 +32,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -135,6 +136,7 @@ public class Captura extends Fragment {
     private Button Foto;
     private Button Envia;
     private Button Desa;
+    private Button Pendents;
     private TextView GPS;
     private TextView Adressa;
     private ImageView imatge;
@@ -159,13 +161,39 @@ public class Captura extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.captura, container, false);
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
-        mAddressRequested = false;
-        mAddressOutput = "";
+
         Lloc = (Button) v.findViewById(R.id.btnGPS);
         Foto = (Button) v.findViewById(R.id.btnFoto);
         Envia = (Button) v.findViewById(R.id.btnEnvia);
         Desa = (Button) v.findViewById(R.id.btnDesa);
+        Pendents = (Button) v.findViewById(R.id.btnPendents);
+
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+        mAddressRequested = false;
+        mAddressOutput = "";
+
+        imatge = (ImageView) v.findViewById(R.id.imgFoto);
+        observacio = (EditText) v.findViewById(R.id.txtObservacions);
+        // Locate the UI widgets.
+        GPS = (TextView) v.findViewById(R.id.txtGPS);
+        Adressa = (TextView) v.findViewById(R.id.txtAdressa);
+        mGPSLabel = getResources().getString(R.string.latitude_label);
+
+        Spinner spinner = (Spinner) v.findViewById(R.id.spinner);
+
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.fenomens, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        mRequestingLocationUpdates = false;
+        updateValuesFromBundle(savedInstanceState);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mSettingsClient = LocationServices.getSettingsClient(getActivity());
+
+
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
@@ -181,30 +209,16 @@ public class Captura extends Fragment {
                 desa();
             }
         });
+        Pendents.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).pendents();
+            }
+        });
         Lloc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startUpdatesButtonHandler(v);
             }
         });
-        imatge = (ImageView) v.findViewById(R.id.imgFoto);
-        observacio = (EditText) v.findViewById(R.id.txtObservacions);
-        // Locate the UI widgets.
-        GPS = (TextView) v.findViewById(R.id.txtGPS);
-        Adressa = (TextView) v.findViewById(R.id.txtAdressa);
-        mGPSLabel = getResources().getString(R.string.latitude_label);
-
-        Spinner spinner = (Spinner) v.findViewById(R.id.spinner);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.fenomens, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        mRequestingLocationUpdates = false;
-        updateValuesFromBundle(savedInstanceState);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        mSettingsClient = LocationServices.getSettingsClient(getActivity());
 
         createLocationCallback();
         createLocationRequest();
@@ -212,8 +226,6 @@ public class Captura extends Fragment {
 
         return v;
     }
-
-
 
 /*    @Override
     protected void onDestroy() {
