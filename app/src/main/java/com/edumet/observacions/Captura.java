@@ -87,28 +87,12 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import static android.app.Activity.RESULT_OK;
 
-
-/**
- * Using location settings.
- * <p/>
- * Uses the {@link com.google.android.gms.location.SettingsApi} to ensure that the device's system
- * settings are properly configured for the app's location needs. When making a request to
- * Location services, the device's system settings may be in a state that prevents the app from
- * obtaining the location data that it needs. For example, GPS or Wi-Fi scanning may be switched
- * off. The {@code SettingsApi} makes it possible to determine if a device's system settings are
- * adequate for the location request, and to optionally invoke a dialog that allows the user to
- * enable the necessary settings.
- * <p/>
- * This sample allows the user to request location updates using the ACCESS_FINE_LOCATION setting
- * (as specified in AndroidManifest.xml).
- */
 public class Captura extends Fragment {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -159,8 +143,9 @@ public class Captura extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.captura, container, false);
+
+        mDbHelper = new DadesHelper(getContext());
 
         Lloc = (Button) v.findViewById(R.id.btnGPS);
         Foto = (Button) v.findViewById(R.id.btnFoto);
@@ -174,13 +159,12 @@ public class Captura extends Fragment {
 
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
-        // Locate the UI widgets.
+
         GPS = (TextView) v.findViewById(R.id.txtGPS);
         Adressa = (TextView) v.findViewById(R.id.txtAdressa);
         mGPSLabel = getResources().getString(R.string.latitude_label);
 
         Spinner spinner = (Spinner) v.findViewById(R.id.spinner);
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.fenomens, android.R.layout.simple_spinner_item);
@@ -227,11 +211,11 @@ public class Captura extends Fragment {
         return v;
     }
 
-/*    @Override
-    protected void onDestroy() {
+    @Override
+    public void onDestroy() {
         mDbHelper.close();
         super.onDestroy();
-    }*/
+    }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
@@ -249,9 +233,7 @@ public class Captura extends Fragment {
             requestPermissions();
         } else {
             startLocationUpdates();
-            //getAddress();
         }
-
     }
 
     @Override
@@ -296,41 +278,6 @@ public class Captura extends Fragment {
             updateLocationUI();
         }
     }
-
-/*    private void startIntentService() {
-        Intent intent = new Intent(getActivity(), FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        getActivity().startService(intent);
-    }*/
-
-    /*@SuppressWarnings("MissingPermission")
-    private void getAddress() {
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location == null) {
-                            Log.w(TAG, "onSuccess:null");
-                            return;
-                        }
-                        mLastLocation = location;
-                        if (!Geocoder.isPresent()) {
-                            Toast.makeText(getActivity().getBaseContext(), R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        if (mAddressRequested) {
-                            startIntentService();
-                        }
-                    }
-                })
-                .addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "getLastLocation:onFailure", e);
-                    }
-                });
-    }*/
 
     private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -387,7 +334,6 @@ public class Captura extends Fragment {
             mRequestingLocationUpdates = true;
             startLocationUpdates();
         }
-        //getAddress();
     }
 
     private void startLocationUpdates() {
@@ -509,19 +455,6 @@ public class Captura extends Fragment {
             }
         }
     }
-
-/*    private class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Adressa.setText(mAddressOutput);
-            mAddressRequested = false;
-        }
-    }*/
 
     //
     // FOTOGRAFIA
@@ -788,7 +721,6 @@ public class Captura extends Fragment {
             itemIds.add(itemId);
         }
         cursor.close();
-
         Toast.makeText(getActivity(), itemIds.get(0).toString(), Toast.LENGTH_LONG).show();
     }
 
