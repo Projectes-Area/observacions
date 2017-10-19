@@ -92,6 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
+        android:enabled="false"
         android:text="@string/foto"
         app:layout_constraintLeft_toRightOf="@+id/btnGPS"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
