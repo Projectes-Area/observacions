@@ -128,13 +128,13 @@ public class Captura extends Fragment {
     private ImageView imatge;
     private EditText observacio;
     private ProgressBar mProgressBar;
+    private Spinner spinner;
 
     private String mGPSLabel;
-    private String mAddressOutput;
-    private Boolean mRequestingLocationUpdates;
+    private String mAddressOutput="";
+    private Boolean mRequestingLocationUpdates=false;
     private Location mLastLocation;
-    private boolean mAddressRequested;
-    //private AddressResultReceiver mResultReceiver;
+    private boolean mAddressRequested=false;
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
@@ -147,40 +147,33 @@ public class Captura extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v= inflater.inflate(R.layout.captura, container, false);
 
-        mDbHelper = new DadesHelper(getContext());
-
         Lloc = (Button) v.findViewById(R.id.btnGPS);
         Foto = (Button) v.findViewById(R.id.btnFoto);
         Envia = (Button) v.findViewById(R.id.btnEnvia);
         Desa = (Button) v.findViewById(R.id.btnDesa);
         Pendents = (Button) v.findViewById(R.id.btnPendents);
         Mapa = (Button) v.findViewById(R.id.btnMapa);
-
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
-        mAddressRequested = false;
-        mAddressOutput = "";
-
-        imatge = (ImageView) v.findViewById(R.id.imgFoto);
-        observacio = (EditText) v.findViewById(R.id.txtObservacions);
-
         GPS = (TextView) v.findViewById(R.id.txtGPS);
         Adressa = (TextView) v.findViewById(R.id.txtAdressa);
-        mGPSLabel = getResources().getString(R.string.latitude_label);
+        imatge = (ImageView) v.findViewById(R.id.imgFoto);
+        observacio = (EditText) v.findViewById(R.id.txtObservacions);
+        spinner = (Spinner) v.findViewById(R.id.spinner);
 
-        Spinner spinner = (Spinner) v.findViewById(R.id.spinner);
+        mGPSLabel = getResources().getString(R.string.latitude_label);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.fenomens, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
-        mRequestingLocationUpdates = false;
+        mDbHelper = new DadesHelper(getContext());
+
         updateValuesFromBundle(savedInstanceState);
+        return v;
+    }
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        mSettingsClient = LocationServices.getSettingsClient(getActivity());
-
-
+    @Override
+    public void onViewCreated(View v, Bundle savedInstanceState) {
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
@@ -212,11 +205,12 @@ public class Captura extends Fragment {
             }
         });
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mSettingsClient = LocationServices.getSettingsClient(getActivity());
+
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-
-        return v;
     }
 
     @Override
