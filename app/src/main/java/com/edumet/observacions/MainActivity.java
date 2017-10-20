@@ -36,56 +36,29 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void pendents() {
-        // Create fragment and give it an argument specifying the article it should show
-        Pendents_enviar newFragment = new Pendents_enviar();
+        Observacions_fetes newFragment = new Observacions_fetes();
         Bundle args = new Bundle();
-        //args.putInt(Pendents_enviar.ARG_POSITION, position);
-        //newFragment.setArguments(args);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack so the user can navigate back
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
-
-// Commit the transaction
         transaction.commit();
     }
 
-    public void login() {
-        // Create fragment and give it an argument specifying the article it should show
+/*    public void login() {
         Login newFragment = new Login();
         Bundle args = new Bundle();
-        //args.putInt(Pendents_enviar.ARG_POSITION, position);
-        //newFragment.setArguments(args);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack so the user can navigate back
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
-
-// Commit the transaction
         transaction.commit();
-    }
+    }*/
 
     public void captura() {
-        // Create fragment and give it an argument specifying the article it should show
         Captura newFragment = new Captura();
         Bundle args = new Bundle();
-        //args.putInt(Pendents_enviar.ARG_POSITION, position);
-        //newFragment.setArguments(args);
-
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack so the user can navigate back
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
-
-// Commit the transaction
         transaction.commit();
     }
 

@@ -13,15 +13,17 @@ public class DadesHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DadesEstructura.Parametres.TABLE_NAME + " (" +
                     DadesEstructura.Parametres._ID + " INTEGER PRIMARY KEY," +
+                    DadesEstructura.Parametres.COLUMN_NAME_DIA + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_HORA + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_LATITUD + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_LONGITUD + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_FENOMEN + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO + " TEXT," +
-                    DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT)";
+                    DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + DadesEstructura.Parametres.TABLE_NAME;
-
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Database.db";

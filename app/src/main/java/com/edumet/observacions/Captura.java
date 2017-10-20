@@ -1,9 +1,5 @@
 package com.edumet.observacions;
 
-/**
- * Created by 40980055N on 18/10/17.
- */
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -18,24 +14,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Looper;
-import android.os.ResultReceiver;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -70,12 +58,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -124,17 +110,13 @@ public class Captura extends Fragment {
     private Button Pendents;
     private Button Mapa;
     private TextView GPS;
-    private TextView Adressa;
     private ImageView imatge;
     private EditText observacio;
     private ProgressBar mProgressBar;
     private Spinner spinner;
 
     private String mGPSLabel;
-    private String mAddressOutput="";
-    private Boolean mRequestingLocationUpdates=false;
-    private Location mLastLocation;
-    private boolean mAddressRequested=false;
+    private boolean mRequestingLocationUpdates=false;
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
@@ -155,16 +137,15 @@ public class Captura extends Fragment {
         Mapa = (Button) v.findViewById(R.id.btnMapa);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         GPS = (TextView) v.findViewById(R.id.txtGPS);
-        Adressa = (TextView) v.findViewById(R.id.txtAdressa);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
-
-        mGPSLabel = getResources().getString(R.string.latitude_label);
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.fenomens, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        mGPSLabel = getResources().getString(R.string.latitude_label);
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -211,6 +192,17 @@ public class Captura extends Fragment {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
+        updateLocationUI();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!checkPermissions()) {
+            requestPermissions();
+        } else {
+            startLocationUpdates();
+        }
     }
 
     @Override
@@ -223,19 +215,7 @@ public class Captura extends Fragment {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
-        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
-        savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (!checkPermissions()) {
-            requestPermissions();
-        } else {
-            startLocationUpdates();
-        }
     }
 
     @Override
@@ -261,7 +241,6 @@ public class Captura extends Fragment {
     //
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
-
         if (savedInstanceState != null) {
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
@@ -269,13 +248,6 @@ public class Captura extends Fragment {
             }
             if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
                 mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            }
-            if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
-                mAddressRequested = savedInstanceState.getBoolean(ADDRESS_REQUESTED_KEY);
-            }
-            if (savedInstanceState.keySet().contains(LOCATION_ADDRESS_KEY)) {
-                mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
-                Adressa.setText(mAddressOutput);
             }
             updateLocationUI();
         }
@@ -378,11 +350,6 @@ public class Captura extends Fragment {
         if (mCurrentLocation != null) {
             GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
             Foto.setEnabled(true);
-            if (mLastLocation != null) {
-                //startIntentService();
-                return;
-            }
-            mAddressRequested = true;
         }
     }
 
@@ -537,9 +504,7 @@ public class Captura extends Fragment {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imatge.setImageBitmap(bitmap);
     }
-    private void setPicEnv(int x,int y) {  // només si cal reduir la mida del fitxer
-        int targetW = x;
-        int targetH = y;
+    private void setPicEnv(int targetW,int targetH) {  // només si cal reduir la mida del fitxer
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -576,7 +541,7 @@ public class Captura extends Fragment {
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicEnv(600,600);
+        setPicEnv(800,800);
         bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
@@ -594,12 +559,19 @@ public class Captura extends Fragment {
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat shf = new SimpleDateFormat("hh:mm:ss");
+        String dia = sdf.format(Calendar.getInstance().getTime());
+        String hora = shf.format(Calendar.getInstance().getTime());
+
         final OkHttpClient client = new OkHttpClient();
 
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
             jsonParam.put("usuari", 43900018);
+            jsonParam.put("dia",dia);
+            jsonParam.put("hora",hora);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
             jsonParam.put("lon", mCurrentLocation.getLongitude());
             jsonParam.put("id_feno", getNumFenomen());
@@ -615,9 +587,9 @@ public class Captura extends Fragment {
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
         final Request request = new Request.Builder()
-                //.url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
                 //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                .url("http://tecnologia.isantandreu.net/prova.php")
+                //.url("http://tecnologia.isantandreu.net/prova.php")
                 //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
@@ -672,13 +644,22 @@ public class Captura extends Fragment {
     private void desa() {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat shf = new SimpleDateFormat("hh:mm:ss");
+        String dia = sdf.format(Calendar.getInstance().getTime());
+        String hora = shf.format(Calendar.getInstance().getTime());
+
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
+
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
@@ -691,11 +672,14 @@ public class Captura extends Fragment {
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
                 DadesEstructura.Parametres._ID,
+                DadesEstructura.Parametres.COLUMN_NAME_DIA,
+                DadesEstructura.Parametres.COLUMN_NAME_HORA,
                 DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
                 DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH
+                DadesEstructura.Parametres.COLUMN_NAME_PATH,
+                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
         // Filter results WHERE "ID" = '1'
