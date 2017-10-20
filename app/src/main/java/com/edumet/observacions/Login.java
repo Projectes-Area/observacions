@@ -12,9 +12,7 @@ import android.widget.Button;
  */
 
 public class Login extends Fragment {
-
     private Button LoginOK;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -22,7 +20,6 @@ public class Login extends Fragment {
         LoginOK=(Button) v.findViewById(R.id.btnLogin);
         return v;
     }
-
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
         LoginOK.setOnClickListener(new View.OnClickListener() {
