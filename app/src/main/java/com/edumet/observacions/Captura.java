@@ -68,6 +68,7 @@ import com.google.android.gms.tasks.Task;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -121,6 +122,7 @@ public class Captura extends Fragment {
     private Button Envia;
     private Button Desa;
     private Button Pendents;
+    private Button Mapa;
     private TextView GPS;
     private TextView Adressa;
     private ImageView imatge;
@@ -152,6 +154,7 @@ public class Captura extends Fragment {
         Envia = (Button) v.findViewById(R.id.btnEnvia);
         Desa = (Button) v.findViewById(R.id.btnDesa);
         Pendents = (Button) v.findViewById(R.id.btnPendents);
+        Mapa = (Button) v.findViewById(R.id.btnMapa);
 
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         mAddressRequested = false;
@@ -193,14 +196,19 @@ public class Captura extends Fragment {
                 desa();
             }
         });
+        Lloc.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startUpdatesButtonHandler(v);
+            }
+        });
         Pendents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ((MainActivity) getActivity()).pendents();
             }
         });
-        Lloc.setOnClickListener(new View.OnClickListener() {
+        Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startUpdatesButtonHandler(v);
+                ((MainActivity) getActivity()).pendents();
             }
         });
 
@@ -535,10 +543,9 @@ public class Captura extends Fragment {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imatge.setImageBitmap(bitmap);
     }
-/*
-    private void setPicEnv() {  // només si cal reduir la mida del fitxer
-        int targetW = 600;
-        int targetH = 600;
+    private void setPicEnv(int x,int y) {  // només si cal reduir la mida del fitxer
+        int targetW = x;
+        int targetH = y;
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -548,7 +555,7 @@ public class Captura extends Fragment {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-    }*/
+    }
 
     //
     // ENVIA AL SERVIDOR EDUMET
@@ -574,12 +581,12 @@ public class Captura extends Fragment {
     }
 
     private void sendPost() {
-        //ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        //setPicEnv();
-        //bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
-        //byte[] fotografia = baosEnv.toByteArray();
+        ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
+        setPicEnv(600,600);
+        bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
+        byte[] fotografia = baosEnv.toByteArray();
 
-        byte[] fotografia;
+/*        byte[] fotografia;
         fotografia = new byte[(int) output.length()];
         try {
             InputStream is = new FileInputStream(output);
@@ -589,7 +596,7 @@ public class Captura extends Fragment {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
@@ -614,9 +621,9 @@ public class Captura extends Fragment {
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
         final Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
+                //.url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
                 //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                //.url("http://tecnologia.isantandreu.net/prova.php")
+                .url("http://tecnologia.isantandreu.net/prova.php")
                 //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")

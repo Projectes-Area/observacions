@@ -24,7 +24,7 @@ public class MainActivity extends FragmentActivity {
             }
 
             // Create a new Fragment to be placed in the activity layout
-            Captura firstFragment = new Captura();
+            Login firstFragment = new Login();
 
             // In case this activity was started with special instructions from an
             // Intent, pass the Intent's extras to the fragment as arguments
@@ -38,6 +38,42 @@ public class MainActivity extends FragmentActivity {
     public void pendents() {
         // Create fragment and give it an argument specifying the article it should show
         Pendents_enviar newFragment = new Pendents_enviar();
+        Bundle args = new Bundle();
+        //args.putInt(Pendents_enviar.ARG_POSITION, position);
+        //newFragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+    }
+
+    public void login() {
+        // Create fragment and give it an argument specifying the article it should show
+        Login newFragment = new Login();
+        Bundle args = new Bundle();
+        //args.putInt(Pendents_enviar.ARG_POSITION, position);
+        //newFragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack so the user can navigate back
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+    }
+
+    public void captura() {
+        // Create fragment and give it an argument specifying the article it should show
+        Captura newFragment = new Captura();
         Bundle args = new Bundle();
         //args.putInt(Pendents_enviar.ARG_POSITION, position);
         //newFragment.setArguments(args);
