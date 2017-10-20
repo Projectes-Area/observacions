@@ -125,6 +125,7 @@ public class Captura extends Fragment {
     private Bitmap bitmap;
     private Bitmap bitmapEnv;
     private int num_fenomen = 0;
+    private int angle_foto;
 
     DadesHelper mDbHelper;
 
@@ -166,7 +167,12 @@ public class Captura extends Fragment {
         });
         Girar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                bitmap=rotateViaMatrix(bitmap);
+                angle_foto+=90;
+                if (angle_foto>=360) {
+                    angle_foto=0;
+                }
+                Log.i("ANGLE",String.valueOf(angle_foto));
+                bitmap=rotateViaMatrix(bitmap,90);
                 imatge.setImageBitmap(bitmap);
             }
         });
@@ -304,6 +310,7 @@ public class Captura extends Fragment {
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
+                    angle_foto=0;
                     setPic();
                     galleryAddPic();
                     Envia.setEnabled(true);
@@ -526,9 +533,9 @@ public class Captura extends Fragment {
         bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
-    static private Bitmap rotateViaMatrix(Bitmap original) {
+    static private Bitmap rotateViaMatrix(Bitmap original,int angle) {
         Matrix matrix= new Matrix();
-        matrix.setRotate(90);
+        matrix.setRotate(angle);
         return(Bitmap.createBitmap(original, 0, 0, original.getWidth(),
                 original.getHeight(), matrix, true));
     }
@@ -559,6 +566,8 @@ public class Captura extends Fragment {
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         setPicEnv(800,800);
+        bitmapEnv=rotateViaMatrix(bitmapEnv,angle_foto);
+        Log.i("ANGLE",String.valueOf(angle_foto));
         bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
@@ -577,7 +586,7 @@ public class Captura extends Fragment {
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 
@@ -676,15 +685,17 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ANGLE, angle_foto);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
+        Toast.makeText(getActivity(), "S'ha desat l'observació", Toast.LENGTH_LONG).show();
 
         // Ara llegim
-        db = mDbHelper.getReadableDatabase();
+ /*       db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -696,6 +707,7 @@ public class Captura extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH,
+                DadesEstructura.Parametres.COLUMN_NAME_ANGLE,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
@@ -723,7 +735,7 @@ public class Captura extends Fragment {
             itemIds.add(itemId);
         }
         cursor.close();
-        Toast.makeText(getActivity(), itemIds.get(0).toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), itemIds.get(0).toString(), Toast.LENGTH_LONG).show();*/
     }
 
     //

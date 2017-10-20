@@ -20,6 +20,7 @@ public class DadesHelper extends SQLiteOpenHelper {
                     DadesEstructura.Parametres.COLUMN_NAME_FENOMEN + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_ANGLE + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
