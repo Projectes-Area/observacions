@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -31,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -105,6 +107,7 @@ public class Captura extends Fragment {
     // UI Widgets.
     private Button Lloc;
     private Button Foto;
+    private ImageButton Girar;
     private Button Envia;
     private Button Desa;
     private Button Pendents;
@@ -131,6 +134,7 @@ public class Captura extends Fragment {
 
         Lloc = (Button) v.findViewById(R.id.btnGPS);
         Foto = (Button) v.findViewById(R.id.btnFoto);
+        Girar = (ImageButton) v.findViewById(R.id.btnGirar);
         Envia = (Button) v.findViewById(R.id.btnEnvia);
         Desa = (Button) v.findViewById(R.id.btnDesa);
         Pendents = (Button) v.findViewById(R.id.btnPendents);
@@ -158,6 +162,12 @@ public class Captura extends Fragment {
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
+            }
+        });
+        Girar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                bitmap=rotateViaMatrix(bitmap);
+                imatge.setImageBitmap(bitmap);
             }
         });
         Envia.setOnClickListener(new View.OnClickListener() {
@@ -514,6 +524,13 @@ public class Captura extends Fragment {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+    }
+
+    static private Bitmap rotateViaMatrix(Bitmap original) {
+        Matrix matrix= new Matrix();
+        matrix.setRotate(90);
+        return(Bitmap.createBitmap(original, 0, 0, original.getWidth(),
+                original.getHeight(), matrix, true));
     }
 
     //
