@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
@@ -61,7 +63,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -196,7 +197,6 @@ public class Captura extends Fragment {
         });
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-               // ((MainActivity) getActivity()).mapa();
                 mapa();
             }
         });
@@ -219,23 +219,6 @@ public class Captura extends Fragment {
         }
     }
 
-    @SuppressWarnings("MissingPermission")
-    private void getLastLocation() {
-        mFusedLocationClient.getLastLocation()
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
-                            Foto.setEnabled(true);
-                        } else {
-/*                            Log.w(TAG, "getLastLocation:exception", task.getException());
-                            showSnackbar(getString(R.string.no_location_detected));*/
-                        }
-                    }
-                });
-    }
-
     @Override
     public void onDestroy() {
         mDbHelper.close();
@@ -252,8 +235,6 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Within {@code onPause()}, we remove location updates. Here, we resume receiving
-        // location updates if the user has requested them.
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
@@ -426,16 +407,16 @@ public class Captura extends Fragment {
                 ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
-/*            showSnackbar(R.string.permission_rationale,
+            showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             // Request permission
-                            ActivityCompat.requestPermissions(MainActivity.this,
+                            ActivityCompat.requestPermissions(getActivity(),
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
-});*/
+});
         } else {
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
@@ -475,7 +456,7 @@ public class Captura extends Fragment {
                 // again" prompts). Therefore, a user interface affordance is typically implemented
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
-                /*showSnackbar(R.string.permission_denied_explanation,
+                showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -489,7 +470,7 @@ public class Captura extends Fragment {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }
-                        });*/
+                        });
             }
         }
     }
@@ -498,18 +479,14 @@ public class Captura extends Fragment {
         // Create a Uri from an intent string. Use the result to create an Intent.
         String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude());
         Uri gmmIntentUri = Uri.parse(laUri);
-
-
-// Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
+        // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         // Make the Intent explicit by setting the Google Maps package
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-// Attempt to start an activity that can handle the Intent
+        // Attempt to start an activity that can handle the Intent
             startActivity(mapIntent);
         }
-
-
     }
 
 
@@ -813,12 +790,14 @@ public class Captura extends Fragment {
     // GENERAL
     //
 
-/*    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
+    private void showSnackbar(final int mainTextStringId, final int actionStringId,
+                              View.OnClickListener listener) {
         Snackbar.make(
-                v.findViewById(android.R.id.content),
+                getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
-    }*/
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(actionStringId), listener).show();
+    }
 
     public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {

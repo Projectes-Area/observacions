@@ -24,4 +24,5 @@
         <item>Cirerer</item>
         <item>Papallona</item>
     </string-array>
+    <string name="no_location_detected">Sense dades de localització</string>
 </resources>
