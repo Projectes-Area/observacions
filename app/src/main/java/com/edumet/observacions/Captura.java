@@ -61,6 +61,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -118,13 +119,17 @@ public class Captura extends Fragment {
     private Spinner spinner;
 
     private String mGPSLabel;
+    private String timeStamp;
     private boolean mRequestingLocationUpdates;
     private String mCurrentPhotoPath;
+    private String minPhotoPath;
     private File output = null;
+    private File outputMiniatura=null;
     private Bitmap bitmap;
-    private Bitmap bitmapEnv;
+    private Bitmap bitmapTemp;
     private int num_fenomen = 0;
     private int angle_foto;
+    
 
     DadesHelper mDbHelper;
 
@@ -318,6 +323,7 @@ public class Captura extends Fragment {
                     angle_foto=0;
                     setPic();
                     galleryAddPic();
+                    fesMiniatura();
                     Envia.setEnabled(true);
                     Desa.setEnabled(true);
                 }
@@ -534,18 +540,46 @@ public class Captura extends Fragment {
                     }
                 }
             }
+
         } else {
             Toast.makeText(super.getContext(), R.string.encara_sense_lloc, Toast.LENGTH_LONG).show();
         }
     }
-
+    
     private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(timeStamp, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
+    private File createMiniatura(int x, int y) throws IOException {
+        String minTimeStamp = "min" + timeStamp;
+        setPicTemp(x, y);
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File miniatura = File.createTempFile(minTimeStamp, ".jpg", storageDir);
+        minPhotoPath = miniatura.getAbsolutePath();
+        return miniatura;
+    }
+
+    private void fesMiniatura() {
+        try {
+            outputMiniatura = createMiniatura(200,200);
+        } catch (IOException ex) {
+            Toast.makeText(super.getContext(), R.string.fitxer_error, Toast.LENGTH_LONG).show();
+            getActivity().finish();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(outputMiniatura);
+            bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -569,7 +603,7 @@ public class Captura extends Fragment {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imatge.setImageBitmap(bitmap);
     }
-    private void setPicEnv(int targetW,int targetH) {  // només si cal reduir la mida del fitxer
+    private void setPicTemp(int targetW, int targetH) {  // només si cal reduir la mida del fitxer
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -578,7 +612,7 @@ public class Captura extends Fragment {
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
-        bitmapEnv = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        bitmapTemp = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
     static private Bitmap rotateViaMatrix(Bitmap original,int angle) {
@@ -613,10 +647,10 @@ public class Captura extends Fragment {
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicEnv(800,800);
-        bitmapEnv=rotateViaMatrix(bitmapEnv,angle_foto);
+        setPicTemp(800,800);
+        bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
         Log.i("ANGLE", valueOf(angle_foto));
-        bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
+        bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
 /*        byte[] fotografia;
