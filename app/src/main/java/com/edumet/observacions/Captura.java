@@ -10,7 +10,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -81,21 +80,20 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import static android.app.Activity.RESULT_OK;
+import static java.lang.String.valueOf;
 
 public class Captura extends Fragment {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 60000;
-    private static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
-    private static final String LOCATION_ADDRESS_KEY = "location-address";
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     //The fastest rate for active location updates. Exact. Updates will never be more frequent than this value.
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     // Keys for storing activity state in the Bundle.
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final static String KEY_LOCATION = "location";
-    private static final int CONTENT_REQUEST = 1337;
+    private static final int CONTENT_REQUEST = 1337; // fotos
     private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
     private FusedLocationProviderClient mFusedLocationClient;
@@ -119,7 +117,7 @@ public class Captura extends Fragment {
     private Spinner spinner;
 
     private String mGPSLabel;
-    private boolean mRequestingLocationUpdates=false;
+    private boolean mRequestingLocationUpdates;
     private String mCurrentPhotoPath;
     private File output = null;
     private Bitmap bitmap;
@@ -171,7 +169,7 @@ public class Captura extends Fragment {
                 if (angle_foto>=360) {
                     angle_foto=0;
                 }
-                Log.i("ANGLE",String.valueOf(angle_foto));
+                Log.i("ANGLE", valueOf(angle_foto));
                 bitmap=rotateViaMatrix(bitmap,90);
                 imatge.setImageBitmap(bitmap);
             }
@@ -198,7 +196,8 @@ public class Captura extends Fragment {
         });
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((MainActivity) getActivity()).pendents();
+               // ((MainActivity) getActivity()).mapa();
+                mapa();
             }
         });
 
@@ -208,7 +207,6 @@ public class Captura extends Fragment {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
-        updateLocationUI();
     }
 
     @Override
@@ -219,6 +217,23 @@ public class Captura extends Fragment {
         } else {
             startLocationUpdates();
         }
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void getLastLocation() {
+        mFusedLocationClient.getLastLocation()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
+                            Foto.setEnabled(true);
+                        } else {
+/*                            Log.w(TAG, "getLastLocation:exception", task.getException());
+                            showSnackbar(getString(R.string.no_location_detected));*/
+                        }
+                    }
+                });
     }
 
     @Override
@@ -237,6 +252,13 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Within {@code onPause()}, we remove location updates. Here, we resume receiving
+        // location updates if the user has requested them.
+        if (mRequestingLocationUpdates && checkPermissions()) {
+            startLocationUpdates();
+        } else if (!checkPermissions()) {
+            requestPermissions();
+        }
         updateLocationUI();
     }
 
@@ -276,11 +298,13 @@ public class Captura extends Fragment {
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+
     private void createLocationCallback() {
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+
                 mCurrentLocation = locationResult.getLastLocation();
                 updateLocationUI();
             }
@@ -333,8 +357,11 @@ public class Captura extends Fragment {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         Log.i(TAG, "All location settings are satisfied.");
+
                         //noinspection MissingPermission
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                                mLocationCallback, Looper.myLooper());
+
                         updateLocationUI();
                     }
                 })
@@ -344,8 +371,11 @@ public class Captura extends Fragment {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade location settings");
+                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
+                                        "location settings ");
                                 try {
+                                    // Show the dialog by calling startResolutionForResult(), and check the
+                                    // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
@@ -353,11 +383,13 @@ public class Captura extends Fragment {
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                //String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.e(TAG, "Location settings are inadequate, and cannot be fixed here. Fix in Settings.");
-                                Toast.makeText(Captura.super.getContext(), R.string.location_settings_inadequate_warning, Toast.LENGTH_LONG).show();
+                                String errorMessage = "Location settings are inadequate, and cannot be " +
+                                        "fixed here. Fix in Settings.";
+                                Log.e(TAG, errorMessage);
+                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
+
                         updateLocationUI();
                     }
                 });
@@ -399,40 +431,60 @@ public class Captura extends Fragment {
                         @Override
                         public void onClick(View view) {
                             // Request permission
-                            ActivityCompat.requestPermissions(getActivity(),
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
-                    });*/
+});*/
         } else {
             Log.i(TAG, "Requesting permission");
+            // Request permission. It's possible this can be auto answered if device policy
+            // sets the permission in a given state or the user denied the permission
+            // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
 
+
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you receive empty arrays.
+                // If user interaction was interrupted, the permission request is cancelled and you
+                // receive empty arrays.
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
-                    startLocationUpdates();
-                    //getAddress();
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
+                    startLocationUpdates();
                 }
             } else {
+                // Permission denied.
+
+                // Notify the user via a SnackBar that they have rejected a core permission for the
+                // app, which makes the Activity useless. In a real app, core permissions would
+                // typically be best requested during a welcome-screen flow.
+
+                // Additionally, it is important to remember that a permission might have been
+                // rejected without asking the user for permission (device policy or "Never ask
+                // again" prompts). Therefore, a user interface affordance is typically implemented
+                // when permissions are denied. Otherwise, your app could appear unresponsive to
+                // touches or interactions which have required permissions.
                 /*showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                // Build intent that displays the App settings screen.
                                 Intent intent = new Intent();
                                 intent.setAction(
                                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                                Uri uri = Uri.fromParts("package",
+                                        BuildConfig.APPLICATION_ID, null);
                                 intent.setData(uri);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
@@ -441,6 +493,25 @@ public class Captura extends Fragment {
             }
         }
     }
+
+    public void mapa() {
+        // Create a Uri from an intent string. Use the result to create an Intent.
+        String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude());
+        Uri gmmIntentUri = Uri.parse(laUri);
+
+
+// Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        // Make the Intent explicit by setting the Google Maps package
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+// Attempt to start an activity that can handle the Intent
+            startActivity(mapIntent);
+        }
+
+
+    }
+
 
     //
     // FOTOGRAFIA
@@ -567,7 +638,7 @@ public class Captura extends Fragment {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         setPicEnv(800,800);
         bitmapEnv=rotateViaMatrix(bitmapEnv,angle_foto);
-        Log.i("ANGLE",String.valueOf(angle_foto));
+        Log.i("ANGLE", valueOf(angle_foto));
         bitmapEnv.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 

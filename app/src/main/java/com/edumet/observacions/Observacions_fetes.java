@@ -29,21 +29,21 @@ public class Observacions_fetes extends Fragment {
         for(int j=0;j<=4;j++)
         {
             // Create LinearLayout
-            LinearLayout ll = new LinearLayout(this.getContext());
+            LinearLayout ll = new LinearLayout(getContext());
             ll.setOrientation(LinearLayout.HORIZONTAL);
 
             // Create TextView
-            TextView product = new TextView(this.getContext());
+            TextView product = new TextView(getContext());
             product.setText(" Product"+j+"    ");
             ll.addView(product);
 
             // Create TextView
-            TextView price = new TextView(this.getContext());
+            TextView price = new TextView(getContext());
             price.setText("  $"+j+"     ");
             ll.addView(price);
 
             // Create Button
-            final Button btn = new Button(this.getContext());
+            final Button btn = new Button(getContext());
             // Give button an ID
             btn.setId(j+1);
             btn.setText("Add To Cart");
@@ -68,8 +68,6 @@ public class Observacions_fetes extends Fragment {
             ll.addView(btn);
             //Add button to LinearLayout defined in XML
             lm.addView(ll);
-
-
         }
         return v;
     }

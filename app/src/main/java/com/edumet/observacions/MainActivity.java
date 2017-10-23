@@ -1,9 +1,14 @@
 package com.edumet.observacions;
 
+import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+
 
 public class MainActivity extends FragmentActivity {
 
@@ -62,4 +67,4 @@ public class MainActivity extends FragmentActivity {
         transaction.commit();
     }
 
-}
+   }
