@@ -34,7 +34,7 @@
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1" />
 
-        <Button
+<!--        <Button
             android:id="@+id/btnGPS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintTop_creator="1" />
+            tools:layout_constraintTop_creator="1" />-->
 
         <TextView
             android:id="@+id/txtGPS"
@@ -56,23 +56,11 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:text="GPS: Sense dades"
             android:textSize="@dimen/default_text_size"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGPS" />
-
-        <TextView
-            android:id="@+id/txtAdressa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ubicació: Desconeguda"
-            android:textSize="@dimen/default_text_size"
-            android:visibility="gone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtGPS" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <TextView
             android:id="@+id/location_inadequate_warning"
@@ -82,52 +70,30 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="120dp"
             android:text="@string/location_settings_inadequate_warning"
             android:visibility="invisible"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGPS" />
-
-        <Button
-            android:id="@+id/btnFoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:enabled="false"
-            android:text="@string/foto"
-            app:layout_constraintLeft_toRightOf="@+id/btnGPS"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
 
         <ImageView
             android:id="@+id/imgFoto"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="7dp"
             android:contentDescription="@string/foto"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtAdressa" />
+            app:layout_constraintTop_toBottomOf="@+id/txtGPS" />
 
-        <Button
-            android:id="@+id/btnEnvia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:enabled="false"
-            android:text="@string/envia"
-            app:layout_constraintLeft_toRightOf="@+id/btnFoto"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
 
         <EditText
             android:id="@+id/txtObservacions"
@@ -187,52 +153,60 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgFoto" />
 
-        <Button
-            android:id="@+id/btnDesa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:enabled="false"
-            android:text="DESA"
-            app:layout_constraintLeft_toRightOf="@+id/btnEnvia"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <Button
-            android:id="@+id/btnPendents"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="PENDENTS D'ENVIAR"
-            app:layout_constraintLeft_toRightOf="@+id/btnMapa"
-            app:layout_constraintTop_toBottomOf="@+id/txtObservacions" />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="368dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            tools:layout_editor_absoluteX="8dp">
 
-        <Button
-            android:id="@+id/btnMapa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="MAPA"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtObservacions" />
+            <ImageButton
+                android:id="@+id/btnFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_camera"
+                tools:layout_editor_absoluteY="64dp" />
 
-        <ImageButton
-            android:id="@+id/btnGirar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:src="@android:drawable/ic_menu_rotate"
-            app:layout_constraintLeft_toRightOf="@+id/imgFoto"
-            app:layout_constraintTop_toTopOf="@+id/imgFoto"
-            app:layout_constraintBottom_toBottomOf="@+id/progress_bar"
-            android:layout_marginBottom="8dp" />
+            <ImageButton
+                android:id="@+id/btnGirar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_rotate"
+                tools:layout_editor_absoluteY="64dp" />
+
+            <ImageButton
+                android:id="@+id/btnEnvia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_send"
+                tools:layout_editor_absoluteY="64dp" />
+
+            <ImageButton
+                android:id="@+id/btnDesa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_save"
+                tools:layout_editor_absoluteY="64dp" />
+
+            <ImageButton
+                android:id="@+id/btnPendents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_recent_history"
+                tools:layout_editor_absoluteY="64dp" />
+
+            <ImageButton
+                android:id="@+id/btnMapa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_dialog_map"
+                tools:layout_editor_absoluteY="64dp" />
+        </LinearLayout>
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

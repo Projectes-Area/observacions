@@ -105,13 +105,13 @@ public class Captura extends Fragment {
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     // UI Widgets.
-    private Button Lloc;
-    private Button Foto;
+    //private Button Lloc;
+    private ImageButton Foto;
     private ImageButton Girar;
-    private Button Envia;
-    private Button Desa;
-    private Button Pendents;
-    private Button Mapa;
+    private ImageButton Envia;
+    private ImageButton Desa;
+    private ImageButton Pendents;
+    private ImageButton Mapa;
     private TextView GPS;
     private ImageView imatge;
     private EditText observacio;
@@ -143,13 +143,13 @@ public class Captura extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v= inflater.inflate(R.layout.captura, container, false);
 
-        Lloc = (Button) v.findViewById(R.id.btnGPS);
-        Foto = (Button) v.findViewById(R.id.btnFoto);
+        //Lloc = (Button) v.findViewById(R.id.btnGPS);
+        Foto = (ImageButton) v.findViewById(R.id.btnFoto);
         Girar = (ImageButton) v.findViewById(R.id.btnGirar);
-        Envia = (Button) v.findViewById(R.id.btnEnvia);
-        Desa = (Button) v.findViewById(R.id.btnDesa);
-        Pendents = (Button) v.findViewById(R.id.btnPendents);
-        Mapa = (Button) v.findViewById(R.id.btnMapa);
+        Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
+        Desa = (ImageButton) v.findViewById(R.id.btnDesa);
+        Pendents = (ImageButton) v.findViewById(R.id.btnPendents);
+        Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         GPS = (TextView) v.findViewById(R.id.txtGPS);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
@@ -170,11 +170,13 @@ public class Captura extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
+        Foto.setEnabled(false);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 fesFoto();
             }
         });
+        Girar.setEnabled(false);
         Girar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 angle_foto+=90;
@@ -186,26 +188,29 @@ public class Captura extends Fragment {
                 imatge.setImageBitmap(bitmap);
             }
         });
+        Envia.setEnabled(false);
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 sendPost();
             }
         });
+        Desa.setEnabled(false);
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 desa();
             }
         });
-        Lloc.setOnClickListener(new View.OnClickListener() {
+        /*Lloc.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startUpdatesButtonHandler(v);
             }
-        });
+        })*/;
         Pendents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ((MainActivity) getActivity()).pendents();
             }
         });
+        Mapa.setEnabled(false);
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
@@ -328,6 +333,7 @@ public class Captura extends Fragment {
                     angle_foto=0;
                     setPic();
                     galleryAddPic();
+                    Girar.setEnabled(true);
                     Envia.setEnabled(true);
                     Desa.setEnabled(true);
                 }
@@ -387,6 +393,7 @@ public class Captura extends Fragment {
         if (mCurrentLocation != null) {
             GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
             Foto.setEnabled(true);
+            Mapa.setEnabled(true);
         }
     }
 
