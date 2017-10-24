@@ -120,11 +120,17 @@ public class Captura extends Fragment {
 
     private String mGPSLabel;
     private String timeStamp;
+    private String pathIcon;
+    private String pathVista;
+    private String pathEnvio;
     private boolean mRequestingLocationUpdates;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
     private File output = null;
     private File outputMiniatura=null;
+    private int midaEnvio=800;
+    private int midaVista=150;
+    private int midaIcon=60;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
@@ -290,7 +296,6 @@ public class Captura extends Fragment {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-
                 mCurrentLocation = locationResult.getLastLocation();
                 updateLocationUI();
             }
@@ -323,7 +328,6 @@ public class Captura extends Fragment {
                     angle_foto=0;
                     setPic();
                     galleryAddPic();
-                    fesMiniatura();
                     Envia.setEnabled(true);
                     Desa.setEnabled(true);
                 }
@@ -344,11 +348,9 @@ public class Captura extends Fragment {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         Log.i(TAG, "All location settings are satisfied.");
-
                         //noinspection MissingPermission
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                                 mLocationCallback, Looper.myLooper());
-
                         updateLocationUI();
                     }
                 })
@@ -376,7 +378,6 @@ public class Captura extends Fragment {
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
-
                         updateLocationUI();
                     }
                 });
@@ -491,7 +492,7 @@ public class Captura extends Fragment {
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
         // Attempt to start an activity that can handle the Intent
-            startActivity(mapIntent);
+        startActivity(mapIntent);
         }
     }
 
@@ -554,32 +555,47 @@ public class Captura extends Fragment {
         return image;
     }
 
-    private File createMiniatura(int x, int y) throws IOException {
-        String minTimeStamp = "min" + timeStamp;
-        setPicTemp(x, y);
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    private File createMiniatura(int x) throws IOException {
+        String minTimeStamp = String.valueOf(x) + "_"+timeStamp;
+        File storageDir = getActivity().getFilesDir();
         File miniatura = File.createTempFile(minTimeStamp, ".jpg", storageDir);
         minPhotoPath = miniatura.getAbsolutePath();
         return miniatura;
     }
 
-    private void fesMiniatura() {
+    private void fesMiniatura(int x,int angle) {
+        setPicTemp(x, x);
         try {
-            outputMiniatura = createMiniatura(200,200);
+            outputMiniatura = createMiniatura(x);
         } catch (IOException ex) {
             Toast.makeText(super.getContext(), R.string.fitxer_error, Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
         try {
             FileOutputStream out = new FileOutputStream(outputMiniatura);
+            bitmapTemp=rotateViaMatrix(bitmapTemp,angle);
             bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(super.getContext(), R.string.fitxer_error, Toast.LENGTH_LONG).show();
+            getActivity().finish();
         }
     }
 
+    private void fesMiniatures() {
+        fesMiniatura(midaIcon,angle_foto); // icona
+        pathIcon=outputMiniatura.getAbsolutePath();
+        fesMiniatura(imatge.getMeasuredWidth(),midaVista); // vista
+        pathVista=outputMiniatura.getAbsolutePath();
+        fesMiniatura(midaEnvio,angle_foto); // envio
+        pathEnvio=outputMiniatura.getAbsolutePath();
+    }
+
+    private void desaObservacio() {
+        fesMiniatures();
+    }
 
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -603,7 +619,8 @@ public class Captura extends Fragment {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imatge.setImageBitmap(bitmap);
     }
-    private void setPicTemp(int targetW, int targetH) {  // només si cal reduir la mida del fitxer
+
+    private void setPicTemp(int targetW, int targetH) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -647,7 +664,7 @@ public class Captura extends Fragment {
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicTemp(800,800);
+        setPicTemp(midaEnvio,midaEnvio);
         bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
         Log.i("ANGLE", valueOf(angle_foto));
         bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
@@ -712,7 +729,8 @@ public class Captura extends Fragment {
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
+                                                        //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
@@ -726,7 +744,8 @@ public class Captura extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content),R.string.dades_enviades,Snackbar.LENGTH_LONG).show();
+                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -734,7 +753,8 @@ public class Captura extends Fragment {
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
+                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -750,6 +770,7 @@ public class Captura extends Fragment {
     //
 
     private void desa() {
+        desaObservacio();
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -774,7 +795,8 @@ public class Captura extends Fragment {
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
-        Toast.makeText(getActivity(), "S'ha desat l'observació", Toast.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha desat l'observació",Snackbar.LENGTH_LONG).show();
+        //Toast.makeText(getActivity(), "S'ha desat l'observació", Toast.LENGTH_LONG).show();
 
         // Ara llegim
  /*       db = mDbHelper.getReadableDatabase();
