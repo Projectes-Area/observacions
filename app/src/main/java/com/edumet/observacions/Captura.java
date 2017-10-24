@@ -123,7 +123,7 @@ public class Captura extends Fragment {
     private String pathIcon;
     private String pathVista;
     private String pathEnvio;
-    private boolean mRequestingLocationUpdates;
+    private boolean mRequestingLocationUpdates=false;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
     private File output = null;
@@ -164,7 +164,7 @@ public class Captura extends Fragment {
 
         mDbHelper = new DadesHelper(getContext());
 
-        updateValuesFromBundle(savedInstanceState);
+
         return v;
     }
 
@@ -217,6 +217,8 @@ public class Captura extends Fragment {
             }
         });
 
+        updateValuesFromBundle(savedInstanceState);
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mSettingsClient = LocationServices.getSettingsClient(getActivity());
 
@@ -241,52 +243,60 @@ public class Captura extends Fragment {
         super.onDestroy();
     }
 
+
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.i("ONSAVE", String.valueOf(mRequestingLocationUpdates));
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(KEY_REQUESTING_LOCATION_UPDATES);
+            }
+            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
+                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            }
+            Log.i("ONUPDATE", String.valueOf(mRequestingLocationUpdates));
+            updateLocationUI();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        mRequestingLocationUpdates=true; // això s'ha afegit per quan s'atorga el permís
+        Log.i("mRequesting",String.valueOf(mRequestingLocationUpdates));
+        Log.i("checkPerm",String.valueOf(checkPermissions()));
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
             requestPermissions();
         }
         updateLocationUI();
+        Log.i("ONRESUME","OK");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         stopLocationUpdates();
+        Log.i("ONPAUSE","OK");
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
+        Log.i("ONCONFIGCHANGES","OK");
     }
 
     //
     // LOCALITZACIÓ
     //
-
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        KEY_REQUESTING_LOCATION_UPDATES);
-            }
-            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
-                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            }
-            updateLocationUI();
-        }
-    }
 
     private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -320,12 +330,14 @@ public class Captura extends Fragment {
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
+
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
                         updateLocationUI();
                         break;
+
                 }
                 break;
             case CONTENT_REQUEST:
@@ -339,6 +351,7 @@ public class Captura extends Fragment {
                 }
                 break;
         }
+        Log.i("ONACTIVITYRESULT",String.valueOf(resultCode));
     }
 
     public void startUpdatesButtonHandler(View view) {
@@ -440,6 +453,7 @@ public class Captura extends Fragment {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+        Log.i("REQUESTING","...");
     }
 
 
@@ -456,7 +470,9 @@ public class Captura extends Fragment {
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    startLocationUpdates();
+                    //startLocationUpdates();
+                    Log.i("PERMISSION","OK");
+
                 }
             } else {
                 // Permission denied.
