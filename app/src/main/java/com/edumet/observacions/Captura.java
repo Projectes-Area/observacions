@@ -135,6 +135,7 @@ public class Captura extends Fragment {
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
     private int angle_foto;
+    private boolean jaLocalitzat=false;
     
 
     DadesHelper mDbHelper;
@@ -269,8 +270,6 @@ public class Captura extends Fragment {
     public void onResume() {
         super.onResume();
         mRequestingLocationUpdates=true; // això s'ha afegit per quan s'atorga el permís
-        Log.i("mRequesting",String.valueOf(mRequestingLocationUpdates));
-        Log.i("checkPerm",String.valueOf(checkPermissions()));
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
@@ -354,23 +353,25 @@ public class Captura extends Fragment {
         Log.i("ONACTIVITYRESULT",String.valueOf(resultCode));
     }
 
-    public void startUpdatesButtonHandler(View view) {
+/*    public void startUpdatesButtonHandler(View view) {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             startLocationUpdates();
         }
-    }
+    }*/
 
     private void startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i(TAG, "All location settings are satisfied.");
-                        //noinspection MissingPermission
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                                mLocationCallback, Looper.myLooper());
-                        updateLocationUI();
+
+                            Log.i(TAG, "All location settings are satisfied.");
+
+                            //noinspection MissingPermission
+                            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                            updateLocationUI();
+
                     }
                 })
                 .addOnFailureListener(getActivity(), new OnFailureListener() {
@@ -379,21 +380,20 @@ public class Captura extends Fragment {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
-                                        "location settings ");
+                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade location settings.");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                                    Log.i(TAG, "rae");
                                 } catch (IntentSender.SendIntentException sie) {
                                     Log.i(TAG, "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "Location settings are inadequate, and cannot be " +
-                                        "fixed here. Fix in Settings.";
-                                Log.e(TAG, errorMessage);
+                                String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
+                                Log.i(TAG, errorMessage);
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
@@ -404,9 +404,14 @@ public class Captura extends Fragment {
 
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
+            if (!jaLocalitzat) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha localitzat la teva ubicació",Snackbar.LENGTH_LONG).show();
+                jaLocalitzat=true;
+            }
             GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
             Foto.setEnabled(true);
             Mapa.setEnabled(true);
+
         }
     }
 
@@ -475,6 +480,7 @@ public class Captura extends Fragment {
 
                 }
             } else {
+                Log.i(TAG, "Show Snackbar");
                 // Permission denied.
 
                 // Notify the user via a SnackBar that they have rejected a core permission for the
