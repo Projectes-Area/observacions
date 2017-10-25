@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -123,7 +125,7 @@ public class Captura extends Fragment {
     private String pathIcon;
     private String pathVista;
     private String pathEnvio;
-    private boolean mRequestingLocationUpdates=false;
+    static private boolean mRequestingLocationUpdates;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
     private File output = null;
@@ -201,11 +203,6 @@ public class Captura extends Fragment {
                 desa();
             }
         });
-        /*Lloc.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                startUpdatesButtonHandler(v);
-            }
-        })*/;
         Pendents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ((MainActivity) getActivity()).pendents();
@@ -244,9 +241,8 @@ public class Captura extends Fragment {
         super.onDestroy();
     }
 
-
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.i("ONSAVE", String.valueOf(mRequestingLocationUpdates));
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
@@ -261,7 +257,6 @@ public class Captura extends Fragment {
             if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
                 mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             }
-            Log.i("ONUPDATE", String.valueOf(mRequestingLocationUpdates));
             updateLocationUI();
         }
     }
@@ -270,7 +265,6 @@ public class Captura extends Fragment {
     public void onResume() {
         super.onResume();
         Log.i("ONRESUME",String.valueOf(mRequestingLocationUpdates));
-        //mRequestingLocationUpdates=true; // això s'ha afegit per quan s'atorga el permís
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
@@ -290,7 +284,6 @@ public class Captura extends Fragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
-        Log.i("ONCONFIGCHANGES","OK");
     }
 
     //
@@ -322,6 +315,8 @@ public class Captura extends Fragment {
         mLocationSettingsRequest = builder.build();
     }
 
+    Bundle deso=new Bundle();
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -332,17 +327,24 @@ public class Captura extends Fragment {
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         mRequestingLocationUpdates=true;
                         updateLocationUI();
-                        Log.i("ONRESUME",String.valueOf(mRequestingLocationUpdates));
+                        Log.i(TAG,String.valueOf(mRequestingLocationUpdates));
                         //startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
                         updateLocationUI();
+                        Log.i(TAG,String.valueOf(mRequestingLocationUpdates));
                         break;
 
                 }
                 Log.i("CODI",String.valueOf(resultCode));
+/*                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("mRequestingLocationUpdates", mRequestingLocationUpdates);
+                editor.commit();*/
+
+
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -355,7 +357,6 @@ public class Captura extends Fragment {
                 }
                 break;
         }
-        Log.i("ONACTIVITYRESULT",String.valueOf(resultCode));
     }
 
 /*    public void startUpdatesButtonHandler(View view) {
@@ -391,7 +392,6 @@ public class Captura extends Fragment {
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
-                                    Log.i(TAG, "rae");
                                 } catch (IntentSender.SendIntentException sie) {
                                     Log.i(TAG, "PendingIntent unable to execute request.");
                                 }
