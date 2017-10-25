@@ -269,14 +269,14 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mRequestingLocationUpdates=true; // això s'ha afegit per quan s'atorga el permís
+        Log.i("ONRESUME",String.valueOf(mRequestingLocationUpdates));
+        //mRequestingLocationUpdates=true; // això s'ha afegit per quan s'atorga el permís
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
             requestPermissions();
         }
         updateLocationUI();
-        Log.i("ONRESUME","OK");
     }
 
     @Override
@@ -325,11 +325,15 @@ public class Captura extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
-
+                        mRequestingLocationUpdates=true;
+                        updateLocationUI();
+                        Log.i("ONRESUME",String.valueOf(mRequestingLocationUpdates));
+                        //startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
@@ -338,6 +342,7 @@ public class Captura extends Fragment {
                         break;
 
                 }
+                Log.i("CODI",String.valueOf(resultCode));
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -454,9 +459,8 @@ public class Captura extends Fragment {
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(),new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_PERMISSIONS_REQUEST_CODE);
         }
         Log.i("REQUESTING","...");
     }
@@ -464,8 +468,8 @@ public class Captura extends Fragment {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull int[] grantResults) {
+
         Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
