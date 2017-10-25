@@ -48,7 +48,7 @@ public class MainActivity extends FragmentActivity {
         Log.i("ACT","ActivityResult");
             super.onActivityResult(requestCode, resultCode, data);
         Captura targetFragment = new Captura();
-        Bundle args = new Bundle();
+        //Bundle args = new Bundle();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         targetFragment.onActivityResult(requestCode, resultCode, data);
         transaction.commit();

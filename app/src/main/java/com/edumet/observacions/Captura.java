@@ -5,10 +5,8 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -33,7 +31,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -87,7 +84,6 @@ import static android.app.Activity.RESULT_OK;
 import static java.lang.String.valueOf;
 
 public class Captura extends Fragment {
-
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -107,7 +103,6 @@ public class Captura extends Fragment {
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     // UI Widgets.
-    //private Button Lloc;
     private ImageButton Foto;
     private ImageButton Girar;
     private ImageButton Envia;
@@ -125,20 +120,19 @@ public class Captura extends Fragment {
     private String pathIcon;
     private String pathVista;
     private String pathEnvio;
-    static private boolean mRequestingLocationUpdates;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
+    static private boolean mRequestingLocationUpdates;
     private File output = null;
     private File outputMiniatura=null;
     private int midaEnvio=800;
-    private int midaVista=150;
+    private int midaVista=200;
     private int midaIcon=60;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
     private int angle_foto;
     private boolean jaLocalitzat=false;
-    
 
     DadesHelper mDbHelper;
 
@@ -162,11 +156,7 @@ public class Captura extends Fragment {
                 R.array.fenomens, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-        mGPSLabel = getResources().getString(R.string.latitude_label);
-
         mDbHelper = new DadesHelper(getContext());
-
 
         return v;
     }
@@ -315,36 +305,22 @@ public class Captura extends Fragment {
         mLocationSettingsRequest = builder.build();
     }
 
-    Bundle deso=new Bundle();
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
-                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        Log.i("onActivityResult", "User agreed to make required location settings changes.");
                         mRequestingLocationUpdates=true;
-                        updateLocationUI();
-                        Log.i(TAG,String.valueOf(mRequestingLocationUpdates));
-                        //startLocationUpdates();
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        Log.i("onActivityResult", "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
-                        updateLocationUI();
-                        Log.i(TAG,String.valueOf(mRequestingLocationUpdates));
                         break;
-
                 }
-                Log.i("CODI",String.valueOf(resultCode));
-/*                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean("mRequestingLocationUpdates", mRequestingLocationUpdates);
-                editor.commit();*/
-
-
+                updateLocationUI();
+                Log.i("onActivityResult",String.valueOf(mRequestingLocationUpdates));
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -354,26 +330,18 @@ public class Captura extends Fragment {
                     Girar.setEnabled(true);
                     Envia.setEnabled(true);
                     Desa.setEnabled(true);
+                    Log.i("onActivityResult","Foto");
                 }
                 break;
         }
     }
-
-/*    public void startUpdatesButtonHandler(View view) {
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
-            startLocationUpdates();
-        }
-    }*/
 
     private void startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-
                             Log.i(TAG, "All location settings are satisfied.");
-
                             //noinspection MissingPermission
                             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                             updateLocationUI();
@@ -386,19 +354,19 @@ public class Captura extends Fragment {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade location settings.");
+                                Log.i("startLocationUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.i(TAG, "PendingIntent unable to execute request.");
+                                    Log.i("startLocationUpdates", "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                                 String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.i(TAG, errorMessage);
+                                Log.i("startLocationUpdates", errorMessage);
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
@@ -422,7 +390,7 @@ public class Captura extends Fragment {
 
     private void stopLocationUpdates() {
         if (!mRequestingLocationUpdates) {
-            Log.d(TAG, "stopLocationUpdates: updates never requested, no-op.");
+            Log.i(TAG, "stopLocationUpdates: updates never requested, no-op.");
             return;
         }
         mFusedLocationClient.removeLocationUpdates(mLocationCallback)
@@ -443,7 +411,7 @@ public class Captura extends Fragment {
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
         if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
+            Log.i("requestPermissions", "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, new View.OnClickListener() {
                         @Override
@@ -455,14 +423,13 @@ public class Captura extends Fragment {
                         }
 });
         } else {
-            Log.i(TAG, "Requesting permission");
+            Log.i("requestPermissions", "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(getActivity(),new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_PERMISSIONS_REQUEST_CODE);
         }
-        Log.i("REQUESTING","...");
     }
 
 
@@ -475,16 +442,13 @@ public class Captura extends Fragment {
             if (grantResults.length <= 0) {
                 // If user interaction was interrupted, the permission request is cancelled and you
                 // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
+                Log.i("onRequestPermResult", "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
-                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    //startLocationUpdates();
-                    Log.i("PERMISSION","OK");
-
+                    Log.i("onRequestPermResult", "Permission granted, updates requested, starting location updates");
                 }
             } else {
-                Log.i(TAG, "Show Snackbar");
+                Log.i("onRequestPermResult","Show Snackbar");
                 // Permission denied.
 
                 // Notify the user via a SnackBar that they have rejected a core permission for the
@@ -515,20 +479,18 @@ public class Captura extends Fragment {
         }
     }
 
+    //
+    // MAPA
+
     public void mapa() {
-        // Create a Uri from an intent string. Use the result to create an Intent.
-        String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude());
+        String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude()+"?z=9");
         Uri gmmIntentUri = Uri.parse(laUri);
-        // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        // Make the Intent explicit by setting the Google Maps package
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-        // Attempt to start an activity that can handle the Intent
         startActivity(mapIntent);
         }
     }
-
 
     //
     // FOTOGRAFIA
@@ -699,7 +661,7 @@ public class Captura extends Fragment {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         setPicTemp(midaEnvio,midaEnvio);
         bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
-        Log.i("ANGLE", valueOf(angle_foto));
+        Log.i("angle_foto", valueOf(angle_foto));
         bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
@@ -740,7 +702,7 @@ public class Captura extends Fragment {
             e.printStackTrace();
         }
 
-        Log.i("JSON", jsonParam.toString());
+        Log.i("JSON sortida", jsonParam.toString());
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
@@ -767,7 +729,7 @@ public class Captura extends Fragment {
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
-                                                Log.i("APP", getString(R.string.error_connexio));
+                                                Log.i("CLIENT", getString(R.string.error_connexio));
                                             }
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
@@ -782,7 +744,7 @@ public class Captura extends Fragment {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("APP", getString(R.string.dades_enviades));
+                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -791,7 +753,7 @@ public class Captura extends Fragment {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("APP", getString(R.string.error_servidor));
+                                                    Log.i("CLIENT", getString(R.string.error_servidor));
                                                 }
                                             }
                                         }
@@ -821,7 +783,9 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ANGLE, angle_foto);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, pathIcon);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, pathVista);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvio);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 
         // Insert the new row, returning the primary key value of the new row
