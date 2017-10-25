@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,11 +27,28 @@ public class Observacions_fetes extends Fragment {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         //Create four
-        for(int j=0;j<=4;j++)
+        for(int j=0;j<=6;j++)
         {
-            // Create LinearLayout
             LinearLayout ll = new LinearLayout(getContext());
             ll.setOrientation(LinearLayout.HORIZONTAL);
+
+final ImageButton btn =new ImageButton(getContext());
+            btn.setId(j+1);
+            //btn.setText("Add To Cart");
+            btn.setLayoutParams(params);
+
+            final int index = j;
+            // Set click listener for button
+            btn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Log.i("TAG", "index :" + index);
+                    Toast.makeText(getContext(),
+                            "Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
+
+                }
+            });
+            //Add button to LinearLayout
+            ll.addView(btn);
 
             // Create TextView
             TextView product = new TextView(getContext());
@@ -42,31 +60,7 @@ public class Observacions_fetes extends Fragment {
             price.setText("  $"+j+"     ");
             ll.addView(price);
 
-            // Create Button
-            final Button btn = new Button(getContext());
-            // Give button an ID
-            btn.setId(j+1);
-            btn.setText("Add To Cart");
-            // set the layoutParams on the button
-            btn.setLayoutParams(params);
 
-            final int index = j;
-            // Set click listener for button
-            btn.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-
-                    Log.i("TAG", "index :" + index);
-
-                    Toast.makeText(getContext(),
-                            "Clicked Button Index :" + index,
-                            Toast.LENGTH_LONG).show();
-
-                }
-            });
-
-            //Add button to LinearLayout
-            ll.addView(btn);
-            //Add button to LinearLayout defined in XML
             lm.addView(ll);
         }
         return v;

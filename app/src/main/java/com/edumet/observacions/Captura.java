@@ -119,7 +119,7 @@ public class Captura extends Fragment {
     private String timeStamp;
     private String pathIcon;
     private String pathVista;
-    private String pathEnvio;
+    private String pathEnvia;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
     static private boolean mRequestingLocationUpdates;
@@ -344,6 +344,7 @@ public class Captura extends Fragment {
                             Log.i(TAG, "All location settings are satisfied.");
                             //noinspection MissingPermission
                             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                            mRequestingLocationUpdates=true;
                             updateLocationUI();
 
                     }
@@ -384,13 +385,12 @@ public class Captura extends Fragment {
             GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
             Foto.setEnabled(true);
             Mapa.setEnabled(true);
-
         }
     }
 
     private void stopLocationUpdates() {
         if (!mRequestingLocationUpdates) {
-            Log.i(TAG, "stopLocationUpdates: updates never requested, no-op.");
+            Log.i("stopLocationUpdates", "stopLocationUpdates: updates never requested, no-op.");
             return;
         }
         mFusedLocationClient.removeLocationUpdates(mLocationCallback)
@@ -507,25 +507,19 @@ public class Captura extends Fragment {
                     getActivity().finish();
                 }
                 if (output != null) {
-                    Uri outputUri = FileProvider.getUriForFile(getActivity(), "com.edumet.observacions", output);
+                    Uri outputUri = FileProvider.getUriForFile(getContext(), "com.edumet.observacions", output);
                     i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        ClipData clip =
-                                ClipData.newUri(getActivity().getContentResolver(), "Una foto", outputUri);
-
+                        ClipData clip = ClipData.newUri(getActivity().getContentResolver(), "Una foto", outputUri);
                         i.setClipData(clip);
                         i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     } else {
-                        List<ResolveInfo> resInfoList =
-                                getActivity().getPackageManager()
-                                        .queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
-
+                        List<ResolveInfo> resInfoList = getActivity().getPackageManager().queryIntentActivities(i, PackageManager.MATCH_DEFAULT_ONLY);
                         for (ResolveInfo resolveInfo : resInfoList) {
                             String packageName = resolveInfo.activityInfo.packageName;
-                            getActivity().grantUriPermission(packageName, outputUri,
-                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            getActivity().grantUriPermission(packageName, outputUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         }
                     }
                     try {
@@ -582,10 +576,14 @@ public class Captura extends Fragment {
     private void fesMiniatures() {
         fesMiniatura(midaIcon,angle_foto); // icona
         pathIcon=outputMiniatura.getAbsolutePath();
-        fesMiniatura(imatge.getMeasuredWidth(),midaVista); // vista
+        fesMiniatura(midaVista,angle_foto); // vista
         pathVista=outputMiniatura.getAbsolutePath();
         fesMiniatura(midaEnvio,angle_foto); // envio
-        pathEnvio=outputMiniatura.getAbsolutePath();
+        pathEnvia =outputMiniatura.getAbsolutePath();
+        Log.i("mCurrentPhotoPath",mCurrentPhotoPath);
+        Log.i("pathIcon",pathIcon);
+        Log.i("pathVista",pathVista);
+        Log.i("pathEnvia", pathEnvia);
     }
 
     private void desaObservacio() {
@@ -769,7 +767,7 @@ public class Captura extends Fragment {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 
@@ -785,7 +783,7 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, pathIcon);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, pathVista);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvio);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 
         // Insert the new row, returning the primary key value of the new row
@@ -843,8 +841,7 @@ public class Captura extends Fragment {
     // GENERAL
     //
 
-    private void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener) {
+    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
                 getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
