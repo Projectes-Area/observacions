@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -109,13 +110,11 @@ public class Captura extends Fragment {
     private ImageButton Desa;
     private ImageButton Pendents;
     private ImageButton Mapa;
-    private TextView GPS;
     private ImageView imatge;
     private EditText observacio;
     private ProgressBar mProgressBar;
     private Spinner spinner;
 
-    private String mGPSLabel;
     private String timeStamp;
     private String pathIcon;
     private String pathVista;
@@ -125,7 +124,7 @@ public class Captura extends Fragment {
     static private boolean mRequestingLocationUpdates;
     private File output = null;
     private File outputMiniatura=null;
-    private int midaEnvio=800;
+    private int midaEnvia=800;
     private int midaVista=200;
     private int midaIcon=60;
     private Bitmap bitmap;
@@ -140,7 +139,6 @@ public class Captura extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v= inflater.inflate(R.layout.captura, container, false);
 
-        //Lloc = (Button) v.findViewById(R.id.btnGPS);
         Foto = (ImageButton) v.findViewById(R.id.btnFoto);
         Girar = (ImageButton) v.findViewById(R.id.btnGirar);
         Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
@@ -148,7 +146,6 @@ public class Captura extends Fragment {
         Pendents = (ImageButton) v.findViewById(R.id.btnPendents);
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
-        GPS = (TextView) v.findViewById(R.id.txtGPS);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
@@ -339,10 +336,10 @@ public class Captura extends Fragment {
     private void startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+                    @SuppressLint("MissingPermission")
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                             Log.i(TAG, "All location settings are satisfied.");
-                            //noinspection MissingPermission
                             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                             mRequestingLocationUpdates=true;
                             updateLocationUI();
@@ -382,8 +379,7 @@ public class Captura extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha localitzat la teva ubicació",Snackbar.LENGTH_LONG).show();
                 jaLocalitzat=true;
             }
-            GPS.setText(mGPSLabel + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
-            Foto.setEnabled(true);
+           Foto.setEnabled(true);
             Mapa.setEnabled(true);
         }
     }
@@ -578,7 +574,7 @@ public class Captura extends Fragment {
         pathIcon=outputMiniatura.getAbsolutePath();
         fesMiniatura(midaVista,angle_foto); // vista
         pathVista=outputMiniatura.getAbsolutePath();
-        fesMiniatura(midaEnvio,angle_foto); // envio
+        fesMiniatura(midaEnvia,angle_foto); // envio
         pathEnvia =outputMiniatura.getAbsolutePath();
         Log.i("mCurrentPhotoPath",mCurrentPhotoPath);
         Log.i("pathIcon",pathIcon);
@@ -657,7 +653,7 @@ public class Captura extends Fragment {
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicTemp(midaEnvio,midaEnvio);
+        setPicTemp(midaEnvia,midaEnvia);
         bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
         Log.i("angle_foto", valueOf(angle_foto));
         bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
