@@ -149,11 +149,18 @@ public class Captura extends Fragment {
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.fenomens, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+
+
         mDbHelper = new DadesHelper(getContext());
+
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.fenomens, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
 
         return v;
     }
@@ -203,6 +210,7 @@ public class Captura extends Fragment {
         });
 
         updateValuesFromBundle(savedInstanceState);
+
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mSettingsClient = LocationServices.getSettingsClient(getActivity());
@@ -633,7 +641,7 @@ public class Captura extends Fragment {
     //
 
     private int getNumFenomen() {
-        int codi_fenomen = 2;
+        int codi_fenomen=1;
         switch (num_fenomen) {
             case 0:
                 codi_fenomen = 2; // Aus--Oreneta
@@ -648,6 +656,7 @@ public class Captura extends Fragment {
                 codi_fenomen = 1; // Insectes--Papallona
                 break;
         }
+        Log.i("getNumFenomen",String.valueOf(codi_fenomen));
         return codi_fenomen;
     }
 
@@ -719,7 +728,6 @@ public class Captura extends Fragment {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
-                                                        //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
@@ -787,50 +795,6 @@ public class Captura extends Fragment {
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
         Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha desat l'observació",Snackbar.LENGTH_LONG).show();
-        //Toast.makeText(getActivity(), "S'ha desat l'observació", Toast.LENGTH_LONG).show();
-
-        // Ara llegim
- /*       db = mDbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database you will actually use after this query.
-        String[] projection = {
-                DadesEstructura.Parametres._ID,
-                DadesEstructura.Parametres.COLUMN_NAME_DIA,
-                DadesEstructura.Parametres.COLUMN_NAME_HORA,
-                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                DadesEstructura.Parametres.COLUMN_NAME_ANGLE,
-                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
-        };
-
-        // Filter results WHERE "ID" = '1'
-        String selection = DadesEstructura.Parametres._ID + " = ?";
-        String[] selectionArgs = {"1"};
-
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder =
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD+ " DESC";
-        Cursor cursor = db.query(
-                DadesEstructura.Parametres.TABLE_NAME,    // The table to query
-                projection,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                selectionArgs,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
-
-        List itemIds = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
-            itemIds.add(itemId);
-        }
-        cursor.close();
-        Toast.makeText(getActivity(), itemIds.get(0).toString(), Toast.LENGTH_LONG).show();*/
     }
 
     //
@@ -846,12 +810,21 @@ public class Captura extends Fragment {
     }
 
     public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
-        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            num_fenomen = pos;
+
+        public void onItemSelected(AdapterView<?> parent, View view,
+                                   int pos, long id) {
+            // An item was selected. You can retrieve the selected item using
+            // parent.getItemAtPosition(pos)
+            Log.i("spinner",String.valueOf(pos));
+            num_fenomen=pos;
         }
+
         public void onNothingSelected(AdapterView<?> parent) {
+            // Another interface callback
         }
     }
+
+
 }
 
 
