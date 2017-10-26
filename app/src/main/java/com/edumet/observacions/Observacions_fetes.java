@@ -122,6 +122,8 @@ public class Observacions_fetes extends Fragment {
             final ImageButton btn =new ImageButton(getContext());
             btn.setId(j+1);
             btn.setLayoutParams(params);
+            btn.setPadding(0,1,0,1);
+
             btn.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
             final int index = j;
             // Set click listener for button
@@ -156,12 +158,12 @@ public class Observacions_fetes extends Fragment {
 
             lm.addView(ll);
 
-/*            RelativeLayout.LayoutParams lineparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 1);
+            RelativeLayout.LayoutParams lineparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 1);
             View line = new View(getContext());
             line.setLayoutParams(lineparams);
             line.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 
-            lm.addView(line);*/
+            lm.addView(line);
         }
         return v;
     }
@@ -187,4 +189,7 @@ public class Observacions_fetes extends Fragment {
                 return "Genèric";
         }
     }
+
+
+
 }

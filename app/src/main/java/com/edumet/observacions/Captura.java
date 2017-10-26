@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -150,17 +151,7 @@ public class Captura extends Fragment {
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
-
         mDbHelper = new DadesHelper(getContext());
-
-// Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.fenomens, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-
 
         return v;
     }
@@ -209,8 +200,28 @@ public class Captura extends Fragment {
             }
         });
 
-        updateValuesFromBundle(savedInstanceState);
+        List<String> categories = new ArrayList<String>();
+        categories.add("Oreneta");
+        categories.add("Ametller");
+        categories.add("Cirerer");
+        categories.add("Papallona");
 
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                //String item = parent.getItemAtPosition(position).toString();
+                //Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                num_fenomen=position;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        updateValuesFromBundle(savedInstanceState);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mSettingsClient = LocationServices.getSettingsClient(getActivity());
@@ -809,7 +820,7 @@ public class Captura extends Fragment {
                 .setAction(getString(actionStringId), listener).show();
     }
 
-    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
+/*    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
         public void onItemSelected(AdapterView<?> parent, View view,
                                    int pos, long id) {
@@ -822,7 +833,7 @@ public class Captura extends Fragment {
         public void onNothingSelected(AdapterView<?> parent) {
             // Another interface callback
         }
-    }
+    }*/
 
 
 }
