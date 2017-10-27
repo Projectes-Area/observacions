@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -103,37 +102,48 @@ public class Observacions_fetes extends Fragment {
         params.setMargins(5, 0, 0, 0);
         LinearLayout.LayoutParams paramsChk = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsChk.setMargins(0, 0, 20, 0);
+        LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(200, 200);
+        paramsIcona.setMargins(20, 10, 20, 10);
 
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
         for(int j=0;j<itemDies.size();j++)
         {
+            final int index = j;
             LinearLayout ll = new LinearLayout(getContext());
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
+            ll.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Log.i("TAG", "index :" + index);
+                    Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
 
-            final ImageButton btn =new ImageButton(getContext());
-            btn.setId(j+1);
-            btn.setLayoutParams(params);
-            btn.setMinimumHeight(200);
-            btn.setMinimumWidth(200);
-            btn.setBackgroundColor(0);
-            //btn.setPadding(0,0,0,0);
 
-            btn.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
-            final int index = j;
+                }
+            });
+
+            final ImageView img =new ImageView(getContext());
+            img.setId(j+1);
+            img.setLayoutParams(paramsIcona);
+            //img.setPadding(20,10,20,10);
+            //img.setLayoutParams(params);
+
+
+            //img.setBackgroundColor(0);
+
+            img.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
+
             // Set click listener for button
-            btn.setOnClickListener(new View.OnClickListener() {
+/*            btn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Log.i("TAG", "index :" + index);
                     Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
 
                 }
-            });
-            ll.addView(btn);
+            });*/
+            ll.addView(img);
 
             TextView lblDia = new TextView(getContext());
-            //product.setText(" Product"+j+"    ");
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = format.parse(itemDies.get(j).toString());
@@ -141,8 +151,6 @@ public class Observacions_fetes extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            //lblDia.setPadding(40,0,0,0);
-            //lblDia.setLayoutParams(params);
             ll.addView(lblDia);
 
 
@@ -155,15 +163,12 @@ public class Observacions_fetes extends Fragment {
                 e.printStackTrace();
             }
             lblHora.setPadding(30,0,40,0);
-            //lblHora.setLayoutParams(params);
             ll.addView(lblHora);
 
              TextView lblFenomen = new TextView(getContext());
              lblFenomen.setText(nomFenomen(Integer.parseInt(itemFenomens.get(j).toString())));
-            //price.setText("  $"+j+"     ");
             lblFenomen.setLayoutParams(params);
             ll.addView(lblFenomen);
-
 
             LinearLayout llCheck = new LinearLayout(getContext());
             llCheck.setOrientation(LinearLayout.HORIZONTAL);
@@ -172,7 +177,6 @@ public class Observacions_fetes extends Fragment {
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
             ImageView chk=new ImageView(getContext());
-            //chk.setLayoutParams(paramsChk);
             chk.setImageResource(R.drawable.checkbox_off_background);
             chk.setPadding(0,0,20,0);
             llCheck.addView(chk);

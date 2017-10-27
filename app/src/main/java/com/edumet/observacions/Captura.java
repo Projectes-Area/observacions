@@ -129,7 +129,7 @@ public class Captura extends Fragment {
     private File outputMiniatura=null;
     private int midaEnvia=800;
     private int midaVista=200;
-    private int midaIcon=100;
+    private int midaIcon=60;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
@@ -213,13 +213,10 @@ public class Captura extends Fragment {
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                //String item = parent.getItemAtPosition(position).toString();
-                //Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
                 num_fenomen=position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
