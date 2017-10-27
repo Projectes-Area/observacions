@@ -14,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,10 +51,9 @@ public class Observacions_fetes extends Fragment {
         // Filter results
         String selection = DadesEstructura.Parametres._ID + " > ?";
         String[] selectionArgs = {"0"};
-
-        // How you want the results sorted in the resulting Cursor
         //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
         String sortOrder ="dia DESC, hora DESC";
+
         Cursor cursor = db.query(
                 DadesEstructura.Parametres.TABLE_NAME,    // The table to query
                 projection,                               // The columns to return
@@ -78,7 +75,7 @@ public class Observacions_fetes extends Fragment {
         List itemPath_icons = new ArrayList<>();
         //List itemPath_vistes = new ArrayList<>();
         //List itemPath_envies = new ArrayList<>();
-        List itemEnviats = new ArrayList<>();
+        //List itemEnviats = new ArrayList<>();
         while(cursor.moveToNext()) {
             String itemDia=cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
@@ -116,31 +113,15 @@ public class Observacions_fetes extends Fragment {
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Log.i("TAG", "index :" + index);
-                    Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
-
-
+                    ((MainActivity) getActivity()).fitxa();
+                    //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                 }
             });
-
             final ImageView img =new ImageView(getContext());
             img.setId(j+1);
             img.setLayoutParams(paramsIcona);
-            //img.setPadding(20,10,20,10);
-            //img.setLayoutParams(params);
-
-
-            //img.setBackgroundColor(0);
-
             img.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
 
-            // Set click listener for button
-/*            btn.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Log.i("TAG", "index :" + index);
-                    Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
-
-                }
-            });*/
             ll.addView(img);
 
             TextView lblDia = new TextView(getContext());
@@ -152,7 +133,6 @@ public class Observacions_fetes extends Fragment {
                 e.printStackTrace();
             }
             ll.addView(lblDia);
-
 
             TextView lblHora = new TextView(getContext());
             try {
@@ -216,7 +196,4 @@ public class Observacions_fetes extends Fragment {
                 return "Genèric";
         }
     }
-
-
-
 }

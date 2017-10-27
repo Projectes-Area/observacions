@@ -8,7 +8,6 @@ import android.provider.BaseColumns;
 
 public final class DadesEstructura {
     private DadesEstructura() {}
-    /* Inner class that defines the table contents */
     public static class Parametres implements BaseColumns {
         public static final String TABLE_NAME = "observacions";
         public static final String COLUMN_NAME_DIA = "dia";
