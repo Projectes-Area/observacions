@@ -129,7 +129,7 @@ public class Captura extends Fragment {
     private File outputMiniatura=null;
     private int midaEnvia=800;
     private int midaVista=200;
-    private int midaIcon=60;
+    private int midaIcon=100;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;

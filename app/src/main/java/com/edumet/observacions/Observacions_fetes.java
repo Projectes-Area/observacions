@@ -2,7 +2,6 @@ package com.edumet.observacions;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,11 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +56,8 @@ public class Observacions_fetes extends Fragment {
         String[] selectionArgs = {"0"};
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
+        //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
+        String sortOrder ="dia DESC, hora DESC";
         Cursor cursor = db.query(
                 DadesEstructura.Parametres.TABLE_NAME,    // The table to query
                 projection,                               // The columns to return
@@ -96,21 +93,18 @@ public class Observacions_fetes extends Fragment {
             String itemPath_icon=cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON));
             itemPath_icons.add(itemPath_icon);
-/*            long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
-            itemIds.add(itemId);*/
         }
         cursor.close();
-        Toast.makeText(getActivity(), itemDies.get(0).toString(), Toast.LENGTH_LONG).show();
 
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm");
 
-        final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearMain);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(20, 0, 0, 0);
+        params.setMargins(5, 0, 0, 0);
         LinearLayout.LayoutParams paramsChk = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 60, 0);
+        paramsChk.setMargins(0, 0, 20, 0);
+
+        final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
         for(int j=0;j<itemDies.size();j++)
         {
@@ -123,7 +117,8 @@ public class Observacions_fetes extends Fragment {
             btn.setLayoutParams(params);
             btn.setMinimumHeight(200);
             btn.setMinimumWidth(200);
-            btn.setPadding(0,0,0,0);
+            btn.setBackgroundColor(0);
+            //btn.setPadding(0,0,0,0);
 
             btn.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
             final int index = j;
@@ -143,12 +138,11 @@ public class Observacions_fetes extends Fragment {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date date = format.parse(itemDies.get(j).toString());
                 lblDia.setText(dateCatala.format(date.getTime()));
-                System.out.println(date);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            lblDia.setPadding(40,0,0,0);
-            lblDia.setLayoutParams(params);
+            //lblDia.setPadding(40,0,0,0);
+            //lblDia.setLayoutParams(params);
             ll.addView(lblDia);
 
 
@@ -157,12 +151,11 @@ public class Observacions_fetes extends Fragment {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                 Date time = format.parse(itemHores.get(j).toString());
                 lblHora.setText(horaCatala.format(time.getTime()));
-                System.out.println(time);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            lblHora.setPadding(40,0,40,0);
-            lblHora.setLayoutParams(params);
+            lblHora.setPadding(30,0,40,0);
+            //lblHora.setLayoutParams(params);
             ll.addView(lblHora);
 
              TextView lblFenomen = new TextView(getContext());
@@ -179,12 +172,12 @@ public class Observacions_fetes extends Fragment {
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
             ImageView chk=new ImageView(getContext());
-            chk.setImageResource(R.drawable.checkbox_on_background);
+            //chk.setLayoutParams(paramsChk);
+            chk.setImageResource(R.drawable.checkbox_off_background);
+            chk.setPadding(0,0,20,0);
             llCheck.addView(chk);
 
             ll.addView(llCheck);
-
-
 
             lm.addView(ll);
 
