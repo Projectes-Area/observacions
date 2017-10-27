@@ -14,10 +14,10 @@
     <string name="error_servidor">No s\'ha pogut enviar l\'observació al servidor</string>
     <string name="descriu">Descriu aquí les teves observacions</string>
     <string name="no_location_detected">Sense dades de localització</string>
-    <string-array name="fenomens">
+<!--    <string-array name="fenomens">
         <item>Oreneta</item>
         <item>Ametller</item>
         <item>Cirerer</item>
         <item>Papallona</item>
-    </string-array>
+    </string-array>-->
 </resources>

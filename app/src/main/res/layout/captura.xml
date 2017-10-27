@@ -20,14 +20,13 @@
             android:id="@+id/toolbar"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:background="?attr/colorPrimary"
+            android:background="#418ac8"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name"
+            app:titleTextColor="#ffffff"
             tools:layout_constraintTop_creator="1" />
 
         <TextView
@@ -117,11 +116,11 @@
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-            app:layout_constraintHorizontal_bias="0.666"
+            android:paddingBottom="0dp"
+            app:layout_constraintHorizontal_bias="0.333"
             app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
             app:layout_constraintRight_toRightOf="@+id/imgFoto"
             app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -130,21 +129,24 @@
                 android:id="@+id/btnFoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_camera"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/ic_photo_camera_white_48pt"
                 tools:layout_editor_absoluteY="64dp" />
 
             <ImageButton
                 android:id="@+id/btnEnvia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_send"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/ic_send_white_48pt"
                 tools:layout_editor_absoluteY="64dp" />
 
             <ImageButton
                 android:id="@+id/btnPendents"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_recent_history"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/ic_watch_edumet_48pt"
                 tools:layout_editor_absoluteY="64dp" />
         </LinearLayout>
 
@@ -166,7 +168,7 @@
                 android:id="@+id/btnGirar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_rotate"
+                android:src="@drawable/ic_rotate_right_white_48pt"
                 tools:layout_editor_absoluteY="64dp" />
 
 
@@ -174,7 +176,7 @@
                 android:id="@+id/btnDesa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_save"
+                android:src="@drawable/ic_save_white_48pt"
                 tools:layout_editor_absoluteY="64dp" />
 
 
@@ -182,7 +184,7 @@
                 android:id="@+id/btnMapa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_dialog_map"
+                android:src="@drawable/ic_map_white_48pt"
                 tools:layout_editor_absoluteY="64dp" />
         </LinearLayout>
 

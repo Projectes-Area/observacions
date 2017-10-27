@@ -19,9 +19,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class Observacions_fetes extends Fragment {
@@ -100,14 +103,14 @@ public class Observacions_fetes extends Fragment {
         cursor.close();
         Toast.makeText(getActivity(), itemDies.get(0).toString(), Toast.LENGTH_LONG).show();
 
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
-        String dia = sdf.format(Calendar.getInstance().getTime());
-        String hora = shf.format(Calendar.getInstance().getTime());
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm");
 
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearMain);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(20, 0, 0, 0);
+        LinearLayout.LayoutParams paramsChk = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 60, 0);
 
         for(int j=0;j<itemDies.size();j++)
         {
@@ -115,14 +118,12 @@ public class Observacions_fetes extends Fragment {
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
 
-            ImageView chk=new ImageView(getContext());
-            chk.setImageResource(R.drawable.checkbox_on_background);
-            ll.addView(chk);
-
             final ImageButton btn =new ImageButton(getContext());
             btn.setId(j+1);
             btn.setLayoutParams(params);
-            btn.setPadding(0,1,0,1);
+            btn.setMinimumHeight(200);
+            btn.setMinimumWidth(200);
+            btn.setPadding(0,0,0,0);
 
             btn.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
             final int index = j;
@@ -138,14 +139,28 @@ public class Observacions_fetes extends Fragment {
 
             TextView lblDia = new TextView(getContext());
             //product.setText(" Product"+j+"    ");
-            lblDia.setText(itemDies.get(j).toString());
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = format.parse(itemDies.get(j).toString());
+                lblDia.setText(dateCatala.format(date.getTime()));
+                System.out.println(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             lblDia.setPadding(40,0,0,0);
             lblDia.setLayoutParams(params);
             ll.addView(lblDia);
 
 
             TextView lblHora = new TextView(getContext());
-            lblHora.setText(itemHores.get(j).toString());
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                Date time = format.parse(itemHores.get(j).toString());
+                lblHora.setText(horaCatala.format(time.getTime()));
+                System.out.println(time);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             lblHora.setPadding(40,0,40,0);
             lblHora.setLayoutParams(params);
             ll.addView(lblHora);
@@ -155,6 +170,21 @@ public class Observacions_fetes extends Fragment {
             //price.setText("  $"+j+"     ");
             lblFenomen.setLayoutParams(params);
             ll.addView(lblFenomen);
+
+
+            LinearLayout llCheck = new LinearLayout(getContext());
+            llCheck.setOrientation(LinearLayout.HORIZONTAL);
+            llCheck.setLayoutParams(paramsChk);
+            llCheck.setVerticalGravity(Gravity.CENTER_VERTICAL);
+            llCheck.setHorizontalGravity(Gravity.RIGHT);
+
+            ImageView chk=new ImageView(getContext());
+            chk.setImageResource(R.drawable.checkbox_on_background);
+            llCheck.addView(chk);
+
+            ll.addView(llCheck);
+
+
 
             lm.addView(ll);
 
