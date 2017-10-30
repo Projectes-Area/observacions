@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,14 +40,8 @@ public class Observacions_fetes extends Fragment {
                 DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
-                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
@@ -65,19 +61,15 @@ public class Observacions_fetes extends Fragment {
                 sortOrder                                 // The sort order
         );
 
-        //List itemIds = new ArrayList<>();
+        List itemIds = new ArrayList<>();
         List itemDies = new ArrayList<>();
         List itemHores = new ArrayList<>();
-        //List itemLatituds = new ArrayList<>();
-        //List itemLongituds = new ArrayList<>();
         List itemFenomens = new ArrayList<>();
-        //List itemDescripcions = new ArrayList<>();
-        //List itemPaths = new ArrayList<>();
         List itemPath_icons = new ArrayList<>();
-        //List itemPath_vistes = new ArrayList<>();
-        //List itemPath_envies = new ArrayList<>();
-        //List itemEnviats = new ArrayList<>();
         while(cursor.moveToNext()) {
+            String itemId=cursor.getString(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
+            itemIds.add(itemId);
             String itemDia=cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
             itemDies.add(itemDia);
@@ -104,10 +96,11 @@ public class Observacions_fetes extends Fragment {
             LinearLayout ll = new LinearLayout(getContext());
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
+            final int parametreID=Integer.valueOf(itemIds.get(j).toString());
+
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.i("TAG", "index :" + index);
-                    ((MainActivity) getActivity()).fitxa();
+                    ((MainActivity) getActivity()).fitxa(parametreID);
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                 }
             });
@@ -208,9 +201,9 @@ public class Observacions_fetes extends Fragment {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    public static int pxToDp(int px)
+/*    public static int pxToDp(int px)
     {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
-    }
+    }*/
     
 }
