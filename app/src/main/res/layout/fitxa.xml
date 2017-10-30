@@ -78,7 +78,7 @@
             app:layout_constraintTop_toBottomOf="@+id/imgFoto">
 
             <ImageButton
-                android:id="@+id/imgEnvia"
+                android:id="@+id/btnEnvia"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
@@ -87,7 +87,7 @@
                 tools:layout_editor_absoluteY="461dp" />
 
             <ImageButton
-                android:id="@+id/imgEsborra"
+                android:id="@+id/btnEsborra"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
@@ -96,7 +96,7 @@
                 tools:layout_editor_absoluteY="452dp" />
 
             <ImageButton
-                android:id="@+id/imgMapa"
+                android:id="@+id/btnMapa"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"

@@ -2,27 +2,53 @@ package com.edumet.observacions;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by 40980055N on 27/10/17.
  */
 
-
 public class Fitxa extends Fragment {
 
     DadesHelper mDbHelper;
 
+    private ImageButton Envia;
+    private ImageButton Mapa;
+    private ImageButton Esborra;
+    private ImageView imatge;
+    private TextView fenomen;
+    private TextView data;
+    private TextView descripcio;
+    private ProgressBar mProgressBar;
+
     private int numID;
+    private String elDia;
+    private String laHora;
+    private double laLatitud;
+    private double laLongitud;
+    private String elFenomen;
+    private String laDescripcio;
+    private String elPath;
+    private String elPath_Envia;
+    private String elPath_Vista;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,8 +57,15 @@ public class Fitxa extends Fragment {
         numID=getArguments().getInt("numID");
 
         mDbHelper = new DadesHelper(getContext());
-
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        fenomen=(TextView) v.findViewById(R.id.lblFenomen);
+        Envia=(ImageButton) v.findViewById(R.id.btnEnvia);
+        Mapa=(ImageButton) v.findViewById(R.id.btnMapa);
+        Esborra=(ImageButton) v.findViewById(R.id.btnEsborra);
+        imatge = (ImageView) v.findViewById(R.id.imgFoto);
+        data = (TextView) v.findViewById(R.id.lblData);
+        descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -44,7 +77,6 @@ public class Fitxa extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
@@ -54,7 +86,7 @@ public class Fitxa extends Fragment {
         String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {String.valueOf(numID)};
         //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
-        String sortOrder ="dia DESC, hora DESC";
+        String sortOrder =null;
 
         Cursor cursor = db.query(
                 DadesEstructura.Parametres.TABLE_NAME,    // The table to query
@@ -66,40 +98,39 @@ public class Fitxa extends Fragment {
                 sortOrder                                 // The sort order
         );
 
-        //List itemIds = new ArrayList<>();
-        List itemDies = new ArrayList<>();
-        List itemHores = new ArrayList<>();
-        //List itemLatituds = new ArrayList<>();
-        //List itemLongituds = new ArrayList<>();
-        List itemFenomens = new ArrayList<>();
-        //List itemDescripcions = new ArrayList<>();
-        //List itemPaths = new ArrayList<>();
-        List itemPath_icons = new ArrayList<>();
-        //List itemPath_vistes = new ArrayList<>();
-        //List itemPath_envies = new ArrayList<>();
-        //List itemEnviats = new ArrayList<>();
         while(cursor.moveToNext()) {
-            String itemDia=cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-            itemDies.add(itemDia);
-            String itemHora=cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
-            itemHores.add(itemHora);
-            String itemFenomen=cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-            itemFenomens.add(itemFenomen);
-            String itemPath_icon=cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON));
-            itemPath_icons.add(itemPath_icon);
+            if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID)))==numID) {
+                elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+                laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+                laLatitud=Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
+                laLongitud=Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
+                elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+                laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
+                elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
+                elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+                elPath_Vista = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA));
+            }
         }
         cursor.close();
 
-        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm");
         return v;
     }
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-        Toast.makeText(getActivity(), String.valueOf(numID), Toast.LENGTH_LONG).show();
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss");
+
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(elDia);
+            format = new SimpleDateFormat("HH:mm:ss");
+            Date time = format.parse(laHora);
+            data.setText(dateCatala.format(date.getTime())+" "+horaCatala.format(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        descripcio.setText(laDescripcio);
+        imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Vista));
     }
 }
