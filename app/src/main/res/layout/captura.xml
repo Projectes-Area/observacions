@@ -44,11 +44,9 @@
             android:id="@+id/imgFoto"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -58,11 +56,9 @@
             android:id="@+id/txtObservacions"
             android:layout_width="200dp"
             android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:ems="10"
             android:hint="@string/descriu"
             android:inputType="textMultiLine"
@@ -88,76 +84,47 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:spinnerMode="dialog"
             android:textSize="18sp"
-            app:layout_constraintHorizontal_bias="0.525"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblFenomen" />
-
-        <TextView
-            android:id="@+id/lblFenomen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="TIPUS DE FENOMEN OBSERVAT"
-            android:textSize="12sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/imgFoto"
+            app:layout_constraintStart_toStartOf="@+id/imgFoto"
             app:layout_constraintTop_toBottomOf="@+id/imgFoto" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginRight="8dp"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:paddingBottom="0dp"
-            app:layout_constraintHorizontal_bias="0.333"
             app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
             app:layout_constraintRight_toRightOf="@+id/imgFoto"
             app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <ImageButton
                 android:id="@+id/btnFoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/ic_photo_camera_white_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_photo_camera_white_48pt"/>
 
             <ImageButton
                 android:id="@+id/btnEnvia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/ic_send_white_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_send_white_48pt"/>
 
             <ImageButton
                 android:id="@+id/btnPendents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:src="@drawable/ic_watch_edumet_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_watch_edumet_48pt"/>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
@@ -166,27 +133,36 @@
 
             <ImageButton
                 android:id="@+id/btnGirar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_rotate_right_white_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_rotate_right_white_48pt"/>
 
 
             <ImageButton
                 android:id="@+id/btnDesa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_save_white_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_save_white_48pt"/>
 
 
             <ImageButton
                 android:id="@+id/btnMapa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_map_white_48pt"
-                tools:layout_editor_absoluteY="64dp" />
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_map_white_48pt"/>
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_remove_red_eye_edumet_48pt"
+            app:layout_constraintBottom_toBottomOf="@+id/spinner"
+            app:layout_constraintEnd_toStartOf="@+id/spinner"
+            app:layout_constraintTop_toTopOf="@+id/spinner"/>
 
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>
