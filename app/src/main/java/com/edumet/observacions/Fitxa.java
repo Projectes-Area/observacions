@@ -2,7 +2,6 @@ package com.edumet.observacions;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,18 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,10 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,13 +36,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static java.lang.String.valueOf;
-import static java.lang.System.out;
-
-/**
- * Created by 40980055N on 27/10/17.
- */
 
 public class Fitxa extends Fragment {
 
@@ -75,6 +61,8 @@ public class Fitxa extends Fragment {
     private String elPath_Envia;
     private String elPath_Vista;
 
+    private SQLiteDatabase db;
+
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     @Override
@@ -84,7 +72,7 @@ public class Fitxa extends Fragment {
         numID = getArguments().getInt("numID");
 
         mDbHelper = new DadesHelper(getContext());
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        db = mDbHelper.getReadableDatabase();
 
         fenomen = (TextView) v.findViewById(R.id.lblFenomen);
         Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
@@ -95,9 +83,15 @@ public class Fitxa extends Fragment {
         });
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
+        Esborra.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                esborra();
+            }
+        });
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         data = (TextView) v.findViewById(R.id.lblData);
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
+        mProgressBar=(ProgressBar) v.findViewById(R.id.progressBar);
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -221,7 +215,6 @@ public class Fitxa extends Fragment {
             jsonParam.put("hora", laHora);
             jsonParam.put("lat", laLatitud);
             jsonParam.put("lon", laLongitud);
-            //jsonParam.put("id_feno", getNumFenomen());
             jsonParam.put("id_feno", Integer.valueOf(elFenomen));
             jsonParam.put("descripcio", laDescripcio);
             jsonParam.put("tab", "salvarFenoApp");
@@ -245,7 +238,7 @@ public class Fitxa extends Fragment {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
                                             @Override
@@ -253,7 +246,7 @@ public class Fitxa extends Fragment {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
                                                 Log.i("CLIENT", getString(R.string.error_connexio));
@@ -269,7 +262,9 @@ public class Fitxa extends Fragment {
                                                         public void run() {
                                                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_LONG).show();
                                                             //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
-                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            Envia.setEnabled(false);
+                                                            Envia.setImageResource(R.drawable.ic_send_white_48pt);
                                                         }
                                                     });
                                                     Log.i("CLIENT", getString(R.string.dades_enviades));
@@ -278,7 +273,7 @@ public class Fitxa extends Fragment {
                                                         public void run() {
                                                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
                                                             //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
-                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
                                                     Log.i("CLIENT", getString(R.string.error_servidor));
@@ -288,5 +283,21 @@ public class Fitxa extends Fragment {
         );
     }
 
+//
+// ESBORRA OBSERVACIÓ
+//
 
+    private void esborra() {
+
+        db = mDbHelper.getWritableDatabase();
+
+        db.delete("observacions", DadesEstructura.Parametres._ID+ "=" + String.valueOf(numID), null);
+
+        Envia.setEnabled(false);
+        Envia.setImageResource(R.drawable.ic_send_white_48pt);
+        Esborra.setEnabled(false);
+        Esborra.setImageResource(R.drawable.ic_cancel_white_48pt);
+
+        Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
+    }
 }

@@ -181,7 +181,6 @@ public class Observacions_fetes extends Fragment {
     }
 
     public String nomFenomen(int i) {
-        Log.i("numFenomen",String.valueOf(i));
         switch (i) {
             case 2:
                 return "Oreneta";

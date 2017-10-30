@@ -613,10 +613,6 @@ public class Captura extends Fragment {
         Log.i("pathEnvia", pathEnvia);
     }
 
-    private void desaObservacio() {
-        fesMiniatures();
-    }
-
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
@@ -687,7 +683,6 @@ public class Captura extends Fragment {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         setPicTemp(midaEnvia,midaEnvia);
         bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
-        Log.i("angle_foto", valueOf(angle_foto));
         bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
@@ -789,8 +784,11 @@ public class Captura extends Fragment {
     // DESA
     //
 
+
     private void desa() {
-        desaObservacio();
+
+        fesMiniatures();
+
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -828,26 +826,8 @@ public class Captura extends Fragment {
         Snackbar.make(
                 getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
+                Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
     }
-
-/*    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
-
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
-            // An item was selected. You can retrieve the selected item using
-            // parent.getItemAtPosition(pos)
-            Log.i("spinner",String.valueOf(pos));
-            num_fenomen=pos;
-        }
-
-        public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
-        }
-    }*/
-
-
 }
 
 
