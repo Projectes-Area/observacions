@@ -508,6 +508,7 @@ public class Captura extends Fragment {
 
     //
     // MAPA
+    //
 
     public void mapa() {
         String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude()+"?z=9");

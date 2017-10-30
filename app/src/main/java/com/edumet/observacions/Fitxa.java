@@ -1,8 +1,10 @@
 package com.edumet.observacions;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -36,6 +38,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static java.lang.String.valueOf;
 
 public class Fitxa extends Fragment {
 
@@ -82,6 +86,11 @@ public class Fitxa extends Fragment {
             }
         });
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
+        Mapa.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mapa();
+            }
+        });
         Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
         Esborra.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -299,5 +308,19 @@ public class Fitxa extends Fragment {
         Esborra.setImageResource(R.drawable.ic_cancel_white_48pt);
 
         Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
+    }
+
+//
+// MAPA
+//
+
+    public void mapa() {
+        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud+"?z=9");
+        Uri gmmIntentUri = Uri.parse(laUri);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
     }
 }
