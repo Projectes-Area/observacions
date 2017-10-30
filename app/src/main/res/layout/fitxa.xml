@@ -80,7 +80,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_send_edumet_48pt"
+                android:src="@mipmap/ic_send_edumet"
                 tools:layout_editor_absoluteX="63dp"
                 tools:layout_editor_absoluteY="461dp" />
 
@@ -118,7 +118,6 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
