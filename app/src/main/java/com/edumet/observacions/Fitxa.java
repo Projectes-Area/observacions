@@ -2,9 +2,13 @@ package com.edumet.observacions;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +20,32 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static java.lang.String.valueOf;
+import static java.lang.System.out;
 
 /**
  * Created by 40980055N on 27/10/17.
@@ -50,19 +75,26 @@ public class Fitxa extends Fragment {
     private String elPath_Envia;
     private String elPath_Vista;
 
+    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v= inflater.inflate(R.layout.fitxa, container, false);
-        numID=getArguments().getInt("numID");
+        View v = inflater.inflate(R.layout.fitxa, container, false);
+        numID = getArguments().getInt("numID");
 
         mDbHelper = new DadesHelper(getContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-        fenomen=(TextView) v.findViewById(R.id.lblFenomen);
-        Envia=(ImageButton) v.findViewById(R.id.btnEnvia);
-        Mapa=(ImageButton) v.findViewById(R.id.btnMapa);
-        Esborra=(ImageButton) v.findViewById(R.id.btnEsborra);
+        fenomen = (TextView) v.findViewById(R.id.lblFenomen);
+        Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
+        Envia.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                sendPost();
+            }
+        });
+        Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
+        Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         data = (TextView) v.findViewById(R.id.lblData);
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
@@ -86,7 +118,7 @@ public class Fitxa extends Fragment {
         String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {String.valueOf(numID)};
         //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
-        String sortOrder =null;
+        String sortOrder = null;
 
         Cursor cursor = db.query(
                 DadesEstructura.Parametres.TABLE_NAME,    // The table to query
@@ -98,12 +130,12 @@ public class Fitxa extends Fragment {
                 sortOrder                                 // The sort order
         );
 
-        while(cursor.moveToNext()) {
-            if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID)))==numID) {
+        while (cursor.moveToNext()) {
+            if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
                 elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-                laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-                laLatitud=Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
-                laLongitud=Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
+                laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+                laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
+                laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
                 elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
                 laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
                 elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
@@ -115,6 +147,7 @@ public class Fitxa extends Fragment {
 
         return v;
     }
+
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
@@ -125,12 +158,135 @@ public class Fitxa extends Fragment {
             Date date = format.parse(elDia);
             format = new SimpleDateFormat("HH:mm:ss");
             Date time = format.parse(laHora);
-            data.setText(dateCatala.format(date.getTime())+" "+horaCatala.format(date.getTime()));
+            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
+        fenomen.setText(nomFenomen(Integer.valueOf(elFenomen)));
         descripcio.setText(laDescripcio);
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Vista));
     }
+
+    //
+    // ENVIA AL SERVIDOR EDUMET
+    //
+
+    public String nomFenomen(int i) {
+        Log.i("numFenomen",String.valueOf(i));
+        switch (i) {
+            case 2:
+                return "Oreneta";
+            case 3:
+                return "Ametller";
+            case 4:
+                return "Cirerer";
+            case 1:
+                return "Papallona";
+            default:
+                return "Genèric";
+        }
+    }
+
+    private void sendPost() {
+
+        File fitxer_a_enviar=new File(elPath_Envia);
+
+        byte[] fotografia;
+        fotografia = new byte[(int) fitxer_a_enviar.length()];
+        try {
+            InputStream is = new FileInputStream(fitxer_a_enviar);
+            is.read(fotografia);
+            is.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
+        String dia = sdf.format(Calendar.getInstance().getTime());
+        String hora = shf.format(Calendar.getInstance().getTime());
+
+        final OkHttpClient client = new OkHttpClient();
+
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("fitxer", encodedFoto);
+            jsonParam.put("usuari", 43900018);
+            jsonParam.put("dia", elDia);
+            jsonParam.put("hora", laHora);
+            jsonParam.put("lat", laLatitud);
+            jsonParam.put("lon", laLongitud);
+            //jsonParam.put("id_feno", getNumFenomen());
+            jsonParam.put("id_feno", Integer.valueOf(elFenomen));
+            jsonParam.put("descripcio", laDescripcio);
+            jsonParam.put("tab", "salvarFenoApp");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.i("JSON sortida", jsonParam.toString());
+
+        RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
+
+        final Request request = new Request.Builder()
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
+                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
+                //.url("http://tecnologia.isantandreu.net/prova.php")
+                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "auth")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
+                                                Log.i("CLIENT", getString(R.string.error_connexio));
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+
+                                                Log.i("RESPONSE", response.toString());
+                                                Log.i("CONTENT", response.body().string());
+                                                if (response.isSuccessful()) {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_LONG).show();
+                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
+                                                } else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.error_servidor));
+                                                }
+                                            }
+                                        }
+        );
+    }
+
+
 }
