@@ -1,12 +1,12 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
@@ -322,7 +322,7 @@ public class Fitxa extends Fragment {
 //
 
     public void mapa() {
-        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud)+"?z=9";
+        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud)+"?z=15";
         Uri gmmIntentUri = Uri.parse(laUri);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -336,11 +336,16 @@ public class Fitxa extends Fragment {
 //
 
     public void veure_foto() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         File newFile = new File(elPath);
-        Uri contentUri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
-        Intent intent = new Intent(Intent.ACTION_VIEW, contentUri);
-        intent.setType("image/*");
-        startActivity(intent); /** replace with your own uri */
-    }
+        Log.i("path",elPath);
+        Uri uri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
+        intent.setDataAndType(uri, "image/*");
 
+        PackageManager pm = getActivity().getPackageManager();
+        if (intent.resolveActivity(pm) != null) {
+            startActivity(intent);
+        }
+    }
 }
