@@ -156,7 +156,7 @@ public class Observacions_fetes extends Fragment {
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
             ImageView chk=new ImageView(getContext());
-            chk.setImageResource(R.drawable.checkbox_off_background);
+            chk.setImageResource(R.mipmap.ic_check_off);
             chk.setLayoutParams(paramsChk);
             llCheck.addView(chk);
 
@@ -167,7 +167,7 @@ public class Observacions_fetes extends Fragment {
             View line = new View(getContext());
             RelativeLayout.LayoutParams lineparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 1);
             line.setLayoutParams(lineparams);
-            line.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            line.setBackgroundColor(getResources().getColor(R.color.edumet));
 
             lm.addView(line);
         }

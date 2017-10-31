@@ -354,11 +354,11 @@ public class Captura extends Fragment {
     }
 
     private void enableBotons() {
-        Girar.setImageResource(R.drawable.ic_rotate_right_edumet_48pt);
+        Girar.setImageResource(R.mipmap.ic_rotate_edumet);
         Girar.setEnabled(true);
-        Envia.setImageResource(R.drawable.ic_send_edumet_48pt);
+        Envia.setImageResource(R.mipmap.ic_send_edumet);
         Envia.setEnabled(true);
-        Desa.setImageResource(R.drawable.ic_save_edumet_48pt);
+        Desa.setImageResource(R.mipmap.ic_save_edumet);
         Desa.setEnabled(true);
     }
 
@@ -408,9 +408,9 @@ public class Captura extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha localitzat la teva ubicació",Snackbar.LENGTH_LONG).show();
                 jaLocalitzat=true;
             }
-            Foto.setImageResource(R.drawable.ic_photo_camera_edumet_48pt);
+            Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);
-            Mapa.setImageResource(R.drawable.ic_map_edumet_48pt);
+            Mapa.setImageResource(R.mipmap.ic_map_edumet);
             Mapa.setEnabled(true);
         }
     }

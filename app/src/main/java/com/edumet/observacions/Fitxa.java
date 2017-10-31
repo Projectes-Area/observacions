@@ -273,7 +273,7 @@ public class Fitxa extends Fragment {
                                                             //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                             Envia.setEnabled(false);
-                                                            Envia.setImageResource(R.drawable.ic_send_white_48pt);
+                                                            Envia.setImageResource(R.mipmap.ic_send_white);
                                                         }
                                                     });
                                                     Log.i("CLIENT", getString(R.string.dades_enviades));
@@ -303,9 +303,9 @@ public class Fitxa extends Fragment {
         db.delete("observacions", DadesEstructura.Parametres._ID+ "=" + String.valueOf(numID), null);
 
         Envia.setEnabled(false);
-        Envia.setImageResource(R.drawable.ic_send_white_48pt);
+        Envia.setImageResource(R.mipmap.ic_send_white);
         Esborra.setEnabled(false);
-        Esborra.setImageResource(R.drawable.ic_cancel_white_48pt);
+        Esborra.setImageResource(R.mipmap.ic_delete_white);
 
         Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
     }
