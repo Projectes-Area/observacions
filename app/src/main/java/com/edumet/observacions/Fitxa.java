@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
@@ -39,6 +40,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.support.v4.content.FileProvider.getUriForFile;
 import static java.lang.String.valueOf;
 
 public class Fitxa extends Fragment {
@@ -98,6 +100,11 @@ public class Fitxa extends Fragment {
             }
         });
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
+        imatge.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                veure_foto();
+            }
+        });
         data = (TextView) v.findViewById(R.id.lblData);
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
         mProgressBar=(ProgressBar) v.findViewById(R.id.progressBar);
@@ -315,7 +322,7 @@ public class Fitxa extends Fragment {
 //
 
     public void mapa() {
-        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud+"?z=9");
+        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud)+"?z=9";
         Uri gmmIntentUri = Uri.parse(laUri);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -323,4 +330,17 @@ public class Fitxa extends Fragment {
             startActivity(mapIntent);
         }
     }
+
+//
+// VEURE FOTO
+//
+
+    public void veure_foto() {
+        File newFile = new File(elPath);
+        Uri contentUri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
+        Intent intent = new Intent(Intent.ACTION_VIEW, contentUri);
+        intent.setType("image/*");
+        startActivity(intent); /** replace with your own uri */
+    }
+
 }

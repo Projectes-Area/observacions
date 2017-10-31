@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -74,11 +75,13 @@ import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -118,6 +121,8 @@ public class Captura extends Fragment {
     private ProgressBar mProgressBar;
     private Spinner spinner;
 
+    private Button Sincronitza;
+
     private String timeStamp;
     private String pathIcon;
     private String pathVista;
@@ -152,6 +157,8 @@ public class Captura extends Fragment {
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
+
+        Sincronitza= (Button) v.findViewById(R.id.btnSincronitza);
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -199,6 +206,17 @@ public class Captura extends Fragment {
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
+            }
+        });
+        Sincronitza.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                sincronitza();
+                }
+            catch (Exception e) {
+                Log.i("exception","error");
+            }
+
             }
         });
 
@@ -782,9 +800,43 @@ public class Captura extends Fragment {
     }
 
     //
-    // DESA
+    // SINCRONITZA
     //
 
+        final OkHttpClient client = new OkHttpClient();
+
+        public void sincronitza() throws Exception {
+            Request request = new Request.Builder()
+                    //.url("http://publicobject.com/helloworld.txt")
+                    .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident=43900018&psw=lstp2012&tab=registrar_se") // login
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override public void onResponse(Call call, Response response) throws IOException {
+                    try (ResponseBody responseBody = response.body()) {
+                        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+                        Headers responseHeaders = response.headers();
+                        for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+                            System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                        }
+
+                        Log.i("response",responseBody.string());
+                    }
+                }
+            });
+        }
+
+
+
+
+    //
+    // DESA
+    //
 
     private void desa() {
 

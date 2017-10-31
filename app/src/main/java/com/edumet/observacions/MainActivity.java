@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.google.android.gms.maps.MapFragment;
+
 public class MainActivity extends FragmentActivity {
 
     @Override
@@ -71,4 +73,22 @@ public class MainActivity extends FragmentActivity {
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+/*    public void fragment_mapa() {
+        MapFragment newFragment = new MapFragment();
+        Bundle args = new Bundle();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.container_current,newFragment);
+        //transaction.replace(R.id.fragment_container, new MapFragment());
+        //args.putInt("numID",ID);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_container, new MapFragment())
+                .commit();
+
+        newFragment.setArguments(args);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }*/
    }
