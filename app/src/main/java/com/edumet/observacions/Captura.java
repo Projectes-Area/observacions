@@ -59,6 +59,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,8 +71,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -131,21 +134,21 @@ public class Captura extends Fragment {
     private String minPhotoPath;
     static private boolean mRequestingLocationUpdates;
     private File output = null;
-    private File outputMiniatura=null;
-    private int midaEnvia=800;
-    private int midaVista=200;
-    private int midaIcon=60;
+    private File outputMiniatura = null;
+    private int midaEnvia = 800;
+    private int midaVista = 200;
+    private int midaIcon = 60;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
     private int angle_foto;
-    private boolean jaLocalitzat=false;
+    private boolean jaLocalitzat = false;
 
     DadesHelper mDbHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v= inflater.inflate(R.layout.captura, container, false);
+        View v = inflater.inflate(R.layout.captura, container, false);
 
         Foto = (ImageButton) v.findViewById(R.id.btnFoto);
         Girar = (ImageButton) v.findViewById(R.id.btnGirar);
@@ -158,7 +161,7 @@ public class Captura extends Fragment {
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
-        Sincronitza= (Button) v.findViewById(R.id.btnSincronitza);
+        Sincronitza = (Button) v.findViewById(R.id.btnSincronitza);
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -176,12 +179,12 @@ public class Captura extends Fragment {
         Girar.setEnabled(false);
         Girar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                angle_foto+=90;
-                if (angle_foto>=360) {
-                    angle_foto=0;
+                angle_foto += 90;
+                if (angle_foto >= 360) {
+                    angle_foto = 0;
                 }
                 Log.i("ANGLE", valueOf(angle_foto));
-                bitmap=rotateViaMatrix(bitmap,90);
+                bitmap = rotateViaMatrix(bitmap, 90);
                 imatge.setImageBitmap(bitmap);
             }
         });
@@ -211,11 +214,10 @@ public class Captura extends Fragment {
         Sincronitza.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                sincronitza();
+                    sincronitza();
+                } catch (Exception e) {
+                    Log.i("exception", "error");
                 }
-            catch (Exception e) {
-                Log.i("exception","error");
-            }
 
             }
         });
@@ -230,9 +232,10 @@ public class Captura extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                num_fenomen=position;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                num_fenomen = position;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -287,14 +290,14 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("ONRESUME",String.valueOf(mRequestingLocationUpdates));
+        Log.i("ONRESUME", String.valueOf(mRequestingLocationUpdates));
         if (mRequestingLocationUpdates && checkPermissions()) {
             startLocationUpdates();
         } else if (!checkPermissions()) {
             requestPermissions();
         }
         updateLocationUI();
-        if(output!=null) {
+        if (output != null) {
             imatge.setImageBitmap(bitmap);
             enableBotons();
         }
@@ -304,7 +307,7 @@ public class Captura extends Fragment {
     public void onPause() {
         super.onPause();
         stopLocationUpdates();
-        Log.i("ONPAUSE","OK");
+        Log.i("ONPAUSE", "OK");
     }
 
     @Override
@@ -349,7 +352,7 @@ public class Captura extends Fragment {
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i("onActivityResult", "User agreed to make required location settings changes.");
-                        mRequestingLocationUpdates=true;
+                        mRequestingLocationUpdates = true;
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i("onActivityResult", "User chose not to make required location settings changes.");
@@ -357,15 +360,15 @@ public class Captura extends Fragment {
                         break;
                 }
                 updateLocationUI();
-                Log.i("onActivityResult",String.valueOf(mRequestingLocationUpdates));
+                Log.i("onActivityResult", String.valueOf(mRequestingLocationUpdates));
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    angle_foto=0;
+                    angle_foto = 0;
                     setPic();
                     galleryAddPic();
                     enableBotons();
-                    Log.i("onActivityResult","Foto");
+                    Log.i("onActivityResult", "Foto");
                 }
                 break;
         }
@@ -386,10 +389,10 @@ public class Captura extends Fragment {
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                            Log.i(TAG, "All location settings are satisfied.");
-                            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                            mRequestingLocationUpdates=true;
-                            updateLocationUI();
+                        Log.i(TAG, "All location settings are satisfied.");
+                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                        mRequestingLocationUpdates = true;
+                        updateLocationUI();
 
                     }
                 })
@@ -423,8 +426,8 @@ public class Captura extends Fragment {
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
             if (!jaLocalitzat) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha localitzat la teva ubicació",Snackbar.LENGTH_LONG).show();
-                jaLocalitzat=true;
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_LONG).show();
+                jaLocalitzat = true;
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);
@@ -466,21 +469,20 @@ public class Captura extends Fragment {
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
-});
+                    });
         } else {
             Log.i("requestPermissions", "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(getActivity(),new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_PERMISSIONS_REQUEST_CODE);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
 
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,@NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
@@ -493,7 +495,7 @@ public class Captura extends Fragment {
                     Log.i("onRequestPermResult", "Permission granted, updates requested, starting location updates");
                 }
             } else {
-                Log.i("onRequestPermResult","Show Snackbar");
+                Log.i("onRequestPermResult", "Show Snackbar");
                 // Permission denied.
 
                 // Notify the user via a SnackBar that they have rejected a core permission for the
@@ -529,12 +531,12 @@ public class Captura extends Fragment {
     //
 
     public void mapa() {
-        String laUri="geo:"+String.valueOf(mCurrentLocation.getLatitude())+","+ valueOf(mCurrentLocation.getLongitude()+"?z=9");
+        String laUri = "geo:" + String.valueOf(mCurrentLocation.getLatitude()) + "," + valueOf(mCurrentLocation.getLongitude() + "?z=9");
         Uri gmmIntentUri = Uri.parse(laUri);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-        startActivity(mapIntent);
+            startActivity(mapIntent);
         }
     }
 
@@ -581,7 +583,7 @@ public class Captura extends Fragment {
             Toast.makeText(super.getContext(), R.string.encara_sense_lloc, Toast.LENGTH_LONG).show();
         }
     }
-    
+
     private File createImageFile() throws IOException {
         timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -591,14 +593,14 @@ public class Captura extends Fragment {
     }
 
     private File createMiniatura(int x) throws IOException {
-        String minTimeStamp = String.valueOf(x) + "_"+timeStamp;
+        String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
         File storageDir = getActivity().getFilesDir();
         File miniatura = File.createTempFile(minTimeStamp, ".jpg", storageDir);
         minPhotoPath = miniatura.getAbsolutePath();
         return miniatura;
     }
 
-    private void fesMiniatura(int x,int angle) {
+    private void fesMiniatura(int x, int angle) {
         setPicTemp(x, x);
         try {
             outputMiniatura = createMiniatura(x);
@@ -608,7 +610,7 @@ public class Captura extends Fragment {
         }
         try {
             FileOutputStream out = new FileOutputStream(outputMiniatura);
-            bitmapTemp=rotateViaMatrix(bitmapTemp,angle);
+            bitmapTemp = rotateViaMatrix(bitmapTemp, angle);
             bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
@@ -620,15 +622,15 @@ public class Captura extends Fragment {
     }
 
     private void fesMiniatures() {
-        fesMiniatura(midaIcon,angle_foto); // icona
-        pathIcon=outputMiniatura.getAbsolutePath();
-        fesMiniatura(midaVista,angle_foto); // vista
-        pathVista=outputMiniatura.getAbsolutePath();
-        fesMiniatura(midaEnvia,angle_foto); // envio
-        pathEnvia =outputMiniatura.getAbsolutePath();
-        Log.i("mCurrentPhotoPath",mCurrentPhotoPath);
-        Log.i("pathIcon",pathIcon);
-        Log.i("pathVista",pathVista);
+        fesMiniatura(midaIcon, angle_foto); // icona
+        pathIcon = outputMiniatura.getAbsolutePath();
+        fesMiniatura(midaVista, angle_foto); // vista
+        pathVista = outputMiniatura.getAbsolutePath();
+        fesMiniatura(midaEnvia, angle_foto); // envio
+        pathEnvia = outputMiniatura.getAbsolutePath();
+        Log.i("mCurrentPhotoPath", mCurrentPhotoPath);
+        Log.i("pathIcon", pathIcon);
+        Log.i("pathVista", pathVista);
         Log.i("pathEnvia", pathEnvia);
     }
 
@@ -667,10 +669,10 @@ public class Captura extends Fragment {
         bitmapTemp = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
-    static private Bitmap rotateViaMatrix(Bitmap original,int angle) {
-        Matrix matrix= new Matrix();
+    static private Bitmap rotateViaMatrix(Bitmap original, int angle) {
+        Matrix matrix = new Matrix();
         matrix.setRotate(angle);
-        return(Bitmap.createBitmap(original, 0, 0, original.getWidth(),
+        return (Bitmap.createBitmap(original, 0, 0, original.getWidth(),
                 original.getHeight(), matrix, true));
     }
 
@@ -679,7 +681,7 @@ public class Captura extends Fragment {
     //
 
     private int getNumFenomen() {
-        int codi_fenomen=1;
+        int codi_fenomen = 1;
         switch (num_fenomen) {
             case 0:
                 codi_fenomen = 2; // Aus--Oreneta
@@ -694,14 +696,14 @@ public class Captura extends Fragment {
                 codi_fenomen = 1; // Insectes--Papallona
                 break;
         }
-        Log.i("getNumFenomen",String.valueOf(codi_fenomen));
+        Log.i("getNumFenomen", String.valueOf(codi_fenomen));
         return codi_fenomen;
     }
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicTemp(midaEnvia,midaEnvia);
-        bitmapTemp=rotateViaMatrix(bitmapTemp,angle_foto);
+        setPicTemp(midaEnvia, midaEnvia);
+        bitmapTemp = rotateViaMatrix(bitmapTemp, angle_foto);
         bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
@@ -730,8 +732,8 @@ public class Captura extends Fragment {
         try {
             jsonParam.put("fitxer", encodedFoto);
             jsonParam.put("usuari", 43900018);
-            jsonParam.put("dia",dia);
-            jsonParam.put("hora",hora);
+            jsonParam.put("dia", dia);
+            jsonParam.put("hora", hora);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
             jsonParam.put("lon", mCurrentLocation.getLongitude());
             jsonParam.put("id_feno", getNumFenomen());
@@ -764,12 +766,13 @@ public class Captura extends Fragment {
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
                                                 Log.i("CLIENT", getString(R.string.error_connexio));
                                             }
+
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
@@ -778,7 +781,7 @@ public class Captura extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content),R.string.dades_enviades,Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_LONG).show();
                                                             //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
@@ -787,7 +790,7 @@ public class Captura extends Fragment {
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
                                                             //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
@@ -803,35 +806,136 @@ public class Captura extends Fragment {
     // SINCRONITZA
     //
 
-        final OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient client = new OkHttpClient();
 
-        public void sincronitza() throws Exception {
-            Request request = new Request.Builder()
-                    //.url("http://publicobject.com/helloworld.txt")
-                    .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident=43900018&psw=lstp2012&tab=registrar_se") // login
-                    .build();
+    public void sincronitza() throws Exception {
+        Request request = new Request.Builder()
+                .url("https://api.github.com/gists/c2a7c39532239ff261be")
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=43900018&tab=visuFeno")
+                .build();
 
-            client.newCall(request).enqueue(new Callback() {
-                @Override public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
-                @Override public void onResponse(Call call, Response response) throws IOException {
-                    try (ResponseBody responseBody = response.body()) {
-                        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
+                                                Log.i("CLIENT", getString(R.string.error_connexio));
+                                            }
 
-                        Headers responseHeaders = response.headers();
-                        for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                            System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                        }
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
 
-                        Log.i("response",responseBody.string());
-                    }
-                }
-            });
-        }
+                                                Log.i("RESPONSE", response.toString());
+                                                String resposta = response.body().string().trim();
+                                                Log.i("CONTENT", resposta);
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(resposta);
+                                                    Log.i("length", String.valueOf(jsonArray.length()));
+
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        JSONArray JSONobservacio=jsonArray.getJSONArray(i);
+                                                        for(int j=0;j<7;j++) {
+                                                            Log.i("Dada",JSONobservacio.getString(j));
+                                                        }
+                                                    }
+
+                                                } catch (Exception e) {
+                                                    Log.i("error", "error");
+                                                }
+
+                                                if (response.isSuccessful()) {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
 
 
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
+
+                                                    /*if (response.body().string() != null) {
+                                                        try {
+                                                            JSONObject jsonObj = new JSONObject(response.body().string() );
+
+                                                            // Getting JSON Array node
+                                                            JSONArray contacts = jsonObj.getJSONArray("contacts");
+
+                                                            // looping through All Contacts
+                                                            for (int i = 0; i < contacts.length(); i++) {
+                                                                JSONObject c = contacts.getJSONObject(i);
+
+                                                                String id = c.getString("id");
+                                                                String name = c.getString("name");
+                                                                String email = c.getString("email");
+                                                                String address = c.getString("address");
+                                                                String gender = c.getString("gender");
+
+                                                                // Phone node is JSON Object
+                                                                JSONObject phone = c.getJSONObject("phone");
+                                                                String mobile = phone.getString("mobile");
+                                                                String home = phone.getString("home");
+                                                                String office = phone.getString("office");
+
+                                                                // tmp hash map for single contact
+                                                                HashMap<String, String> contact = new HashMap<>();
+
+                                                                // adding each child node to HashMap key => value
+                                                                contact.put("id", id);
+                                                                contact.put("name", name);
+                                                                contact.put("email", email);
+                                                                contact.put("mobile", mobile);
+
+                                                                // adding contact to contact list
+                                                                //contactList.add(contact);
+                                                            }
+                                                        } catch (final JSONException e) {
+                                                            Log.e(TAG, "Json parsing error: " + e.getMessage());
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    *//*Toast.makeText(getApplicationContext(),
+                                                                            "Json parsing error: " + e.getMessage(),
+                                                                            Toast.LENGTH_LONG)
+                                                                            .show();*//*
+                                                                }
+                                                            });
+
+                                                        }
+                                                    } else {
+                                                        Log.e(TAG, "Couldn't get json from server.");
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+*//*                                                                Toast.makeText(getApplicationContext(),
+                                                                        "Couldn't get json from server. Check LogCat for possible errors!",
+                                                                        Toast.LENGTH_LONG)
+                                                                        .show();*//*
+                                                            }
+                                                        });
+
+                                                    }*/
+
+
+                                                } else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.error_servidor));
+                                                }
+                                            }
+                                        }
+        );
+    }
 
 
     //
@@ -868,7 +972,7 @@ public class Captura extends Fragment {
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
-        Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha desat l'observació",Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha desat l'observació", Snackbar.LENGTH_LONG).show();
     }
 
     //
