@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:id="@+id/linearMain">
 
-    <android.support.v7.widget.Toolbar
+<!--    <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -25,7 +25,7 @@
         app:titleTextColor="#ffffff"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        tools:layout_constraintTop_creator="1" />-->
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

@@ -13,6 +13,17 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="4dp"
+            android:background="@color/edumet"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Observacions"
+            app:titleTextColor="@color/blanc"/>
+
+<!--        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -23,7 +34,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name"
             app:titleTextColor="#ffffff"
-            tools:layout_constraintTop_creator="1" />
+            tools:layout_constraintTop_creator="1" />-->
 
         <fragment
             android:id="@+id/map"
