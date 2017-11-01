@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Observacions_fetes extends Fragment {
+public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
 

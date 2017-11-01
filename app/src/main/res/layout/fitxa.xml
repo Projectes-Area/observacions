@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@mipmap/ic_map_edumet"
+                android:src="@mipmap/ic_location_edumet"
                 tools:layout_editor_absoluteX="270dp"
                 tools:layout_editor_absoluteY="461dp" />
         </LinearLayout>

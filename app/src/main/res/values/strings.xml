@@ -13,4 +13,5 @@
     <string name="error_servidor">No s\'ha pogut enviar l\'observació al servidor</string>
     <string name="descriu">Descriu aquí les teves observacions</string>
     <string name="no_location_detected">Sense dades de localització</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

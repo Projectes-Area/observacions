@@ -1,21 +1,17 @@
 package com.edumet.observacions;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-
-import com.google.android.gms.maps.MapFragment;
 
 public class MainActivity extends FragmentActivity {
+
+    public static final String EXTRA_MESSAGE = "com.edumet.observacions.MESSAGE";
+    public static final String EXTRA_LATITUD = "com.edumet.observacions.LATITUD";
+    public static final String EXTRA_LONGITUD = "com.edumet.observacions.LONGITUD";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +42,7 @@ public class MainActivity extends FragmentActivity {
         }
 
     public void pendents() {
-        Observacions_fetes newFragment = new Observacions_fetes();
+        ObservacionsFetes newFragment = new ObservacionsFetes();
         Bundle args = new Bundle();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);

@@ -57,8 +57,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="89dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             android:layout_marginTop="4dp"
             android:ems="10"
             android:enabled="true"
@@ -66,8 +66,10 @@
             android:inputType="textMultiLine"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/spinner"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
         <ProgressBar
@@ -152,7 +154,7 @@
                 android:id="@+id/btnMapa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_map_white" />
+                android:src="@mipmap/ic_location_white" />
         </LinearLayout>
 
         <ImageView
@@ -177,6 +179,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtObservacions" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:src="@mipmap/ic_bookmark_edumet"
+            app:layout_constraintEnd_toStartOf="@+id/txtObservacions"
+            app:layout_constraintTop_toTopOf="@+id/txtObservacions" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

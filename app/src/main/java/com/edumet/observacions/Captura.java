@@ -423,7 +423,7 @@ public class Captura extends Fragment {
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);
-            Mapa.setImageResource(R.mipmap.ic_map_edumet);
+            Mapa.setImageResource(R.mipmap.ic_location_edumet);
             Mapa.setEnabled(true);
         }
     }
@@ -489,16 +489,6 @@ public class Captura extends Fragment {
             } else {
                 Log.i("onRequestPermResult", "Show Snackbar");
                 // Permission denied.
-
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
                 showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
                             @Override
@@ -523,13 +513,19 @@ public class Captura extends Fragment {
     //
 
     public void mapa() {
-        String laUri = "geo:" + String.valueOf(mCurrentLocation.getLatitude()) + "," + valueOf(mCurrentLocation.getLongitude() + "?z=15");
+/*        String laUri = "geo:" + String.valueOf(mCurrentLocation.getLatitude()) + "," + valueOf(mCurrentLocation.getLongitude() + "?z=15");
         Uri gmmIntentUri = Uri.parse(laUri);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(mapIntent);
-        }
+        }*/
+        Intent intent = new Intent(getActivity(), MapsActivity.class);
+        String message = " ";
+        intent.putExtra(MainActivity.EXTRA_MESSAGE, message);
+        intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
+        intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(mCurrentLocation.getLongitude()));
+        startActivity(intent);
     }
 
     //
