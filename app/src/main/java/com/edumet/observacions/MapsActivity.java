@@ -54,6 +54,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         LatLng observacio = new LatLng(latitud,longitud);
         mMap.addMarker(new MarkerOptions().position(observacio).title("Observació"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(observacio));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));
     }
 }
