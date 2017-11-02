@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.ThemedSpinnerAdapter;
@@ -64,7 +65,7 @@ public class ObservacionsFetes extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON,
+                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
@@ -103,7 +104,7 @@ public class ObservacionsFetes extends Fragment {
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
             itemFenomens.add(itemFenomen);
             String itemPath_icon = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON));
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
             itemPath_icons.add(itemPath_icon);
         }
         cursor.close();
@@ -257,7 +258,6 @@ public class ObservacionsFetes extends Fragment {
 
         client.newCall(request).enqueue(new Callback() {
 
-
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -307,12 +307,12 @@ public class ObservacionsFetes extends Fragment {
                                                         numFenomen[i] = JSONobservacio.getString(7);
                                                         descripcio[i] = JSONobservacio.getString(8);
                                                         nom_remot[i] = JSONobservacio.getString(9);
-                                                        dataStamp[i] = JSONobservacio.getString(10);
+                                                        dataStamp[i] = JSONobservacio.getString(10).replaceAll("[- :]","");;
 
                                                         Log.i("NOM_REMOT", nom_remot[i]);
 
                                                         try {
-                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], nom_remot[i]);
+                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], dataStamp[i]);
                                                         }
                                                         catch (Exception e) {
                                                         }
@@ -362,7 +362,7 @@ public class ObservacionsFetes extends Fragment {
                                                 }
                                                 Log.i("Download URL", downloadUrl);
 
-                                                File storageDir = getActivity().getFilesDir();
+                                                File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                                                 File miniatura = File.createTempFile(nomFitxer, ".jpg", storageDir);
                                                 try {
                                                     FileOutputStream out = new FileOutputStream(miniatura);
@@ -400,8 +400,8 @@ public class ObservacionsFetes extends Fragment {
             values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, nous_paths[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, nous_paths[i]);
+/*            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, nous_paths[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, nous_paths[i]);*/
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
 

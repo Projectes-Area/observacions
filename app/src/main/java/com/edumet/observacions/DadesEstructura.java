@@ -17,8 +17,8 @@ public final class DadesEstructura {
         public static final String COLUMN_NAME_FENOMEN = "fenomen";
         public static final String COLUMN_NAME_DESCRIPCIO = "descripcio";
         public static final String COLUMN_NAME_PATH = "path";
-        public static final String COLUMN_NAME_PATH_ICON = "path_icon";
-        public static final String COLUMN_NAME_PATH_VISTA = "path_vista";
+/*        public static final String COLUMN_NAME_PATH_ICON = "path_icon";
+        public static final String COLUMN_NAME_PATH_VISTA = "path_vista";*/
         public static final String COLUMN_NAME_PATH_ENVIA = "path_envia";
         public static final String COLUMN_NAME_ENVIAT = "enviat";
     }

@@ -65,7 +65,7 @@ public class Fitxa extends Fragment {
     private String laDescripcio;
     private String elPath;
     private String elPath_Envia;
-    private String elPath_Vista;
+    //private String elPath_Vista;
 
     private SQLiteDatabase db;
 
@@ -119,7 +119,7 @@ public class Fitxa extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA,
+                //DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
@@ -150,7 +150,7 @@ public class Fitxa extends Fragment {
                 laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
                 elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-                elPath_Vista = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA));
+                //elPath_Vista = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA));
             }
         }
         cursor.close();
@@ -175,7 +175,7 @@ public class Fitxa extends Fragment {
 
         fenomen.setText(nomFenomen(Integer.valueOf(elFenomen)));
         descripcio.setText(laDescripcio);
-        imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Vista));
+        imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
     }
 
     //

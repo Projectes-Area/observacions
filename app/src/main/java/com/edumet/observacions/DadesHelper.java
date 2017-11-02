@@ -20,8 +20,8 @@ public class DadesHelper extends SQLiteOpenHelper {
                     DadesEstructura.Parametres.COLUMN_NAME_FENOMEN + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT," +
-                    DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON+ " TEXT," +
-                    DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA + " TEXT," +
+/*                    DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON+ " TEXT," +
+                    DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA + " TEXT," +*/
                     DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " TEXT)";
 

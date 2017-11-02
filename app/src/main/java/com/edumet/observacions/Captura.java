@@ -119,8 +119,8 @@ public class Captura extends Fragment {
     private Button Sincronitza;
 
     private String timeStamp;
-    private String pathIcon;
-    private String pathVista;
+    //private String pathIcon;
+    //private String pathVista;
     private String pathEnvia;
     private String mCurrentPhotoPath;
     private String minPhotoPath;
@@ -598,15 +598,15 @@ public class Captura extends Fragment {
     }
 
     private void fesMiniatures() {
-        fesMiniatura(midaIcon, angle_foto); // icona
-        pathIcon = outputMiniatura.getAbsolutePath();
-        fesMiniatura(midaVista, angle_foto); // vista
-        pathVista = outputMiniatura.getAbsolutePath();
+        //fesMiniatura(midaIcon, angle_foto); // icona
+        //pathIcon = outputMiniatura.getAbsolutePath();
+        //((fesMiniatura(midaVista, angle_foto); // vista
+        //pathVista = outputMiniatura.getAbsolutePath();
         fesMiniatura(midaEnvia, angle_foto); // envio
         pathEnvia = outputMiniatura.getAbsolutePath();
         Log.i("mCurrentPhotoPath", mCurrentPhotoPath);
-        Log.i("pathIcon", pathIcon);
-        Log.i("pathVista", pathVista);
+        //Log.i("pathIcon", pathIcon);
+        //Log.i("pathVista", pathVista);
         Log.i("pathEnvia", pathEnvia);
     }
 
@@ -803,8 +803,8 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, pathIcon);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, pathVista);
+        //values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, pathIcon);
+        //values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, pathVista);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 
