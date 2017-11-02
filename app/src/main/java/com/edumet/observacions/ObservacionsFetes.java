@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -123,8 +121,13 @@ public class ObservacionsFetes extends Fragment {
 
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    ((MainActivity) getActivity()).fitxa(parametreID);
+                    //((MainActivity) getActivity()).fitxa(parametreID);
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getActivity(), FitxaMapa.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
+                    intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(41.f));
+                            intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(2.f));
+                    startActivity(intent);
                 }
             });
             final ImageView img = new ImageView(getContext());
