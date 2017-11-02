@@ -55,9 +55,9 @@ public class Login extends Fragment {
 
     }
 
-    //
-    // SINCRONITZA
-    //
+//
+// SINCRONITZA
+//
 
     final OkHttpClient client = new OkHttpClient();
 
@@ -65,8 +65,7 @@ public class Login extends Fragment {
         String cadenaRequest="https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident="+Usuari.getText().toString()+"&psw="+Contrasenya.getText().toString()+"&tab=registrar_se";
         Log.i("post",cadenaRequest);
         Request request = new Request.Builder()
-                //.url("http://publicobject.com/helloworld.txt")
-                .url(cadenaRequest) // login
+                .url(cadenaRequest)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -106,7 +105,7 @@ public class Login extends Fragment {
                         public void run() {
                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
                             //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
-                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                            mProgressBar.setVisibility(ProgressBar.GONE);
                         }
                     });
                     Log.i("CLIENT", getString(R.string.error_servidor));

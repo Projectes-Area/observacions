@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,24 +14,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
+
+    private ProgressBar mProgressBar;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View v=inflater.inflate(R.layout.observacions_fetes, container, false);
+
+        mProgressBar=(ProgressBar) v.findViewById(R.id.progressBarObservacions);
+
         mDbHelper = new DadesHelper(getContext());
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
@@ -175,6 +192,15 @@ public class ObservacionsFetes extends Fragment {
     }
 
     @Override
+    public void onViewCreated(View v, Bundle savedInstanceState) {
+        try {
+            sincronitza();
+        } catch (Exception e) {
+            Log.i("exception", "error");
+        }
+    }
+
+    @Override
     public void onDestroy() {
         mDbHelper.close();
         super.onDestroy();
@@ -200,9 +226,75 @@ public class ObservacionsFetes extends Fragment {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-/*    public static int pxToDp(int px)
-    {
-        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
-    }*/
-    
+    //
+    // SINCRONITZA
+    //
+
+    private final OkHttpClient client = new OkHttpClient();
+
+    public void sincronitza() throws Exception {
+        Request request = new Request.Builder()
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=43900018&tab=visuFeno")
+                .build();
+
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
+                                                Log.i("CLIENT", getString(R.string.error_connexio));
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+
+                                                Log.i("RESPONSE", response.toString());
+                                                String resposta = response.body().string().trim();
+                                                Log.i("CONTENT", resposta);
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(resposta);
+                                                    Log.i("length", String.valueOf(jsonArray.length()));
+
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        JSONArray JSONobservacio=jsonArray.getJSONArray(i);
+                                                        for(int j=0;j<7;j++) {
+                                                            Log.i("Dada",JSONobservacio.getString(j));
+                                                        }
+                                                    }
+
+                                                } catch (Exception e) {
+                                                    Log.i("error", "error");
+                                                }
+
+                                                if (response.isSuccessful()) {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+
+
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
+
+
+                                                } else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.error_servidor));
+                                                }
+                                            }
+                                        }
+        );
+    }
 }

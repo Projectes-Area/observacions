@@ -153,8 +153,6 @@ public class Captura extends Fragment {
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
-        Sincronitza = (Button) v.findViewById(R.id.btnSincronitza);
-
         mDbHelper = new DadesHelper(getContext());
 
         return v;
@@ -201,16 +199,6 @@ public class Captura extends Fragment {
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
-            }
-        });
-        Sincronitza.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                try {
-                    sincronitza();
-                } catch (Exception e) {
-                    Log.i("exception", "error");
-                }
-
             }
         });
 
@@ -789,142 +777,6 @@ public class Captura extends Fragment {
                                         }
         );
     }
-
-    //
-    // SINCRONITZA
-    //
-
-    private final OkHttpClient client = new OkHttpClient();
-
-    public void sincronitza() throws Exception {
-        Request request = new Request.Builder()
-                .url("https://api.github.com/gists/c2a7c39532239ff261be")
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=43900018&tab=visuFeno")
-                .build();
-
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                                Log.i("CLIENT", getString(R.string.error_connexio));
-                                            }
-
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-
-                                                Log.i("RESPONSE", response.toString());
-                                                String resposta = response.body().string().trim();
-                                                Log.i("CONTENT", resposta);
-                                                try {
-                                                    JSONArray jsonArray = new JSONArray(resposta);
-                                                    Log.i("length", String.valueOf(jsonArray.length()));
-
-                                                    for (int i = 0; i < jsonArray.length(); i++) {
-                                                        JSONArray JSONobservacio=jsonArray.getJSONArray(i);
-                                                        for(int j=0;j<7;j++) {
-                                                            Log.i("Dada",JSONobservacio.getString(j));
-                                                        }
-                                                    }
-
-                                                } catch (Exception e) {
-                                                    Log.i("error", "error");
-                                                }
-
-                                                if (response.isSuccessful()) {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-
-
-                                                        }
-                                                    });
-                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
-
-                                                    /*if (response.body().string() != null) {
-                                                        try {
-                                                            JSONObject jsonObj = new JSONObject(response.body().string() );
-
-                                                            // Getting JSON Array node
-                                                            JSONArray contacts = jsonObj.getJSONArray("contacts");
-
-                                                            // looping through All Contacts
-                                                            for (int i = 0; i < contacts.length(); i++) {
-                                                                JSONObject c = contacts.getJSONObject(i);
-
-                                                                String id = c.getString("id");
-                                                                String name = c.getString("name");
-                                                                String email = c.getString("email");
-                                                                String address = c.getString("address");
-                                                                String gender = c.getString("gender");
-
-                                                                // Phone node is JSON Object
-                                                                JSONObject phone = c.getJSONObject("phone");
-                                                                String mobile = phone.getString("mobile");
-                                                                String home = phone.getString("home");
-                                                                String office = phone.getString("office");
-
-                                                                // tmp hash map for single contact
-                                                                HashMap<String, String> contact = new HashMap<>();
-
-                                                                // adding each child node to HashMap key => value
-                                                                contact.put("id", id);
-                                                                contact.put("name", name);
-                                                                contact.put("email", email);
-                                                                contact.put("mobile", mobile);
-
-                                                                // adding contact to contact list
-                                                                //contactList.add(contact);
-                                                            }
-                                                        } catch (final JSONException e) {
-                                                            Log.e(TAG, "Json parsing error: " + e.getMessage());
-                                                            getActivity().runOnUiThread(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    *//*Toast.makeText(getApplicationContext(),
-                                                                            "Json parsing error: " + e.getMessage(),
-                                                                            Toast.LENGTH_LONG)
-                                                                            .show();*//*
-                                                                }
-                                                            });
-
-                                                        }
-                                                    } else {
-                                                        Log.e(TAG, "Couldn't get json from server.");
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-*//*                                                                Toast.makeText(getApplicationContext(),
-                                                                        "Couldn't get json from server. Check LogCat for possible errors!",
-                                                                        Toast.LENGTH_LONG)
-                                                                        .show();*//*
-                                                            }
-                                                        });
-
-                                                    }*/
-
-
-                                                } else {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                    Log.i("CLIENT", getString(R.string.error_servidor));
-                                                }
-                                            }
-                                        }
-        );
-    }
-
 
     //
     // DESA

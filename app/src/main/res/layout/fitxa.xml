@@ -14,18 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<!--        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:background="@color/edumet"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/app_name"
-            app:titleTextColor="#ffffff"
-            tools:layout_constraintTop_creator="1" />-->
 
         <TextView
             android:id="@+id/lblFenomen"
