@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -48,9 +50,9 @@ public class ObservacionsFetes extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View v=inflater.inflate(R.layout.observacions_fetes, container, false);
+        View v = inflater.inflate(R.layout.observacions_fetes, container, false);
 
-        mProgressBar=(ProgressBar) v.findViewById(R.id.progressBarObservacions);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -70,7 +72,7 @@ public class ObservacionsFetes extends Fragment {
         String selection = DadesEstructura.Parametres._ID + " > ?";
         String[] selectionArgs = {"0"};
         //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
-        String sortOrder ="dia DESC, hora DESC";
+        String sortOrder = "dia DESC, hora DESC";
 
         Cursor cursor = db.query(
                 DadesEstructura.Parametres.TABLE_NAME,    // The table to query
@@ -87,20 +89,20 @@ public class ObservacionsFetes extends Fragment {
         List itemHores = new ArrayList<>();
         List itemFenomens = new ArrayList<>();
         List itemPath_icons = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            String itemId=cursor.getString(
+        while (cursor.moveToNext()) {
+            String itemId = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
             itemIds.add(itemId);
-            String itemDia=cursor.getString(
+            String itemDia = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
             itemDies.add(itemDia);
-            String itemHora=cursor.getString(
+            String itemHora = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
             itemHores.add(itemHora);
-            String itemFenomen=cursor.getString(
+            String itemFenomen = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
             itemFenomens.add(itemFenomen);
-            String itemPath_icon=cursor.getString(
+            String itemPath_icon = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON));
             itemPath_icons.add(itemPath_icon);
         }
@@ -111,13 +113,12 @@ public class ObservacionsFetes extends Fragment {
 
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
-        for(int j=0;j<itemDies.size();j++)
-        {
+        for (int j = 0; j < itemDies.size(); j++) {
             final int index = j;
             LinearLayout ll = new LinearLayout(getContext());
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
-            final int parametreID=Integer.valueOf(itemIds.get(j).toString());
+            final int parametreID = Integer.valueOf(itemIds.get(j).toString());
 
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -125,8 +126,8 @@ public class ObservacionsFetes extends Fragment {
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                 }
             });
-            final ImageView img =new ImageView(getContext());
-            img.setId(j+1);
+            final ImageView img = new ImageView(getContext());
+            img.setId(j + 1);
             LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60), dpToPx(60));
             paramsIcona.setMargins(dpToPx(10), dpToPx(10), 0, dpToPx(10));
             img.setLayoutParams(paramsIcona);
@@ -176,7 +177,7 @@ public class ObservacionsFetes extends Fragment {
             llCheck.setVerticalGravity(Gravity.CENTER_VERTICAL);
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
-            ImageView chk=new ImageView(getContext());
+            ImageView chk = new ImageView(getContext());
             chk.setImageResource(R.mipmap.ic_check_off);
             chk.setLayoutParams(paramsChk);
             llCheck.addView(chk);
@@ -224,17 +225,28 @@ public class ObservacionsFetes extends Fragment {
                 return "Genèric";
         }
     }
-    
-    public static int dpToPx(int dp)
-    {
-        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
 
     //
     // SINCRONITZA
     //
 
     private final OkHttpClient client = new OkHttpClient();
+
+    private int numNovesObservacions;
+    private int numFotosBaixades;
+    private String nous_paths[];
+
+    private String fila[];
+    private String espai[];
+    private String dia[];
+    private String hora[];
+    private String latitud[];
+    private String longitud[];
+    private String usuari[];
+    private String numFenomen[];
+    private String descripcio[];
+    private String nom_remot[];
+    private String dataStamp[];
 
     public void sincronitza() throws Exception {
         Request request = new Request.Builder()
@@ -245,7 +257,6 @@ public class ObservacionsFetes extends Fragment {
 
         client.newCall(request).enqueue(new Callback() {
 
-            String fila,espai,dia,hora,latitud,longitud,usuari,numFenomen,descripcio,nom_remot,dataStamp;
 
                                             @Override
                                             public void onFailure(Call call, IOException e) {
@@ -266,26 +277,45 @@ public class ObservacionsFetes extends Fragment {
                                                 Log.i("CONTENT", resposta);
                                                 try {
                                                     JSONArray jsonArray = new JSONArray(resposta);
-                                                    Log.i("length", String.valueOf(jsonArray.length()));
+                                                    numNovesObservacions=jsonArray.length();
+                                                    numFotosBaixades=0;
+                                                    nous_paths=new String[numNovesObservacions];
+                                                    Log.i("length", String.valueOf(numNovesObservacions));
+
+                                                    fila=new String[numNovesObservacions];
+                                                    espai=new String[numNovesObservacions];
+                                                    dia=new String[numNovesObservacions];
+                                                    hora=new String[numNovesObservacions];
+                                                    latitud=new String[numNovesObservacions];
+                                                    longitud=new String[numNovesObservacions];
+                                                    usuari=new String[numNovesObservacions];
+                                                    numFenomen=new String[numNovesObservacions];
+                                                    descripcio=new String[numNovesObservacions];
+                                                    nom_remot=new String[numNovesObservacions];
+                                                    dataStamp=new String[numNovesObservacions];
 
                                                     for (int i = 0; i < jsonArray.length(); i++) {
-                                                        JSONArray JSONobservacio=jsonArray.getJSONArray(i);
+                                                        JSONArray JSONobservacio = jsonArray.getJSONArray(i);
 
-                                                        fila=JSONobservacio.getString(0);
-                                                        espai=JSONobservacio.getString(1);
-                                                        dia=JSONobservacio.getString(2);
-                                                        hora=JSONobservacio.getString(3);
-                                                        latitud=JSONobservacio.getString(4);
-                                                        longitud=JSONobservacio.getString(5);
-                                                        usuari=JSONobservacio.getString(6);
-                                                        numFenomen=JSONobservacio.getString(7);
-                                                        descripcio=JSONobservacio.getString(8);
-                                                        nom_remot=JSONobservacio.getString(9);
-                                                        dataStamp=JSONobservacio.getString(10);
+                                                        fila[i] = JSONobservacio.getString(0);
+                                                        espai[i] = JSONobservacio.getString(1);
+                                                        dia[i] = JSONobservacio.getString(2);
+                                                        hora[i] = JSONobservacio.getString(3);
+                                                        latitud[i] = JSONobservacio.getString(4);
+                                                        longitud[i] = JSONobservacio.getString(5);
+                                                        usuari[i] = JSONobservacio.getString(6);
+                                                        numFenomen[i] = JSONobservacio.getString(7);
+                                                        descripcio[i] = JSONobservacio.getString(8);
+                                                        nom_remot[i] = JSONobservacio.getString(9);
+                                                        dataStamp[i] = JSONobservacio.getString(10);
 
-                                                        Log.i("NOM_REMOT",nom_remot);
+                                                        Log.i("NOM_REMOT", nom_remot[i]);
 
-                                                        insertaObservacio(fila,espai,dia,hora,latitud,longitud,usuari,numFenomen,descripcio,nom_remot,dataStamp);
+                                                        try {
+                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], nom_remot[i]);
+                                                        }
+                                                        catch (Exception e) {
+                                                        }
                                                     }
 
                                                 } catch (Exception e) {
@@ -318,34 +348,75 @@ public class ObservacionsFetes extends Fragment {
         );
     }
 
-    public void insertaObservacio(String fila,String espai, String dia,String hora,String latitud,String longitud,String usuari,String numFenomen,String descripcio,String nom_remot,String dataStamp)    {
-
-try {
-    downloadFileAsync("https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot, nom_remot);
-}
-catch (Exception e) {
-}
-}
-
-    public void downloadFileAsync(final String downloadUrl, final String nomFitxer) throws Exception {
+    public void downloadFileAsync(final int numNovaObservacio,final String downloadUrl, final String nomFitxer) throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(downloadUrl).build();
         client.newCall(request).enqueue(new Callback() {
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+                                            public void onFailure(Call call, IOException e) {
+                                                e.printStackTrace();
+                                            }
 
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Failed to download file: " + response);
-                }
-                Log.i("BAIXADA FITXER",downloadUrl);
-                /*FileOutputStream fos = new FileOutputStream(nomFitxer);
-                fos.write(response.body().bytes());
-                fos.close();*/
-            }
-        });
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                if (!response.isSuccessful()) {
+                                                    throw new IOException("Failed to download file: " + response);
+                                                }
+                                                Log.i("Download URL", downloadUrl);
+
+                                                File storageDir = getActivity().getFilesDir();
+                                                File miniatura = File.createTempFile(nomFitxer, ".jpg", storageDir);
+                                                try {
+                                                    FileOutputStream out = new FileOutputStream(miniatura);
+                                                    out.write(response.body().bytes());
+                                                    out.flush();
+                                                    out.close();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                nous_paths[numNovaObservacio]=miniatura.getAbsolutePath();
+                                                Log.i("BAIXADA FITXER", nous_paths[numNovaObservacio]);
+                                                numFotosBaixades++;
+                                                if (numFotosBaixades==numNovesObservacions) {
+                                                    Log.i("Baixades","Tot baixat");
+                                                    inclouNousRegistres();
+                                                }
+                                            }
+                                        }
+
+        );
     }
 
+    public void inclouNousRegistres() {
+        db = mDbHelper.getWritableDatabase();
 
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+
+        for(int i=0;i<numNovesObservacions;i++) {
+
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, latitud[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, longitud[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, nous_paths[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, nous_paths[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
+
+            // Insert the new row, returning the primary key value of the new row
+            long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
+            String strLong = Long.toString(newRowId);
+            Log.i("SQL", strLong);
+        }
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han baixat les teves observacions", Snackbar.LENGTH_LONG).show();
+    }
+
+//
+// GENERAL
+//
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 }
