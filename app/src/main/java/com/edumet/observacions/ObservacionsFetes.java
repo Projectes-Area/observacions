@@ -89,7 +89,7 @@ public class ObservacionsFetes extends Fragment {
         List itemDies = new ArrayList<>();
         List itemHores = new ArrayList<>();
         List itemFenomens = new ArrayList<>();
-        List itemPath_icons = new ArrayList<>();
+        List itemPath_Envias = new ArrayList<>();
         while (cursor.moveToNext()) {
             String itemId = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
@@ -105,7 +105,7 @@ public class ObservacionsFetes extends Fragment {
             itemFenomens.add(itemFenomen);
             String itemPath_icon = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-            itemPath_icons.add(itemPath_icon);
+            itemPath_Envias.add(itemPath_icon);
         }
         cursor.close();
 
@@ -132,7 +132,7 @@ public class ObservacionsFetes extends Fragment {
             LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60), dpToPx(60));
             paramsIcona.setMargins(dpToPx(10), dpToPx(10), 0, dpToPx(10));
             img.setLayoutParams(paramsIcona);
-            img.setImageBitmap(BitmapFactory.decodeFile(itemPath_icons.get(j).toString()));
+            img.setImageBitmap(BitmapFactory.decodeFile(itemPath_Envias.get(j).toString()));
 
             ll.addView(img);
 
@@ -373,7 +373,7 @@ public class ObservacionsFetes extends Fragment {
                                                     e.printStackTrace();
                                                 }
                                                 nous_paths[numNovaObservacio]=miniatura.getAbsolutePath();
-                                                Log.i("BAIXADA FITXER", nous_paths[numNovaObservacio]);
+                                                Log.i("Baixada fitxer", nous_paths[numNovaObservacio]);
                                                 numFotosBaixades++;
                                                 if (numFotosBaixades==numNovesObservacions) {
                                                     Log.i("Baixades","Tot baixat");
@@ -400,8 +400,6 @@ public class ObservacionsFetes extends Fragment {
             values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
-/*            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, nous_paths[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, nous_paths[i]);*/
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
 

@@ -41,7 +41,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
-import static java.lang.String.valueOf;
 
 public class Fitxa extends Fragment {
 
@@ -65,7 +64,6 @@ public class Fitxa extends Fragment {
     private String laDescripcio;
     private String elPath;
     private String elPath_Envia;
-    //private String elPath_Vista;
 
     private SQLiteDatabase db;
 
@@ -119,7 +117,6 @@ public class Fitxa extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                //DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
@@ -150,7 +147,6 @@ public class Fitxa extends Fragment {
                 laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
                 elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-                //elPath_Vista = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA));
             }
         }
         cursor.close();
@@ -216,10 +212,10 @@ public class Fitxa extends Fragment {
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
-        String dia = sdf.format(Calendar.getInstance().getTime());
-        String hora = shf.format(Calendar.getInstance().getTime());
+/*        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");*/
+/*        String dia = sdf.format(Calendar.getInstance().getTime());
+        String hora = shf.format(Calendar.getInstance().getTime());*/
 
         final OkHttpClient client = new OkHttpClient();
 

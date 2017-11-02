@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("ACT","ActivityResult");
             super.onActivityResult(requestCode, resultCode, data);
         Captura targetFragment = new Captura();
-        //Bundle args = new Bundle();
+        Bundle args = new Bundle();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         targetFragment.onActivityResult(requestCode, resultCode, data);
         transaction.commit();
@@ -72,21 +72,4 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-/*    public void fragment_mapa() {
-        MapFragment newFragment = new MapFragment();
-        Bundle args = new Bundle();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container_current,newFragment);
-        //transaction.replace(R.id.fragment_container, new MapFragment());
-        //args.putInt("numID",ID);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_container, new MapFragment())
-                .commit();
-
-        newFragment.setArguments(args);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }*/
    }

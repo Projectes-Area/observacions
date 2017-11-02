@@ -59,7 +59,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -116,20 +115,13 @@ public class Captura extends Fragment {
     private ProgressBar mProgressBar;
     private Spinner spinner;
 
-    private Button Sincronitza;
-
     private String timeStamp;
-    //private String pathIcon;
-    //private String pathVista;
     private String pathEnvia;
     private String mCurrentPhotoPath;
-    private String minPhotoPath;
     static private boolean mRequestingLocationUpdates;
     private File output = null;
     private File outputMiniatura = null;
     private int midaEnvia = 800;
-    private int midaVista = 200;
-    private int midaIcon = 60;
     private Bitmap bitmap;
     private Bitmap bitmapTemp;
     private int num_fenomen = 0;
@@ -215,7 +207,6 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -287,7 +278,7 @@ public class Captura extends Fragment {
     public void onPause() {
         super.onPause();
         stopLocationUpdates();
-        Log.i("ONPAUSE", "OK");
+        Log.i("ONPAUSE", "Ok");
     }
 
     @Override
@@ -345,7 +336,8 @@ public class Captura extends Fragment {
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
                     angle_foto = 0;
-                    setPic();
+                    setPic(midaEnvia,midaEnvia);
+                    imatge.setImageBitmap(bitmap);
                     galleryAddPic();
                     enableBotons();
                     Log.i("onActivityResult", "Foto");
@@ -509,7 +501,6 @@ public class Captura extends Fragment {
             startActivity(mapIntent);
         }*/
         Intent intent = new Intent(getActivity(), MapsActivity.class);
-        String message = " ";
         intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
         intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
         intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(mCurrentLocation.getLongitude()));
@@ -568,26 +559,18 @@ public class Captura extends Fragment {
         return image;
     }
 
-    private File createMiniatura(int x) throws IOException {
-        String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
-        File storageDir = getActivity().getFilesDir();
-        File miniatura = File.createTempFile(minTimeStamp, ".jpg", storageDir);
-        minPhotoPath = miniatura.getAbsolutePath();
-        return miniatura;
-    }
-
-    private void fesMiniatura(int x, int angle) {
-        setPicTemp(x, x);
+    private void fesMiniatura(int x) {
         try {
-            outputMiniatura = createMiniatura(x);
+            String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
+            File storageDir = getActivity().getFilesDir();
+            outputMiniatura = File.createTempFile(minTimeStamp, ".jpg", storageDir);
         } catch (IOException ex) {
             Toast.makeText(super.getContext(), R.string.fitxer_error, Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
         try {
             FileOutputStream out = new FileOutputStream(outputMiniatura);
-            bitmapTemp = rotateViaMatrix(bitmapTemp, angle);
-            bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -595,19 +578,6 @@ public class Captura extends Fragment {
             Toast.makeText(super.getContext(), R.string.fitxer_error, Toast.LENGTH_LONG).show();
             getActivity().finish();
         }
-    }
-
-    private void fesMiniatures() {
-        //fesMiniatura(midaIcon, angle_foto); // icona
-        //pathIcon = outputMiniatura.getAbsolutePath();
-        //((fesMiniatura(midaVista, angle_foto); // vista
-        //pathVista = outputMiniatura.getAbsolutePath();
-        fesMiniatura(midaEnvia, angle_foto); // envio
-        pathEnvia = outputMiniatura.getAbsolutePath();
-        Log.i("mCurrentPhotoPath", mCurrentPhotoPath);
-        //Log.i("pathIcon", pathIcon);
-        //Log.i("pathVista", pathVista);
-        Log.i("pathEnvia", pathEnvia);
     }
 
     private void galleryAddPic() {
@@ -618,9 +588,7 @@ public class Captura extends Fragment {
         getActivity().sendBroadcast(mediaScanIntent);
     }
 
-    private void setPic() {
-        int targetW = imatge.getWidth();
-        int targetH = imatge.getHeight();
+    private void setPic(int targetW, int targetH) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
@@ -630,19 +598,6 @@ public class Captura extends Fragment {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        imatge.setImageBitmap(bitmap);
-    }
-
-    private void setPicTemp(int targetW, int targetH) {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bitmapTemp = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
     static private Bitmap rotateViaMatrix(Bitmap original, int angle) {
@@ -678,9 +633,7 @@ public class Captura extends Fragment {
 
     private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
-        setPicTemp(midaEnvia, midaEnvia);
-        bitmapTemp = rotateViaMatrix(bitmapTemp, angle_foto);
-        bitmapTemp.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
 /*        byte[] fotografia;
@@ -784,7 +737,9 @@ public class Captura extends Fragment {
 
     private void desa() {
 
-        fesMiniatures();
+        fesMiniatura(midaEnvia); // envio
+        pathEnvia = outputMiniatura.getAbsolutePath();
+        Log.i("pathEnvia", pathEnvia);
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -803,8 +758,6 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
-        //values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON, pathIcon);
-        //values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA, pathVista);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
 

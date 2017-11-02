@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by 40980055N on 18/10/17.
- */
-
 public class DadesHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
@@ -20,8 +16,6 @@ public class DadesHelper extends SQLiteOpenHelper {
                     DadesEstructura.Parametres.COLUMN_NAME_FENOMEN + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_PATH + " TEXT," +
-/*                    DadesEstructura.Parametres.COLUMN_NAME_PATH_ICON+ " TEXT," +
-                    DadesEstructura.Parametres.COLUMN_NAME_PATH_VISTA + " TEXT," +*/
                     DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " TEXT)";
 
