@@ -17,6 +17,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private double latitud;
     private double longitud;
+    private String etiqueta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +25,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        etiqueta = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
         longitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
 
@@ -48,12 +49,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-/*        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         LatLng observacio = new LatLng(latitud,longitud);
-        mMap.addMarker(new MarkerOptions().position(observacio).title("Observació"));
+        mMap.addMarker(new MarkerOptions().position(observacio).title(etiqueta));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));
     }
 }

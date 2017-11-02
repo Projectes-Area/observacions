@@ -1,5 +1,6 @@
 package com.edumet.observacions;
 
+import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,10 +22,12 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class ObservacionsFetes extends Fragment {
 
     private ProgressBar mProgressBar;
 
+    private SQLiteDatabase db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +54,7 @@ public class ObservacionsFetes extends Fragment {
 
         mDbHelper = new DadesHelper(getContext());
 
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -240,6 +244,9 @@ public class ObservacionsFetes extends Fragment {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
+
+            String fila,espai,dia,hora,latitud,longitud,usuari,numFenomen,descripcio,nom_remot,dataStamp;
+
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -263,9 +270,22 @@ public class ObservacionsFetes extends Fragment {
 
                                                     for (int i = 0; i < jsonArray.length(); i++) {
                                                         JSONArray JSONobservacio=jsonArray.getJSONArray(i);
-                                                        for(int j=0;j<7;j++) {
-                                                            Log.i("Dada",JSONobservacio.getString(j));
-                                                        }
+
+                                                        fila=JSONobservacio.getString(0);
+                                                        espai=JSONobservacio.getString(1);
+                                                        dia=JSONobservacio.getString(2);
+                                                        hora=JSONobservacio.getString(3);
+                                                        latitud=JSONobservacio.getString(4);
+                                                        longitud=JSONobservacio.getString(5);
+                                                        usuari=JSONobservacio.getString(6);
+                                                        numFenomen=JSONobservacio.getString(7);
+                                                        descripcio=JSONobservacio.getString(8);
+                                                        nom_remot=JSONobservacio.getString(9);
+                                                        dataStamp=JSONobservacio.getString(10);
+
+                                                        Log.i("NOM_REMOT",nom_remot);
+
+                                                        insertaObservacio(fila,espai,dia,hora,latitud,longitud,usuari,numFenomen,descripcio,nom_remot,dataStamp);
                                                     }
 
                                                 } catch (Exception e) {
@@ -297,4 +317,35 @@ public class ObservacionsFetes extends Fragment {
                                         }
         );
     }
+
+    public void insertaObservacio(String fila,String espai, String dia,String hora,String latitud,String longitud,String usuari,String numFenomen,String descripcio,String nom_remot,String dataStamp)    {
+
+try {
+    downloadFileAsync("https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot, nom_remot);
+}
+catch (Exception e) {
+}
+}
+
+    public void downloadFileAsync(final String downloadUrl, final String nomFitxer) throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(downloadUrl).build();
+        client.newCall(request).enqueue(new Callback() {
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Failed to download file: " + response);
+                }
+                Log.i("BAIXADA FITXER",downloadUrl);
+                /*FileOutputStream fos = new FileOutputStream(nomFitxer);
+                fos.write(response.body().bytes());
+                fos.close();*/
+            }
+        });
+    }
+
+
 }

@@ -317,18 +317,18 @@ public class Fitxa extends Fragment {
         Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
     }
 
-//
-// MAPA
-//
+    //
+    // MAPA
+    //
 
     public void mapa() {
-        String laUri="geo:"+String.valueOf(laLatitud)+","+ valueOf(laLongitud)+"?z=15";
-        Uri gmmIntentUri = Uri.parse(laUri);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(mapIntent);
-        }
+
+        Intent intent = new Intent(getActivity(), MapsActivity.class);
+        String message = " ";
+        intent.putExtra(MainActivity.EXTRA_MESSAGE, nomFenomen(Integer.valueOf(elFenomen)));
+        intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(laLatitud));
+        intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(laLongitud));
+        startActivity(intent);
     }
 
 //

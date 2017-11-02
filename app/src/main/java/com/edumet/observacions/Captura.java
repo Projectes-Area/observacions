@@ -510,7 +510,7 @@ public class Captura extends Fragment {
         }*/
         Intent intent = new Intent(getActivity(), MapsActivity.class);
         String message = " ";
-        intent.putExtra(MainActivity.EXTRA_MESSAGE, message);
+        intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
         intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
         intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(mCurrentLocation.getLongitude()));
         startActivity(intent);
