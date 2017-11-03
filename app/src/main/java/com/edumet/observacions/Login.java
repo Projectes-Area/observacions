@@ -75,24 +75,25 @@ public class Login extends Fragment {
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 Log.i("RESPONSE", response.toString());
-                Log.i("CONTENT", response.body().toString());
-                String resposta=response.body().string().trim();
-                Log.i("TRIMMED", resposta);
+
+                String resposta=response.body().string();
+                resposta=resposta.trim();
+                Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {
-                    if(resposta=="") {
+                    if(resposta.isEmpty()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Identificació incorrecta", Snackbar.LENGTH_LONG).show();
                                 //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
-                                ((MainActivity) getActivity()).captura();
+                                //((MainActivity) getActivity()).captura();
                             }
                         });
                     }
                     else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
+                                //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
                                 //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                 ((MainActivity) getActivity()).captura();

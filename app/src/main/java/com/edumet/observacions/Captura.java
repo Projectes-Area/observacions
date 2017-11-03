@@ -622,8 +622,8 @@ public class Captura extends Fragment {
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss",Locale.US);
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 
@@ -678,7 +678,7 @@ public class Captura extends Fragment {
                                             public void onResponse(Call call, Response response) throws IOException {
 
                                                 Log.i("RESPONSE", response.toString());
-                                                Log.i("CONTENT", response.body().string());
+                                                Log.i("CONTENT", response.body().toString());
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -715,8 +715,8 @@ public class Captura extends Fragment {
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss",Locale.US);
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 
