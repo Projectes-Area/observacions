@@ -135,7 +135,6 @@ public class Captura extends Fragment {
 
     String usuari;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.captura, container, false);
@@ -196,7 +195,7 @@ public class Captura extends Fragment {
                 ((MainActivity) getActivity()).pendents();
             }
         });
-        Mapa.setEnabled(false);
+        //Mapa.setEnabled(false);
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
@@ -512,15 +511,20 @@ public class Captura extends Fragment {
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(mapIntent);
         }*/
-        Intent intent = new Intent(getActivity(), MapsActivity.class);
-        intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
-        intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
-        startActivity(intent);
+        if (!mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = true;
+            startLocationUpdates();
+        }
+        if (mCurrentLocation!=null) {
+            Intent intent = new Intent(getActivity(), MapsActivity.class);
+            intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
+            intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
+            startActivity(intent);
+        }
     }
-
-    //
-    // FOTOGRAFIA
-    //
+        //
+        // FOTOGRAFIA
+        //
 
     private void fesFoto() {
         if (mCurrentLocation != null) {
@@ -639,7 +643,7 @@ public class Captura extends Fragment {
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
-            jsonParam.put("usuari",usuari);
+            jsonParam.put("usuari", usuari);
             jsonParam.put("dia", dia);
             jsonParam.put("hora", hora);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
