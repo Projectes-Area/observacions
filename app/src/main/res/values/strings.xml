@@ -13,5 +13,14 @@
     <string name="error_servidor">No s\'ha pogut enviar l\'observació al servidor</string>
     <string name="descriu">Descriu aquí les teves observacions</string>
     <string name="no_location_detected">Sense dades de localització</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Mapa</string>
+
+        <string-array name="nomFenomen">
+            <item>Genèric</item>
+            <item>Insectes-Papallona</item>
+            <item>Aus-Oreneta</item>
+            <item>Floració-Ametller</item>
+            <item>Floració-Cirerer</item>
+        </string-array>
+
 </resources>

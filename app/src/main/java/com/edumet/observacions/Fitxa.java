@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -25,10 +26,16 @@ public class Fitxa extends FragmentActivity implements OnMapReadyCallback {
         return parametreID;
     }
 
+
+    String[] nomFenomen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fitxa);
+
+        Resources res = getResources();
+        nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         Intent intent = getIntent();
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
@@ -55,23 +62,8 @@ public class Fitxa extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         LatLng observacio = new LatLng(latitud,longitud);
-        mMap.addMarker(new MarkerOptions().position(observacio).title(nomFenomen(numFenomen)));
+        mMap.addMarker(new MarkerOptions().position(observacio).title(nomFenomen[numFenomen]));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));
-    }
-
-    public String nomFenomen(int i) {
-        switch (i) {
-            case 2:
-                return "Oreneta";
-            case 3:
-                return "Ametller";
-            case 4:
-                return "Cirerer";
-            case 1:
-                return "Papallona";
-            default:
-                return "Genèric";
-        }
     }
 
 }

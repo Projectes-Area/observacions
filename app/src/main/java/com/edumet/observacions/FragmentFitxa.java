@@ -2,6 +2,7 @@ package com.edumet.observacions;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
@@ -68,12 +69,16 @@ public class FragmentFitxa extends Fragment {
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     Fitxa activity;
+    String[] nomFenomen;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
+
+
 
         mDbHelper = new DadesHelper(getContext());
         db = mDbHelper.getReadableDatabase();
@@ -112,6 +117,10 @@ public class FragmentFitxa extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
+
+        Resources res = getResources();
+        nomFenomen = res.getStringArray(R.array.nomFenomen);
+
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss");
 
@@ -174,7 +183,7 @@ public class FragmentFitxa extends Fragment {
         }
         cursor.close();
 
-        fenomen.setText(activity.nomFenomen(Integer.valueOf(elFenomen)));
+        fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
         data.setText(elDia+" "+laHora);
         descripcio.setText(laDescripcio);
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));

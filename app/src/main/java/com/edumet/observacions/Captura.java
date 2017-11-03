@@ -11,6 +11,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -122,12 +123,15 @@ public class Captura extends Fragment {
     private File outputMiniatura = null;
     private int midaEnvia = 800;
     private Bitmap bitmap;
-    private Bitmap bitmapTemp;
-    private int num_fenomen = 0;
+    private int num_fenomen = 1;
     private int angle_foto;
     private boolean jaLocalitzat = false;
 
     DadesHelper mDbHelper;
+
+    String[] nomFenomen;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -193,18 +197,20 @@ public class Captura extends Fragment {
             }
         });
 
+        Resources res = getResources();
+        nomFenomen = res.getStringArray(R.array.nomFenomen);
+
         List<String> categories = new ArrayList<String>();
-        categories.add("Oreneta");
-        categories.add("Ametller");
-        categories.add("Cirerer");
-        categories.add("Papallona");
+        for(int i=1;i<nomFenomen.length;i++) {
+            categories.add(nomFenomen[i]);
+        }
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                num_fenomen = position;
+                num_fenomen = position+1;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -609,27 +615,7 @@ public class Captura extends Fragment {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    private int getNumFenomen() {
-        int codi_fenomen = 1;
-        switch (num_fenomen) {
-            case 0:
-                codi_fenomen = 2; // Aus--Oreneta
-                break;
-            case 1:
-                codi_fenomen = 3; // Floracions--Ametller
-                break;
-            case 2:
-                codi_fenomen = 4; // Floracions--Cirerer
-                break;
-            case 3:
-                codi_fenomen = 1; // Insectes--Papallona
-                break;
-        }
-        Log.i("getNumFenomen", String.valueOf(codi_fenomen));
-        return codi_fenomen;
-    }
-
-    private void sendPost() {
+        private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
@@ -651,7 +637,7 @@ public class Captura extends Fragment {
             jsonParam.put("hora", hora);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
             jsonParam.put("lon", mCurrentLocation.getLongitude());
-            jsonParam.put("id_feno", getNumFenomen());
+            jsonParam.put("id_feno", num_fenomen);
             jsonParam.put("descripcio", observacio.getText());
             jsonParam.put("tab", "salvarFenoApp");
 
@@ -742,7 +728,7 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, getNumFenomen());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);

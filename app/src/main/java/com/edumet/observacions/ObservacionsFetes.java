@@ -47,6 +47,8 @@ public class ObservacionsFetes extends Fragment {
 
     private SQLiteDatabase db;
 
+    String[] nomFenomen;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,9 @@ public class ObservacionsFetes extends Fragment {
         mDbHelper = new DadesHelper(getContext());
 
         db = mDbHelper.getReadableDatabase();
+
+        Resources res = getResources();
+        nomFenomen=res.getStringArray(R.array.nomFenomen);
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -136,8 +141,6 @@ public class ObservacionsFetes extends Fragment {
 
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    //((MainActivity) getActivity()).fitxa(parametreID);
-                    //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), Fitxa.class);
                     intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
                     intent.putExtra(MainActivity.EXTRA_LONGITUD,parametreLON);
@@ -183,7 +186,7 @@ public class ObservacionsFetes extends Fragment {
             ll.addView(lblHora);
 
             TextView lblFenomen = new TextView(getContext());
-            lblFenomen.setText(nomFenomen(Integer.parseInt(itemFenomens.get(j).toString())));
+            lblFenomen.setText(nomFenomen[Integer.parseInt(itemFenomens.get(j).toString())]);
             lblFenomen.setLayoutParams(layoutParams);
             ll.addView(lblFenomen);
 
@@ -231,20 +234,6 @@ public class ObservacionsFetes extends Fragment {
         super.onDestroy();
     }
 
-    public String nomFenomen(int i) {
-        switch (i) {
-            case 2:
-                return "Oreneta";
-            case 3:
-                return "Ametller";
-            case 4:
-                return "Cirerer";
-            case 1:
-                return "Papallona";
-            default:
-                return "Genèric";
-        }
-    }
 
     //
     // SINCRONITZA
@@ -413,6 +402,7 @@ public class ObservacionsFetes extends Fragment {
 
         for(int i=0;i<numNovesObservacions;i++) {
 
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, id_edumet[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, latitud[i]);
