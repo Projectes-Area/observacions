@@ -2,7 +2,9 @@ package com.edumet.observacions;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -25,6 +27,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,8 +71,8 @@ public class FragmentFitxa extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
-        //numID = getArguments().getInt("numID");
 
         mDbHelper = new DadesHelper(getContext());
         db = mDbHelper.getReadableDatabase();
@@ -101,8 +106,31 @@ public class FragmentFitxa extends Fragment {
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
         mProgressBar=(ProgressBar) v.findViewById(R.id.progressBar);
 
+        return v;
+    }
+
+    @Override
+    public void onViewCreated(View v, Bundle savedInstanceState) {
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss");
+
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(elDia);
+            format = new SimpleDateFormat("HH:mm:ss");
+            Date time = format.parse(laHora);
+            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        FitxaMapa activity = (FitxaMapa) getActivity();
+        numID=activity.getID();
+        Log.i("numID",String.valueOf(numID));
+
+
         // Define a projection that specifies which columns from the database you will actually use after this query.
-       /* String[] projection = {
+        String[] projection = {
                 DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
@@ -114,7 +142,6 @@ public class FragmentFitxa extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
-
         // Filter results
         String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {String.valueOf(numID)};
@@ -143,29 +170,12 @@ public class FragmentFitxa extends Fragment {
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
             }
         }
-        cursor.close();*/
-
-        return v;
-    }
-
-    @Override
-    public void onViewCreated(View v, Bundle savedInstanceState) {
-/*        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss");
-
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = format.parse(elDia);
-            format = new SimpleDateFormat("HH:mm:ss");
-            Date time = format.parse(laHora);
-            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        cursor.close();
 
         fenomen.setText(nomFenomen(Integer.valueOf(elFenomen)));
+        data.setText(elDia+" "+laHora);
         descripcio.setText(laDescripcio);
-        imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));*/
+        imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
     }
 
     //

@@ -3,6 +3,7 @@ package com.edumet.observacions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,6 +19,12 @@ public class FitxaMapa extends FragmentActivity implements OnMapReadyCallback {
     private double latitud;
     private double longitud;
     private String etiqueta;
+    public int parametreID;
+    public int numFenomen;
+
+    public int getID() {
+        return parametreID;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +35,22 @@ public class FitxaMapa extends FragmentActivity implements OnMapReadyCallback {
         etiqueta = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
         longitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
+        numFenomen= Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_NUMFENOMEN));
+        parametreID=Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_ID));
+
+        Log.i("numID-Activity",String.valueOf(parametreID));
+
+        FragmentFitxa firstFragment = new FragmentFitxa();
+        // In case this activity was started with special instructions from an
+        // Intent, pass the Intent's extras to the fragment as arguments
+        //firstFragment.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_mapa_container, firstFragment).commit();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
-
 
     /**
      * Manipulates the map once available.
@@ -50,7 +66,23 @@ public class FitxaMapa extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         LatLng observacio = new LatLng(latitud,longitud);
-        mMap.addMarker(new MarkerOptions().position(observacio).title(etiqueta));
+        mMap.addMarker(new MarkerOptions().position(observacio).title(nomFenomen(numFenomen)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));
     }
+
+    public String nomFenomen(int i) {
+        switch (i) {
+            case 2:
+                return "Oreneta";
+            case 3:
+                return "Ametller";
+            case 4:
+                return "Cirerer";
+            case 1:
+                return "Papallona";
+            default:
+                return "Genèric";
+        }
+    }
+
 }

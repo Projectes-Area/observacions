@@ -62,6 +62,8 @@ public class ObservacionsFetes extends Fragment {
                 DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
+                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
+                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
                 DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
@@ -86,6 +88,8 @@ public class ObservacionsFetes extends Fragment {
         List itemIds = new ArrayList<>();
         List itemDies = new ArrayList<>();
         List itemHores = new ArrayList<>();
+        List itemLatituds = new ArrayList<>();
+        List itemLongituds = new ArrayList<>();
         List itemFenomens = new ArrayList<>();
         List itemPath_Envias = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -98,6 +102,12 @@ public class ObservacionsFetes extends Fragment {
             String itemHora = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
             itemHores.add(itemHora);
+            String itemLatitud = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
+            itemLatituds.add(itemLatitud);
+            String itemLongitud = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
+            itemLongituds.add(itemLongitud);
             String itemFenomen = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
             itemFenomens.add(itemFenomen);
@@ -117,7 +127,10 @@ public class ObservacionsFetes extends Fragment {
             LinearLayout ll = new LinearLayout(getContext());
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
-            final int parametreID = Integer.valueOf(itemIds.get(j).toString());
+            final String parametreID = itemIds.get(j).toString();
+            final String parametreLAT=itemLatituds.get(j).toString();
+            final String parametreLON=itemLongituds.get(j).toString();
+            final String numFenomen=itemFenomens.get(j).toString();
 
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -125,8 +138,10 @@ public class ObservacionsFetes extends Fragment {
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), FitxaMapa.class);
                     intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
-                    intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(41.f));
-                            intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(2.f));
+                    intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
+                    intent.putExtra(MainActivity.EXTRA_LONGITUD,parametreLON);
+                    intent.putExtra(MainActivity.EXTRA_NUMFENOMEN,numFenomen);
+                    intent.putExtra(MainActivity.EXTRA_ID, parametreID);
                     startActivity(intent);
                 }
             });

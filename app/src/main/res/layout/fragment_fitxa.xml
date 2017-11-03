@@ -10,15 +10,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="320dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btnEnvia"
+            android:id="@+id/btnEsborra"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@mipmap/ic_send_edumet" />
+            android:layout_marginRight="4dp"
+            android:src="@mipmap/ic_delete_edumet" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -31,10 +32,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                android:text="Oreneta"
-                android:textSize="24sp" />
+                android:text="Fenomen"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/lblData"
@@ -42,9 +43,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                tools:text="26/12/2018" />
+                android:textSize="12sp"
+                tools:text="Data i Hora" />
 
             <ImageView
                 android:id="@+id/imgFoto"
@@ -64,13 +66,20 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
                 tools:text="Descripció" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/btnEsborra"
+            android:id="@+id/btnEnvia"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@mipmap/ic_delete_edumet" />
+            android:layout_marginLeft="4dp"
+            android:src="@mipmap/ic_send_edumet" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -86,10 +95,5 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>
