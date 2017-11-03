@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +61,7 @@ public class ObservacionsFetes extends Fragment {
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
                 DadesEstructura.Parametres._ID,
+                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
                 DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
@@ -137,7 +139,6 @@ public class ObservacionsFetes extends Fragment {
                     //((MainActivity) getActivity()).fitxa(parametreID);
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getActivity(), Fitxa.class);
-                    intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
                     intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
                     intent.putExtra(MainActivity.EXTRA_LONGITUD,parametreLON);
                     intent.putExtra(MainActivity.EXTRA_NUMFENOMEN,numFenomen);
@@ -255,17 +256,14 @@ public class ObservacionsFetes extends Fragment {
     private int numFotosBaixades;
     private String nous_paths[];
 
-    private String fila[];
-    private String espai[];
+    private String id_edumet[];
     private String dia[];
     private String hora[];
     private String latitud[];
     private String longitud[];
-    private String usuari[];
     private String numFenomen[];
     private String descripcio[];
     private String nom_remot[];
-    private String dataStamp[];
 
     public void sincronitza() throws Exception {
         Request request = new Request.Builder()
@@ -300,37 +298,41 @@ public class ObservacionsFetes extends Fragment {
                                                     nous_paths=new String[numNovesObservacions];
                                                     Log.i("length", String.valueOf(numNovesObservacions));
 
-                                                    fila=new String[numNovesObservacions];
-                                                    espai=new String[numNovesObservacions];
+                                                    id_edumet=new String[numNovesObservacions];
                                                     dia=new String[numNovesObservacions];
                                                     hora=new String[numNovesObservacions];
                                                     latitud=new String[numNovesObservacions];
                                                     longitud=new String[numNovesObservacions];
-                                                    usuari=new String[numNovesObservacions];
                                                     numFenomen=new String[numNovesObservacions];
                                                     descripcio=new String[numNovesObservacions];
                                                     nom_remot=new String[numNovesObservacions];
-                                                    dataStamp=new String[numNovesObservacions];
 
                                                     for (int i = 0; i < jsonArray.length(); i++) {
                                                         JSONArray JSONobservacio = jsonArray.getJSONArray(i);
 
-                                                        fila[i] = JSONobservacio.getString(0);
-                                                        espai[i] = JSONobservacio.getString(1);
+                                                        id_edumet[i] = JSONobservacio.getString(0);
                                                         dia[i] = JSONobservacio.getString(2);
                                                         hora[i] = JSONobservacio.getString(3);
                                                         latitud[i] = JSONobservacio.getString(4);
                                                         longitud[i] = JSONobservacio.getString(5);
-                                                        usuari[i] = JSONobservacio.getString(6);
                                                         numFenomen[i] = JSONobservacio.getString(7);
                                                         descripcio[i] = JSONobservacio.getString(8);
                                                         nom_remot[i] = JSONobservacio.getString(9);
-                                                        dataStamp[i] = JSONobservacio.getString(10).replaceAll("[- :]","");;
 
                                                         Log.i("NOM_REMOT", nom_remot[i]);
 
+                                                        SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd");
+                                                        SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss");
+
+                                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                                                        SimpleDateFormat shf = new SimpleDateFormat("HHmmss");
+
+                                                        String diaString = sdf.format(formatDiaEdumet.parse(dia[i]));
+                                                        String horaString = shf.format(formatHoraEdumet.parse(hora[i]));
+                                                        String nomFitxer = diaString+horaString;
+                                                        Log.i("nomFitxer",nomFitxer);
                                                         try {
-                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], dataStamp[i]);
+                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], nomFitxer);
                                                         }
                                                         catch (Exception e) {
                                                         }

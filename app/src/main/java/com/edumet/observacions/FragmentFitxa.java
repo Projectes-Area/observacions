@@ -67,6 +67,8 @@ public class FragmentFitxa extends Fragment {
 
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
+    Fitxa activity;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,7 +88,7 @@ public class FragmentFitxa extends Fragment {
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mapa();
+     //           mapa();
             }
         });
         Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
@@ -123,7 +125,7 @@ public class FragmentFitxa extends Fragment {
             e.printStackTrace();
         }
 
-        Fitxa activity = (Fitxa) getActivity();
+        activity = (Fitxa) getActivity();
         numID=activity.getID();
         Log.i("numID",String.valueOf(numID));
 
@@ -131,6 +133,7 @@ public class FragmentFitxa extends Fragment {
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
                 DadesEstructura.Parametres._ID,
+                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
                 DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
@@ -171,7 +174,7 @@ public class FragmentFitxa extends Fragment {
         }
         cursor.close();
 
-        fenomen.setText(nomFenomen(Integer.valueOf(elFenomen)));
+        fenomen.setText(activity.nomFenomen(Integer.valueOf(elFenomen)));
         data.setText(elDia+" "+laHora);
         descripcio.setText(laDescripcio);
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
@@ -180,22 +183,6 @@ public class FragmentFitxa extends Fragment {
     //
     // ENVIA AL SERVIDOR EDUMET
     //
-
-    public String nomFenomen(int i) {
-        Log.i("numFenomen",String.valueOf(i));
-        switch (i) {
-            case 2:
-                return "Oreneta";
-            case 3:
-                return "Ametller";
-            case 4:
-                return "Cirerer";
-            case 1:
-                return "Papallona";
-            default:
-                return "Genèric";
-        }
-    }
 
     private void sendPost() {
 
@@ -214,11 +201,6 @@ public class FragmentFitxa extends Fragment {
         }
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
-
-/*        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss");*/
-/*        String dia = sdf.format(Calendar.getInstance().getTime());
-        String hora = shf.format(Calendar.getInstance().getTime());*/
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -314,20 +296,6 @@ public class FragmentFitxa extends Fragment {
         Esborra.setImageResource(R.mipmap.ic_delete_white);
 
         Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
-    }
-
-    //
-    // MAPA
-    //
-
-    public void mapa() {
-
-        Intent intent = new Intent(getActivity(), MapsActivity.class);
-        String message = " ";
-        intent.putExtra(MainActivity.EXTRA_MESSAGE, nomFenomen(Integer.valueOf(elFenomen)));
-        intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(laLatitud));
-        intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(laLongitud));
-        startActivity(intent);
     }
 
 //

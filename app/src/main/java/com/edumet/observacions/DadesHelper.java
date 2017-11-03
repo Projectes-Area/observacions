@@ -9,6 +9,7 @@ public class DadesHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DadesEstructura.Parametres.TABLE_NAME + " (" +
                     DadesEstructura.Parametres._ID + " INTEGER PRIMARY KEY," +
+                    DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_DIA + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_HORA + " TEXT," +
                     DadesEstructura.Parametres.COLUMN_NAME_LATITUD + " TEXT," +

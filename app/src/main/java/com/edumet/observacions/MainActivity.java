@@ -9,7 +9,6 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXTRA_MESSAGE = "com.edumet.observacions.MESSAGE";
     public static final String EXTRA_LATITUD = "com.edumet.observacions.LATITUD";
     public static final String EXTRA_LONGITUD = "com.edumet.observacions.LONGITUD";
     public static final String EXTRA_ID = "com.edumet.observacions.ID";

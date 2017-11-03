@@ -500,7 +500,6 @@ public class Captura extends Fragment {
             startActivity(mapIntent);
         }*/
         Intent intent = new Intent(getActivity(), MapsActivity.class);
-        intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
         intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
         intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(mCurrentLocation.getLongitude()));
         startActivity(intent);
@@ -635,18 +634,6 @@ public class Captura extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
-/*        byte[] fotografia;
-        fotografia = new byte[(int) output.length()];
-        try {
-            InputStream is = new FileInputStream(output);
-            is.read(fotografia);
-            is.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -750,6 +737,7 @@ public class Captura extends Fragment {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, 0);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());

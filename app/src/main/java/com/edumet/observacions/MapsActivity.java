@@ -25,7 +25,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.maps_activity);
 
         Intent intent = getIntent();
-        etiqueta = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        etiqueta = "Ubicació actual";
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
         longitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
 
