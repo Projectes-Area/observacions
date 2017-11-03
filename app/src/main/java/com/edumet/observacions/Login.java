@@ -1,5 +1,7 @@
 package com.edumet.observacions;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -76,8 +78,7 @@ public class Login extends Fragment {
             @Override public void onResponse(Call call, Response response) throws IOException {
                 Log.i("RESPONSE", response.toString());
 
-                String resposta=response.body().string();
-                resposta=resposta.trim();
+                final String resposta=response.body().string().trim();
                 Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {
                     if(resposta.isEmpty()) {
@@ -96,6 +97,12 @@ public class Login extends Fragment {
                                 //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
                                 //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
+                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("usuari", Usuari.getText().toString());
+                                editor.putString("nom_usuari", resposta);
+                                editor.apply();
+
                                 ((MainActivity) getActivity()).captura();
                             }
                         });

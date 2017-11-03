@@ -28,6 +28,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="32dp"
+        android:contentDescription="foto"
         android:src="@drawable/edumet"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -41,8 +42,9 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="contrasenya"
+        android:hint="@string/contrasenya"
         android:inputType="textPassword"
+        android:text="lstp2012"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtUser" />
@@ -55,13 +57,14 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="52dp"
         android:ems="10"
-        android:hint="usuari"
+        android:hint="@string/usuari"
         android:inputType="textPersonName"
+        android:text="43900018"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblIdentifica" />
 
-    <TextView
+    <EditText
         android:id="@+id/lblIdentifica"
         android:layout_width="200dp"
         android:layout_height="43dp"
@@ -70,7 +73,7 @@
         android:layout_marginTop="56dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Identifica't"
+        android:text="@string/identificat"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -82,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Entra"
+        android:text="@string/entra"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPassword" />

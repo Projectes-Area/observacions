@@ -1,7 +1,9 @@
 package com.edumet.observacions;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -49,6 +52,8 @@ public class ObservacionsFetes extends Fragment {
 
     String[] nomFenomen;
 
+    String usuari;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,9 @@ public class ObservacionsFetes extends Fragment {
 
         Resources res = getResources();
         nomFenomen=res.getStringArray(R.array.nomFenomen);
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        usuari = sharedPref.getString("usuari", "");
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -124,8 +132,8 @@ public class ObservacionsFetes extends Fragment {
         }
         cursor.close();
 
-        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
 
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
@@ -160,7 +168,7 @@ public class ObservacionsFetes extends Fragment {
 
             TextView lblDia = new TextView(getContext());
             try {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 Date date = format.parse(itemDies.get(j).toString());
                 lblDia.setText(dateCatala.format(date.getTime()));
             } catch (ParseException e) {
@@ -175,7 +183,7 @@ public class ObservacionsFetes extends Fragment {
 
             TextView lblHora = new TextView(getContext());
             try {
-                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.US);
                 Date time = format.parse(itemHores.get(j).toString());
                 lblHora.setText(horaCatala.format(time.getTime()));
             } catch (ParseException e) {
@@ -256,7 +264,7 @@ public class ObservacionsFetes extends Fragment {
 
     public void sincronitza() throws Exception {
         Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=43900018&tab=visuFeno")
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari="+usuari+"&tab=visuFeno")
                 .build();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -310,11 +318,11 @@ public class ObservacionsFetes extends Fragment {
 
                                                         Log.i("NOM_REMOT", nom_remot[i]);
 
-                                                        SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd");
-                                                        SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss");
+                                                        SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                                        SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
-                                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                                                        SimpleDateFormat shf = new SimpleDateFormat("HHmmss");
+                                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+                                                        SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
 
                                                         String diaString = sdf.format(formatDiaEdumet.parse(dia[i]));
                                                         String horaString = shf.format(formatHoraEdumet.parse(hora[i]));

@@ -1,6 +1,8 @@
 package com.edumet.observacions;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -25,11 +27,21 @@ public class MainActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 return;
             }
-            Login firstFragment = new Login();
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            //firstFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+
+            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+            String usuariDesat= sharedPref.getString("usuari", "");
+
+            if (usuariDesat.isEmpty()) {
+                Login firstFragment = new Login();
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+                // In case this activity was started with special instructions from an
+                // Intent, pass the Intent's extras to the fragment as arguments
+                //firstFragment.setArguments(getIntent().getExtras());
+            }
+            else {
+                Captura firstFragment = new Captura();
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+            }
         }
     }
 

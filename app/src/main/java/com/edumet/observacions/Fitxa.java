@@ -29,6 +29,8 @@ public class Fitxa extends FragmentActivity implements OnMapReadyCallback {
 
     String[] nomFenomen;
 
+    String usuari;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -131,6 +133,7 @@ public class Captura extends Fragment {
 
     String[] nomFenomen;
 
+    String usuari;
 
 
     @Override
@@ -149,6 +152,9 @@ public class Captura extends Fragment {
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
         mDbHelper = new DadesHelper(getContext());
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        usuari = sharedPref.getString("usuari", "");
 
         return v;
     }
@@ -201,7 +207,7 @@ public class Captura extends Fragment {
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         List<String> categories = new ArrayList<String>();
-        for(int i=1;i<nomFenomen.length;i++) {
+        for (int i = 1; i < nomFenomen.length; i++) {
             categories.add(nomFenomen[i]);
         }
 
@@ -210,8 +216,9 @@ public class Captura extends Fragment {
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                num_fenomen = position+1;
+                num_fenomen = position + 1;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -341,7 +348,7 @@ public class Captura extends Fragment {
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
                     angle_foto = 0;
-                    setPic(midaEnvia,midaEnvia);
+                    setPic(midaEnvia, midaEnvia);
                     imatge.setImageBitmap(bitmap);
                     galleryAddPic();
                     enableBotons();
@@ -507,7 +514,7 @@ public class Captura extends Fragment {
         }*/
         Intent intent = new Intent(getActivity(), MapsActivity.class);
         intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
-        intent.putExtra(MainActivity.EXTRA_LONGITUD,String.valueOf(mCurrentLocation.getLongitude()));
+        intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
         startActivity(intent);
     }
 
@@ -615,15 +622,15 @@ public class Captura extends Fragment {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-        private void sendPost() {
+    private void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss",Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss", Locale.US);
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 
@@ -632,7 +639,7 @@ public class Captura extends Fragment {
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
-            jsonParam.put("usuari", 43900018);
+            jsonParam.put("usuari",usuari);
             jsonParam.put("dia", dia);
             jsonParam.put("hora", hora);
             jsonParam.put("lat", mCurrentLocation.getLatitude());
@@ -715,8 +722,8 @@ public class Captura extends Fragment {
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd",Locale.US);
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss",Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss", Locale.US);
         String dia = sdf.format(Calendar.getInstance().getTime());
         String hora = shf.format(Calendar.getInstance().getTime());
 

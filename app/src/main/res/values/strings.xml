@@ -22,5 +22,9 @@
             <item>Floració-Ametller</item>
             <item>Floració-Cirerer</item>
         </string-array>
+    <string name="contrasenya">contrasenya</string>
+    <string name="usuari" translatable="false">usuari</string>
+    <string name="identificat">Identifica\'t</string>
+    <string name="entra">Entra</string>
 
 </resources>

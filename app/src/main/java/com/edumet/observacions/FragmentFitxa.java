@@ -1,6 +1,8 @@
 package com.edumet.observacions;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -70,6 +73,8 @@ public class FragmentFitxa extends Fragment {
 
     Fitxa activity;
     String[] nomFenomen;
+
+    String usuari;
 
 
     @Override
@@ -112,6 +117,9 @@ public class FragmentFitxa extends Fragment {
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
         mProgressBar=(ProgressBar) v.findViewById(R.id.progressBar);
 
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        usuari = sharedPref.getString("usuari", "");
+
         return v;
     }
 
@@ -121,13 +129,13 @@ public class FragmentFitxa extends Fragment {
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             Date date = format.parse(elDia);
-            format = new SimpleDateFormat("HH:mm:ss");
+            format = new SimpleDateFormat("HH:mm:ss", Locale.US);
             Date time = format.parse(laHora);
             data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
         } catch (Exception e) {
@@ -216,7 +224,7 @@ public class FragmentFitxa extends Fragment {
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
-            jsonParam.put("usuari", 43900018);
+            jsonParam.put("usuari", usuari);
             jsonParam.put("dia", elDia);
             jsonParam.put("hora", laHora);
             jsonParam.put("lat", laLatitud);
