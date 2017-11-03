@@ -23,7 +23,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.maps_activity);
-
         Intent intent = getIntent();
         etiqueta = "Ubicació actual";
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
