@@ -63,15 +63,4 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void fitxa(int ID) {
-        Fitxa newFragment = new Fitxa();
-        Bundle args = new Bundle();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, newFragment);
-        args.putInt("numID",ID);
-        newFragment.setArguments(args);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
    }

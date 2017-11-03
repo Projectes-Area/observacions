@@ -136,7 +136,7 @@ public class ObservacionsFetes extends Fragment {
                 public void onClick(View v) {
                     //((MainActivity) getActivity()).fitxa(parametreID);
                     //Toast.makeText(getContext(),"Clicked Button Index :" + index,Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(getActivity(), FitxaMapa.class);
+                    Intent intent = new Intent(getActivity(), Fitxa.class);
                     intent.putExtra(MainActivity.EXTRA_MESSAGE, "Ubicació actual");
                     intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
                     intent.putExtra(MainActivity.EXTRA_LONGITUD,parametreLON);

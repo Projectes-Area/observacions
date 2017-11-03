@@ -27,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -124,7 +123,7 @@ public class FragmentFitxa extends Fragment {
             e.printStackTrace();
         }
 
-        FitxaMapa activity = (FitxaMapa) getActivity();
+        Fitxa activity = (Fitxa) getActivity();
         numID=activity.getID();
         Log.i("numID",String.valueOf(numID));
 
