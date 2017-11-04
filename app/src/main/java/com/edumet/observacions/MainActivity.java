@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -72,6 +73,17 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.i("ACT","OnRequest");
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Captura targetFragment = new Captura();
+        Bundle args = new Bundle();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        targetFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        transaction.commit();
     }
 
     @Override
