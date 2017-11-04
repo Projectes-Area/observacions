@@ -17,10 +17,10 @@
 
         <string-array name="nomFenomen">
             <item>Genèric</item>
-            <item>Insectes-Papallona</item>
-            <item>Aus-Oreneta</item>
-            <item>Floració-Ametller</item>
-            <item>Floració-Cirerer</item>
+            <item>Papallona Monarca</item>
+            <item>Oreneta</item>
+            <item>Ametller</item>
+            <item>Cirerer</item>
         </string-array>
     <string name="contrasenya">contrasenya</string>
     <string name="usuari" translatable="false">usuari</string>

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +53,8 @@ public class ObservacionsFetes extends Fragment {
     String[] nomFenomen;
 
     String usuari;
+
+    Bitmap bitmap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -162,9 +164,19 @@ public class ObservacionsFetes extends Fragment {
             LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60), dpToPx(60));
             paramsIcona.setMargins(dpToPx(10), dpToPx(10), 0, dpToPx(10));
             img.setLayoutParams(paramsIcona);
-            img.setImageBitmap(BitmapFactory.decodeFile(itemPath_Envias.get(j).toString()));
+            setPic(60,60,itemPath_Envias.get(j).toString());
+            img.setImageBitmap(bitmap);
 
             ll.addView(img);
+
+            LinearLayout llData = new LinearLayout(getContext());
+            llData.setGravity(Gravity.CENTER_HORIZONTAL);
+            llData.setOrientation(LinearLayout.VERTICAL);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(dpToPx(10), 0, 0, 0);
+
+            llData.setLayoutParams(layoutParams);
 
             TextView lblDia = new TextView(getContext());
             try {
@@ -175,11 +187,11 @@ public class ObservacionsFetes extends Fragment {
                 e.printStackTrace();
             }
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(dpToPx(10), 0, 0, 0);
+            LinearLayout.LayoutParams paramsData = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            lblDia.setLayoutParams(layoutParams);
-            ll.addView(lblDia);
+
+            lblDia.setLayoutParams(paramsData);
+            llData.addView(lblDia);
 
             TextView lblHora = new TextView(getContext());
             try {
@@ -189,9 +201,9 @@ public class ObservacionsFetes extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            lblHora.setLayoutParams(layoutParams);
-            ll.addView(lblHora);
+            lblHora.setLayoutParams(paramsData);
+            llData.addView(lblHora);
+            ll.addView(llData);
 
             TextView lblFenomen = new TextView(getContext());
             lblFenomen.setText(nomFenomen[Integer.parseInt(itemFenomens.get(j).toString())]);
@@ -240,6 +252,18 @@ public class ObservacionsFetes extends Fragment {
     public void onDestroy() {
         mDbHelper.close();
         super.onDestroy();
+    }
+
+    private void setPic(int targetW, int targetH,String path) {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bitmap = BitmapFactory.decodeFile(path, bmOptions);
     }
 
 

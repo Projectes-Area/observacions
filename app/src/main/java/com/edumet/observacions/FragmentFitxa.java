@@ -95,12 +95,6 @@ public class FragmentFitxa extends Fragment {
                 sendPost();
             }
         });
-        Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
-        Mapa.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-     //           mapa();
-            }
-        });
         Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
         Esborra.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
