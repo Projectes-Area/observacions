@@ -656,7 +656,7 @@ public class Captura extends Fragment {
             e.printStackTrace();
         }
 
-        Log.i("JSON sortida", jsonParam.toString());
+        Log.i("JSON ENVIAT", jsonParam.toString());
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
@@ -689,7 +689,8 @@ public class Captura extends Fragment {
                                             public void onResponse(Call call, Response response) throws IOException {
 
                                                 Log.i("RESPONSE", response.toString());
-                                                Log.i("CONTENT", response.body().toString());
+                                                Log.i("BODY.STRING", response.body().string());
+                                                Log.i("BODY.TOSTRING", response.body().toString());
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -698,7 +699,7 @@ public class Captura extends Fragment {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
+                                                    Log.i("APP.onResponse", getString(R.string.dades_enviades));
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
