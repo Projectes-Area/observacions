@@ -128,18 +128,8 @@ public class FragmentFitxa extends Fragment {
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy",Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
-
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-            Date date = format.parse(elDia);
-            format = new SimpleDateFormat("HH:mm:ss", Locale.US);
-            Date time = format.parse(laHora);
-            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         activity = (Fitxa) getActivity();
         numID = activity.getID();
@@ -193,7 +183,17 @@ public class FragmentFitxa extends Fragment {
         cursor.close();
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
-        data.setText(elDia + " " + laHora);
+
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            Date date = format.parse(elDia);
+            format = new SimpleDateFormat("HH:mm:ss", Locale.US);
+            Date time = format.parse(laHora);
+            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         descripcio.setText(laDescripcio);
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
 
@@ -331,8 +331,6 @@ public class FragmentFitxa extends Fragment {
 
         final OkHttpClient client = new OkHttpClient();
 
-        Log.i("usuari-post", usuari);
-
         String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
         Log.i("post", cadenaRequest);
         Request request = new Request.Builder()
@@ -384,7 +382,6 @@ public class FragmentFitxa extends Fragment {
             }
         });
         }
-
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha esborrat l'observació", Snackbar.LENGTH_LONG).show();
     }
 

@@ -39,7 +39,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fitxa);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.fitxa_toolbar);
         setSupportActionBar(myToolbar);
         //MenuItem eduMenu= (MenuItem) findViewById(R.id.action_settings);
         Resources res = getResources();
@@ -64,10 +64,10 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // my_child_toolbar is defined in the layout file
+/*        // my_child_toolbar is defined in the layout file
         Toolbar myChildToolbar =
                 (Toolbar) findViewById(R.id.fitxa_toolbar);
-        setSupportActionBar(myChildToolbar);
+        setSupportActionBar(myChildToolbar);*/
 
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
@@ -95,6 +95,10 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
@@ -112,4 +116,8 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

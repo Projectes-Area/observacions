@@ -24,12 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></FrameLayout>
 
-    <!--    <fragment
-            android:id="@+id/fitx"
-            android:name="com.edumet.observacions.FragmentFitxa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:contecom.edumet.observacions.Fitxa" />-->
 
     <LinearLayout
         android:layout_width="match_parent"

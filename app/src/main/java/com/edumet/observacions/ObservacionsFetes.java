@@ -148,7 +148,7 @@ public class ObservacionsFetes extends Fragment {
         cursor.close();
 
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
