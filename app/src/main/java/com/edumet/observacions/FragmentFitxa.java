@@ -3,12 +3,10 @@ package com.edumet.observacions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -41,8 +39,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class FragmentFitxa extends Fragment {
 
@@ -189,7 +185,7 @@ public class FragmentFitxa extends Fragment {
             Date date = format.parse(elDia);
             format = new SimpleDateFormat("HH:mm:ss", Locale.US);
             Date time = format.parse(laHora);
-            data.setText(dateCatala.format(date.getTime()) + " " + horaCatala.format(time.getTime()));
+            data.setText(dateCatala.format(date.getTime()) + "   " + horaCatala.format(time.getTime()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -390,16 +386,26 @@ public class FragmentFitxa extends Fragment {
 //
 
     public void veure_foto() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+/*        Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         File newFile = new File(elPath);
         Log.i("path", elPath);
         Uri uri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
-        intent.setDataAndType(uri, "image/*");
+        intent.setDataAndType(uri, "image*//*");
 
         PackageManager pm = getActivity().getPackageManager();
         if (intent.resolveActivity(pm) != null) {
             startActivity(intent);
-        }
+        }*/
+
+        Intent intent = new Intent(getActivity(), Visor.class);
+        intent.putExtra(MainActivity.EXTRA_PATH, elPath);
+        startActivity(intent);
+
+/*        Intent intent = new Intent(getActivity(), VeureFoto.class);
+        intent.putExtra(MainActivity.EXTRA_PATH, elPath);
+        startActivity(intent);*/
+
+
     }
 }

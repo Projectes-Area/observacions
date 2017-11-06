@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_LONGITUD = "com.edumet.observacions.LONGITUD";
     public static final String EXTRA_ID = "com.edumet.observacions.ID";
     public static final String EXTRA_NUMFENOMEN = "com.edumet.observacions.NUMFENOMEN";
+    public static final String EXTRA_PATH = "com.edumet.observacions.PATH";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
