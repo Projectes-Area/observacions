@@ -42,9 +42,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
-
 public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
@@ -75,9 +72,11 @@ public class ObservacionsFetes extends Fragment {
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        Context context = getActivity();
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                "com.edumet.observacions", Context.MODE_PRIVATE);
+
         usuari = sharedPref.getString("usuari", "");
-        Log.i("usuari",usuari);
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {

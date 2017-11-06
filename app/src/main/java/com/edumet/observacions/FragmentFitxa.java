@@ -112,9 +112,12 @@ public class FragmentFitxa extends Fragment {
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
 
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        Context context = getActivity();
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                "com.edumet.observacions", Context.MODE_PRIVATE);
+
         usuari = sharedPref.getString("usuari", "");
-        Log.i("usuari", usuari);
+        Log.i("usuari-FITXA", usuari);
 
         return v;
     }
@@ -324,11 +327,11 @@ public class FragmentFitxa extends Fragment {
         Esborra.setEnabled(false);
         Esborra.setImageResource(R.mipmap.ic_delete_white);
 
-        //if (enviat == 1) { // esborrar del servidor
+        if (enviat == 1) { // esborrar del servidor
 
         final OkHttpClient client = new OkHttpClient();
 
-        Log.i("usuari", usuari);
+        Log.i("usuari-post", usuari);
 
         String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
         Log.i("post", cadenaRequest);
@@ -380,7 +383,7 @@ public class FragmentFitxa extends Fragment {
                 }
             }
         });
-        //}
+        }
 
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha esborrat l'observació", Snackbar.LENGTH_LONG).show();
     }

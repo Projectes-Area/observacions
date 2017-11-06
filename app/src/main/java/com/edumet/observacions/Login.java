@@ -97,7 +97,10 @@ public class Login extends Fragment {
                                 //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
                                 //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
-                                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                                Context context = getActivity();
+                                SharedPreferences sharedPref = context.getSharedPreferences(
+                                        "com.edumet.observacions", Context.MODE_PRIVATE);
+
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);

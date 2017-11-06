@@ -152,7 +152,10 @@ public class Captura extends Fragment {
 
         mDbHelper = new DadesHelper(getContext());
 
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        Context context = getActivity();
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                "com.edumet.observacions", Context.MODE_PRIVATE);
+
         usuari = sharedPref.getString("usuari", "");
 
         return v;
@@ -639,6 +642,8 @@ public class Captura extends Fragment {
         String hora = shf.format(Calendar.getInstance().getTime());
 
         final OkHttpClient client = new OkHttpClient();
+
+        Log.i("usuariJSON",usuari);
 
         JSONObject jsonParam = new JSONObject();
         try {
