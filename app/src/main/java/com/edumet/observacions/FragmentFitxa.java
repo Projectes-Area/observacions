@@ -58,6 +58,7 @@ public class FragmentFitxa extends Fragment {
     private ProgressBar mProgressBar;
 
     private int numID;
+    private String id_edumet;
     private String elDia;
     private String laHora;
     private double laLatitud;
@@ -66,6 +67,7 @@ public class FragmentFitxa extends Fragment {
     private String laDescripcio;
     private String elPath;
     private String elPath_Envia;
+    private int enviat;
 
     private SQLiteDatabase db;
 
@@ -82,7 +84,6 @@ public class FragmentFitxa extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
-
 
 
         mDbHelper = new DadesHelper(getContext());
@@ -109,10 +110,11 @@ public class FragmentFitxa extends Fragment {
         });
         data = (TextView) v.findViewById(R.id.lblData);
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
-        mProgressBar=(ProgressBar) v.findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
 
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
+        Log.i("usuari", usuari);
 
         return v;
     }
@@ -137,8 +139,8 @@ public class FragmentFitxa extends Fragment {
         }
 
         activity = (Fitxa) getActivity();
-        numID=activity.getID();
-        Log.i("numID",String.valueOf(numID));
+        numID = activity.getID();
+        Log.i("numID", String.valueOf(numID));
 
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
@@ -173,6 +175,7 @@ public class FragmentFitxa extends Fragment {
 
         while (cursor.moveToNext()) {
             if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
+                id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
                 elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
                 laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
                 laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
@@ -181,14 +184,20 @@ public class FragmentFitxa extends Fragment {
                 laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
                 elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+                enviat = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
             }
         }
         cursor.close();
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
-        data.setText(elDia+" "+laHora);
+        data.setText(elDia + " " + laHora);
         descripcio.setText(laDescripcio);
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
+
+        if (enviat == 1) {
+            Envia.setEnabled(false);
+            Envia.setImageResource(R.mipmap.ic_send_white);
+        }
     }
 
     //
@@ -197,7 +206,7 @@ public class FragmentFitxa extends Fragment {
 
     private void sendPost() {
 
-        File fitxer_a_enviar=new File(elPath_Envia);
+        File fitxer_a_enviar = new File(elPath_Envia);
 
         byte[] fotografia;
         fotografia = new byte[(int) fitxer_a_enviar.length()];
@@ -298,15 +307,82 @@ public class FragmentFitxa extends Fragment {
     private void esborra() {
 
         db = mDbHelper.getWritableDatabase();
+        db.delete("observacions", DadesEstructura.Parametres._ID + "=" + String.valueOf(numID), null);
 
-        db.delete("observacions", DadesEstructura.Parametres._ID+ "=" + String.valueOf(numID), null);
+        File fitxer = new File(elPath);
+        if (fitxer.exists()) {
+            fitxer.delete();
+        }
+
+        fitxer = new File(elPath_Envia);
+        if (fitxer.exists()) {
+            fitxer.delete();
+        }
 
         Envia.setEnabled(false);
         Envia.setImageResource(R.mipmap.ic_send_white);
         Esborra.setEnabled(false);
         Esborra.setImageResource(R.mipmap.ic_delete_white);
 
-        Snackbar.make(getActivity().findViewById(android.R.id.content),"S'ha esborrat l'observació",Snackbar.LENGTH_LONG).show();
+        //if (enviat == 1) { // esborrar del servidor
+
+        final OkHttpClient client = new OkHttpClient();
+
+        Log.i("usuari", usuari);
+
+        String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
+        Log.i("post", cadenaRequest);
+        Request request = new Request.Builder()
+                .url(cadenaRequest)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.i("RESPONSE", response.toString());
+
+                final String resposta = response.body().string().trim();
+                Log.i("Resposta", resposta);
+                if (response.isSuccessful()) {
+                    if (resposta.isEmpty()) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Identificació incorrecta", Snackbar.LENGTH_LONG).show();
+                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                mProgressBar.setVisibility(ProgressBar.GONE);
+                                //((MainActivity) getActivity()).captura();
+                            }
+                        });
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
+                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                mProgressBar.setVisibility(ProgressBar.GONE);
+                            }
+                        });
+                    }
+
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                            mProgressBar.setVisibility(ProgressBar.GONE);
+                        }
+                    });
+                    Log.i("CLIENT", getString(R.string.error_servidor));
+                }
+            }
+        });
+        //}
+
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha esborrat l'observació", Snackbar.LENGTH_LONG).show();
     }
 
 //
@@ -317,7 +393,7 @@ public class FragmentFitxa extends Fragment {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         File newFile = new File(elPath);
-        Log.i("path",elPath);
+        Log.i("path", elPath);
         Uri uri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
         intent.setDataAndType(uri, "image/*");
 

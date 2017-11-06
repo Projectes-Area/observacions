@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    public void pendents() {
+    public void observacionsFetes() {
         ObservacionsFetes newFragment = new ObservacionsFetes();
         Bundle args = new Bundle();
         args.putBoolean("actualitzar", true);

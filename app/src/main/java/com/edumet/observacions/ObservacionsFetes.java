@@ -42,6 +42,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
@@ -74,6 +77,7 @@ public class ObservacionsFetes extends Fragment {
 
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
+        Log.i("usuari",usuari);
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -112,6 +116,7 @@ public class ObservacionsFetes extends Fragment {
         List itemLongituds = new ArrayList<>();
         List itemFenomens = new ArrayList<>();
         List itemPath_Envias = new ArrayList<>();
+        List itemEnviats = new ArrayList<>();
         while (cursor.moveToNext()) {
             String itemIdEdumet = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
@@ -137,6 +142,9 @@ public class ObservacionsFetes extends Fragment {
             String itemPath_icon = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
             itemPath_Envias.add(itemPath_icon);
+            String itemEnviat = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            itemEnviats.add(itemEnviat);
         }
         cursor.close();
 
@@ -162,7 +170,7 @@ public class ObservacionsFetes extends Fragment {
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, parametreLON);
                     intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, numFenomen);
                     intent.putExtra(MainActivity.EXTRA_ID, parametreID);
-                    startActivity(intent);
+                    startActivityForResult(intent,1);
                 }
             });
             final ImageView img = new ImageView(getContext());
@@ -228,7 +236,11 @@ public class ObservacionsFetes extends Fragment {
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
             ImageView chk = new ImageView(getContext());
-            chk.setImageResource(R.mipmap.ic_check_off);
+            if(Integer.valueOf(itemEnviats.get(j).toString())==1) {
+                chk.setImageResource(R.mipmap.ic_chech_on);
+            } else {
+                chk.setImageResource(R.mipmap.ic_check_off);
+            }
             chk.setLayoutParams(paramsChk);
             llCheck.addView(chk);
 
@@ -261,12 +273,18 @@ public class ObservacionsFetes extends Fragment {
             String missatge;
             if (numNoves==1) {
                 missatge="S'ha baixat una nova observació";
+                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
             }
-                else {
+            if (numNoves>1) {
                 missatge="S'han baixat "+String.valueOf(numNoves)+" noves observacions";
+                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
             }
-            Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ((MainActivity) getActivity()).redrawObservacionsFetes(0);
     }
 
     public void redraw(int numNoves) {
@@ -407,10 +425,7 @@ public class ObservacionsFetes extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
-
-
                                                         }
                                                     });
                                                     Log.i("CLIENT", getString(R.string.dades_enviades));

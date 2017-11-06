@@ -192,7 +192,7 @@ public class Captura extends Fragment {
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((MainActivity) getActivity()).pendents();
+                ((MainActivity) getActivity()).observacionsFetes();
             }
         });
         //Mapa.setEnabled(false);
