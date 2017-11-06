@@ -13,8 +13,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -250,12 +248,29 @@ public class ObservacionsFetes extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-        try {
-            sincronitza();
-        } catch (Exception e) {
-            Log.i("exception", "error");
+        Boolean actualitzar= getArguments().getBoolean("actualitzar", false);
+        int numNoves=getArguments().getInt("noves", 0);
+        if (actualitzar) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Sincronitzant amb el servidor ...", Snackbar.LENGTH_SHORT).show();
+            try {
+                sincronitza();
+            } catch (Exception e) {
+                Log.i("exception", "error");
+            }
+        } else {
+            String missatge;
+            if (numNoves==1) {
+                missatge="S'ha baixat una nova observació";
+            }
+                else {
+                missatge="S'han baixat "+String.valueOf(numNoves)+" noves observacions";
+            }
+            Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
         }
+    }
 
+    public void redraw(int numNoves) {
+        ((MainActivity) getActivity()).redrawObservacionsFetes(numNoves);
     }
 
     @Override
@@ -275,7 +290,6 @@ public class ObservacionsFetes extends Fragment {
         bmOptions.inSampleSize = scaleFactor;
         bitmap = BitmapFactory.decodeFile(path, bmOptions);
     }
-
 
     //
     // SINCRONITZA
@@ -393,7 +407,7 @@ public class ObservacionsFetes extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
+                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han rebut les dades", Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
 
 
@@ -405,7 +419,7 @@ public class ObservacionsFetes extends Fragment {
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -448,7 +462,7 @@ public class ObservacionsFetes extends Fragment {
                                                     Log.i("Baixades", "Tot baixat");
                                                     Log.i("Noves", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
-                                                    redraw();
+                                                    redraw(numNovesObservacions);
                                                 }
                                             }
                                         }
@@ -484,11 +498,7 @@ public class ObservacionsFetes extends Fragment {
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han baixat les teves observacions", Snackbar.LENGTH_LONG).show();
     }
 
-    public void redraw() {
-        ((MainActivity) getActivity()).redrawObservacionsFetes();
-    }
-
-    //
+//
 // GENERAL
 //
     public static int dpToPx(int dp) {

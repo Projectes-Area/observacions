@@ -97,12 +97,16 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
         }
 
-    public void redrawObservacionsFetes() {
+    public void redrawObservacionsFetes(int numNoves) {
         Captura fragmentA = new Captura();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ObservacionsFetes fragmentC = new ObservacionsFetes();
-        fragmentTransaction.replace(R.id.fragment_container, fragmentC);
+        ObservacionsFetes newFragment = new ObservacionsFetes();
+        Bundle args = new Bundle();
+        args.putBoolean("actualitzar", false);
+        args.putInt("noves", numNoves);
+        newFragment.setArguments(args);
+        fragmentTransaction.replace(R.id.fragment_container, newFragment);
         fragmentManager.popBackStack();
         fragmentTransaction.addToBackStack(fragmentA.getClass().getName());
         fragmentTransaction.commit();
@@ -111,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
     public void pendents() {
         ObservacionsFetes newFragment = new ObservacionsFetes();
         Bundle args = new Bundle();
+        args.putBoolean("actualitzar", true);
+        newFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
