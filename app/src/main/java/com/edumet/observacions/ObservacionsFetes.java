@@ -56,6 +56,8 @@ public class ObservacionsFetes extends Fragment {
 
     Bitmap bitmap;
 
+    List itemIdsEdumet = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +70,7 @@ public class ObservacionsFetes extends Fragment {
         db = mDbHelper.getReadableDatabase();
 
         Resources res = getResources();
-        nomFenomen=res.getStringArray(R.array.nomFenomen);
+        nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
@@ -102,6 +104,7 @@ public class ObservacionsFetes extends Fragment {
                 sortOrder                                 // The sort order
         );
 
+        itemIdsEdumet = new ArrayList<>();
         List itemIds = new ArrayList<>();
         List itemDies = new ArrayList<>();
         List itemHores = new ArrayList<>();
@@ -110,6 +113,9 @@ public class ObservacionsFetes extends Fragment {
         List itemFenomens = new ArrayList<>();
         List itemPath_Envias = new ArrayList<>();
         while (cursor.moveToNext()) {
+            String itemIdEdumet = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
+            itemIdsEdumet.add(itemIdEdumet);
             String itemId = cursor.getString(
                     cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
             itemIds.add(itemId);
@@ -145,16 +151,16 @@ public class ObservacionsFetes extends Fragment {
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
             final String parametreID = itemIds.get(j).toString();
-            final String parametreLAT=itemLatituds.get(j).toString();
-            final String parametreLON=itemLongituds.get(j).toString();
-            final String numFenomen=itemFenomens.get(j).toString();
+            final String parametreLAT = itemLatituds.get(j).toString();
+            final String parametreLON = itemLongituds.get(j).toString();
+            final String numFenomen = itemFenomens.get(j).toString();
 
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), Fitxa.class);
                     intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
-                    intent.putExtra(MainActivity.EXTRA_LONGITUD,parametreLON);
-                    intent.putExtra(MainActivity.EXTRA_NUMFENOMEN,numFenomen);
+                    intent.putExtra(MainActivity.EXTRA_LONGITUD, parametreLON);
+                    intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, numFenomen);
                     intent.putExtra(MainActivity.EXTRA_ID, parametreID);
                     startActivity(intent);
                 }
@@ -164,7 +170,7 @@ public class ObservacionsFetes extends Fragment {
             LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60), dpToPx(60));
             paramsIcona.setMargins(dpToPx(10), dpToPx(10), 0, dpToPx(10));
             img.setLayoutParams(paramsIcona);
-            setPic(60,60,itemPath_Envias.get(j).toString());
+            setPic(60, 60, itemPath_Envias.get(j).toString());
             img.setImageBitmap(bitmap);
 
             ll.addView(img);
@@ -254,7 +260,7 @@ public class ObservacionsFetes extends Fragment {
         super.onDestroy();
     }
 
-    private void setPic(int targetW, int targetH,String path) {
+    private void setPic(int targetW, int targetH, String path) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, bmOptions);
@@ -274,21 +280,23 @@ public class ObservacionsFetes extends Fragment {
     private final OkHttpClient client = new OkHttpClient();
 
     private int numNovesObservacions;
-    private int numFotosBaixades;
-    private String nous_paths[];
+    private int numObservacionsBaixades;
 
-    private String id_edumet[];
-    private String dia[];
-    private String hora[];
-    private String latitud[];
-    private String longitud[];
-    private String numFenomen[];
-    private String descripcio[];
-    private String nom_remot[];
+    // Listes de les noves observacions
+
+    List id_edumet = new ArrayList<>();
+    List dia = new ArrayList<>();
+    List hora = new ArrayList<>();
+    List latitud = new ArrayList<>();
+    List longitud = new ArrayList<>();
+    List numFenomen = new ArrayList<>();
+    List descripcio = new ArrayList<>();
+    List nom_remot = new ArrayList<>();
+    String nous_paths[];
 
     public void sincronitza() throws Exception {
         Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari="+usuari+"&tab=visuFeno")
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&tab=visuFeno")
                 .build();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -309,55 +317,70 @@ public class ObservacionsFetes extends Fragment {
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
-                                                Log.i("RESPONSE", response.toString());
+                                                //Log.i("RESPONSE", response.toString());
                                                 String resposta = response.body().string().trim();
-                                                Log.i("CONTENT", resposta);
+                                                //Log.i("CONTENT", resposta);
+
+
+
                                                 try {
                                                     JSONArray jsonArray = new JSONArray(resposta);
-                                                    numNovesObservacions=jsonArray.length();
-                                                    numFotosBaixades=0;
-                                                    nous_paths=new String[numNovesObservacions];
-                                                    Log.i("length", String.valueOf(numNovesObservacions));
 
-                                                    id_edumet=new String[numNovesObservacions];
-                                                    dia=new String[numNovesObservacions];
-                                                    hora=new String[numNovesObservacions];
-                                                    latitud=new String[numNovesObservacions];
-                                                    longitud=new String[numNovesObservacions];
-                                                    numFenomen=new String[numNovesObservacions];
-                                                    descripcio=new String[numNovesObservacions];
-                                                    nom_remot=new String[numNovesObservacions];
+                                                    numNovesObservacions = 0;
+                                                    numObservacionsBaixades = 0;
+                                                    int numNovaObservacio = 0;
+
+                                                    Boolean flagRepetida;
 
                                                     for (int i = 0; i < jsonArray.length(); i++) {
                                                         JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+                                                        //
+                                                        // comprova si és nova
+                                                        //
 
-                                                        id_edumet[i] = JSONobservacio.getString(0);
-                                                        dia[i] = JSONobservacio.getString(2);
-                                                        hora[i] = JSONobservacio.getString(3);
-                                                        latitud[i] = JSONobservacio.getString(4);
-                                                        longitud[i] = JSONobservacio.getString(5);
-                                                        numFenomen[i] = JSONobservacio.getString(7);
-                                                        descripcio[i] = JSONobservacio.getString(8);
-                                                        nom_remot[i] = JSONobservacio.getString(9);
-
-                                                        Log.i("NOM_REMOT", nom_remot[i]);
-
-                                                        SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                                                        SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
-
-                                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-                                                        SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
-
-                                                        String diaString = sdf.format(formatDiaEdumet.parse(dia[i]));
-                                                        String horaString = shf.format(formatHoraEdumet.parse(hora[i]));
-                                                        String nomFitxer = diaString+horaString;
-                                                        Log.i("nomFitxer",nomFitxer);
-                                                        try {
-                                                            downloadFileAsync(i,"https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + nom_remot[i], nomFitxer);
+                                                        flagRepetida = false;
+                                                        for (int j = 0; j < itemIdsEdumet.size(); j++) {
+                                                            //Log.i("itemIdsEdumet",itemIdsEdumet.get(j).toString());
+                                                            //Log.i("JSONobservacio",JSONobservacio.getString(0));
+                                                            if (Integer.valueOf(itemIdsEdumet.get(j).toString()) == Integer.valueOf(JSONobservacio.getString(0))) {
+                                                                flagRepetida = true;
+                                                            }
+                                                            //Log.i("flagRepetida", String.valueOf(flagRepetida));
                                                         }
-                                                        catch (Exception e) {
+                                                        if (!flagRepetida) {
+
+                                                            numNovaObservacio++;
+                                                            id_edumet.add(JSONobservacio.getString(0));
+                                                            dia.add(JSONobservacio.getString(2));
+                                                            hora.add(JSONobservacio.getString(3));
+                                                            latitud.add(JSONobservacio.getString(4));
+                                                            longitud.add(JSONobservacio.getString(5));
+                                                            numFenomen.add(JSONobservacio.getString(7));
+                                                            descripcio.add(JSONobservacio.getString(8));
+                                                            nom_remot.add(JSONobservacio.getString(9));
+
+                                                            Log.i("NOM_REMOT", JSONobservacio.getString(9));
+
+                                                            SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                                            SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
+
+                                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+                                                            SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
+
+                                                            String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString(2)));
+                                                            String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString(3)));
+                                                            String nomFitxer = diaString + horaString;
+                                                            Log.i("nomFitxer", nomFitxer);
+                                                            try {
+                                                                downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
+                                                            } catch (Exception e) {
+                                                            }
                                                         }
+
                                                     }
+                                                    numNovesObservacions = numNovaObservacio;
+                                                    Log.i("NOVESOBS", String.valueOf(numNovesObservacions));
+                                                    nous_paths = new String[numNovesObservacions];
 
                                                 } catch (Exception e) {
                                                     Log.i("error", "error");
@@ -389,7 +412,7 @@ public class ObservacionsFetes extends Fragment {
         );
     }
 
-    public void downloadFileAsync(final int numNovaObservacio,final String downloadUrl, final String nomFitxer) throws Exception {
+    public void downloadFileAsync(final int numNovaObservacio, final String downloadUrl, final String nomFitxer) throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(downloadUrl).build();
         client.newCall(request).enqueue(new Callback() {
@@ -413,11 +436,13 @@ public class ObservacionsFetes extends Fragment {
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
-                                                nous_paths[numNovaObservacio]=miniatura.getAbsolutePath();
-                                                Log.i("Baixada fitxer", nous_paths[numNovaObservacio]);
-                                                numFotosBaixades++;
-                                                if (numFotosBaixades==numNovesObservacions) {
-                                                    Log.i("Baixades","Tot baixat");
+                                                Log.i("numNovaObservacio",String.valueOf(numNovaObservacio));
+                                                nous_paths[numNovaObservacio-1] = miniatura.getAbsolutePath();
+                                                Log.i("Baixada fitxer", nous_paths[numNovaObservacio-1]);
+                                                numObservacionsBaixades++;
+                                                if (numObservacionsBaixades == numNovesObservacions) {
+                                                    Log.i("Baixades", "Tot baixat");
+                                                    Log.i("Noves", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
                                                 }
                                             }
@@ -432,18 +457,19 @@ public class ObservacionsFetes extends Fragment {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
-        for(int i=0;i<numNovesObservacions;i++) {
+        for (int i = 0; i < numNovesObservacions; i++) {
 
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, id_edumet[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, latitud[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, longitud[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio[i]);
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, id_edumet.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, latitud.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, longitud.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen.get(i).toString());
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio.get(i).toString());
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
+            //Log.i("NOUPATH",nous_paths[i]);
 
             // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
@@ -453,7 +479,7 @@ public class ObservacionsFetes extends Fragment {
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han baixat les teves observacions", Snackbar.LENGTH_LONG).show();
     }
 
-//
+    //
 // GENERAL
 //
     public static int dpToPx(int dp) {
