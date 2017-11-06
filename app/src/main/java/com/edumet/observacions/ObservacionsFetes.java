@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -185,6 +187,7 @@ public class ObservacionsFetes extends Fragment {
             llData.setLayoutParams(layoutParams);
 
             TextView lblDia = new TextView(getContext());
+
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 Date date = format.parse(itemDies.get(j).toString());
@@ -252,6 +255,7 @@ public class ObservacionsFetes extends Fragment {
         } catch (Exception e) {
             Log.i("exception", "error");
         }
+
     }
 
     @Override
@@ -444,6 +448,7 @@ public class ObservacionsFetes extends Fragment {
                                                     Log.i("Baixades", "Tot baixat");
                                                     Log.i("Noves", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
+                                                    redraw();
                                                 }
                                             }
                                         }
@@ -477,6 +482,10 @@ public class ObservacionsFetes extends Fragment {
             Log.i("SQL", strLong);
         }
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han baixat les teves observacions", Snackbar.LENGTH_LONG).show();
+    }
+
+    public void redraw() {
+        ((MainActivity) getActivity()).redrawObservacionsFetes();
     }
 
     //
