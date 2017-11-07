@@ -115,7 +115,7 @@ public class Captura extends Fragment {
     private ImageButton Desa;
     private ImageButton Pendents;
     private ImageButton Mapa;
-    private ImageView imatge;
+    public ImageView imatge;
     private EditText observacio;
     private ProgressBar mProgressBar;
     private Spinner spinner;
@@ -127,9 +127,9 @@ public class Captura extends Fragment {
     private File output = null;
     private File outputMiniatura = null;
     private int midaEnvia = 800;
-    private Bitmap bitmap;
+    public Bitmap bitmap;
     private int num_fenomen = 1;
-    private int angle_foto;
+    public int angle_foto;
     private boolean jaLocalitzat = false;
 
     DadesHelper mDbHelper;
@@ -204,7 +204,6 @@ public class Captura extends Fragment {
                 ((MainActivity) getActivity()).observacionsFetes();
             }
         });
-        //Mapa.setEnabled(false);
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
@@ -313,8 +312,6 @@ public class Captura extends Fragment {
                                 @Override
                                 public void onClick(View view) {
                                     getActivity().finish();
-/*                                    Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(android.R.id.content), "Message is restored!", Snackbar.LENGTH_SHORT);
-                                    snackbar1.show();*/
                                 }
                             });
                     snackbar.show();
@@ -392,6 +389,7 @@ public class Captura extends Fragment {
                     imatge.setImageBitmap(bitmap);
                     galleryAddPic();
                     enableBotons();
+                    ((MainActivity) getActivity()).hihaFoto();
                     Log.i("onActivityResult", "Foto");
                 }
                 break;
@@ -450,7 +448,8 @@ public class Captura extends Fragment {
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
             if (!jaLocalitzat) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
                 jaLocalitzat = true;
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
@@ -565,7 +564,7 @@ public class Captura extends Fragment {
         // FOTOGRAFIA
         //
 
-    private void fesFoto() {
+    public void fesFoto() {
         if (mCurrentLocation != null) {
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (i.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -654,7 +653,7 @@ public class Captura extends Fragment {
         bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
     }
 
-    static private Bitmap rotateViaMatrix(Bitmap original, int angle) {
+    static public Bitmap rotateViaMatrix(Bitmap original, int angle) {
         Matrix matrix = new Matrix();
         matrix.setRotate(angle);
         return (Bitmap.createBitmap(original, 0, 0, original.getWidth(),
@@ -665,7 +664,7 @@ public class Captura extends Fragment {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    private void sendPost() {
+    public void sendPost() {
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
@@ -752,7 +751,7 @@ public class Captura extends Fragment {
     // DESA
     //
 
-    private void desa() {
+    public void desa() {
 
         fesMiniatura(midaEnvia);
         pathEnvia = outputMiniatura.getAbsolutePath();

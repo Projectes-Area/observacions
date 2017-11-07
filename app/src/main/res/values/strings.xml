@@ -25,10 +25,17 @@
     <string name="usuari" translatable="false">usuari</string>
     <string name="identificat">Identifica\'t</string>
     <string name="entra">Entra</string>
-    <string name="action_settings">Ajustaments</string>
+    <string name="action_settings">Ajustaments de l\'App</string>
     <string name="action_favorite">Ubicació</string>
     <string name="servidor_no_disponible">No s\'ha pogut connectar amb el servidor</string>
     <string name="identificacio_incorrecta">Identificació incorrecta</string>
     <string name="observacions_baixades">\"S\'han baixat les teves observacions</string>
+    <string name="edumet_web">EDUMET web</string>
+    <string name="les_meves_observacions">Les meves observacions</string>
+    <string name="la_meva_ubicacio">La meva ubicació</string>
+    <string name="fotografia">Fes la fotografia</string>
+    <string name="desa_observacio">Desa aquesta observació</string>
+    <string name="envia_observacio">Envia aquesta observació</string>
+    <string name="gira_imatge">Gira la fotografia</string>
 
 </resources>
