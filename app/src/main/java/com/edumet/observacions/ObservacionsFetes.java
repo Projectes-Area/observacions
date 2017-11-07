@@ -19,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -65,6 +67,7 @@ public class ObservacionsFetes extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.observacions_fetes, container, false);
+        setHasOptionsMenu(true);
 
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -286,6 +289,12 @@ public class ObservacionsFetes extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.observacions_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

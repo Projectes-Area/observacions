@@ -2,7 +2,10 @@ package com.edumet.observacions;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +44,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         setContentView(R.layout.fitxa);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.fitxa_toolbar);
         setSupportActionBar(myToolbar);
-        //MenuItem eduMenu= (MenuItem) findViewById(R.id.action_settings);
+
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
@@ -81,7 +84,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_toolbar, menu);
+        getMenuInflater().inflate(R.menu.fitxa_toolbar, menu);
         return true;
     }
 
@@ -92,8 +95,26 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                 onBackPressed();
                 return true;
 
+            case R.id.edumet_web:
+
+                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+
+/*                Intent intent = new Intent(this, Visor.class);
+                intent.putExtra(MainActivity.EXTRA_PATH, "edumet_web");
+                startActivity(intent);*/
+                return true;
+
             case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
+                // Build intent that displays the App settings screen.
+                Intent intent2 = new Intent();
+                intent2.setAction(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri2 = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                intent2.setData(uri2);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent2);
                 return true;
 
 /*            case R.id.action_favorite:
@@ -101,12 +122,15 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                 // as a favorite...
                 return true;*/
 
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     @Override
     public void onBackPressed() {

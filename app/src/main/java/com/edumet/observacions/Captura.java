@@ -37,6 +37,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -141,6 +143,7 @@ public class Captura extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.captura, container, false);
+        setHasOptionsMenu(true);
 
         Foto = (ImageButton) v.findViewById(R.id.btnFoto);
         Girar = (ImageButton) v.findViewById(R.id.btnGirar);
@@ -158,10 +161,11 @@ public class Captura extends Fragment {
         Context context = getActivity();
         SharedPreferences sharedPref = context.getSharedPreferences(
                 "com.edumet.observacions", Context.MODE_PRIVATE);
-
         usuari = sharedPref.getString("usuari", "");
 
-        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+        //ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
 
         return v;
@@ -242,6 +246,12 @@ public class Captura extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.captura_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         if (!checkPermissions()) {
@@ -277,7 +287,7 @@ public class Captura extends Fragment {
         }
     }
 
-    private boolean sortir=true;
+    private boolean sortir = true;
 
     @Override
     public void onResume() {
@@ -294,7 +304,7 @@ public class Captura extends Fragment {
             enableBotons();
         }
 
-        if(getView() == null){
+        if (getView() == null) {
             return;
         }
 
@@ -304,7 +314,7 @@ public class Captura extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     // handle back button's click listener
                     Snackbar snackbar = Snackbar
                             .make(getActivity().findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
@@ -449,7 +459,7 @@ public class Captura extends Fragment {
         if (mCurrentLocation != null) {
             if (!jaLocalitzat) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
-                ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
+                ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 jaLocalitzat = true;
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
@@ -553,16 +563,16 @@ public class Captura extends Fragment {
             mRequestingLocationUpdates = true;
             startLocationUpdates();
         }
-        if (mCurrentLocation!=null) {
+        if (mCurrentLocation != null) {
             Intent intent = new Intent(getActivity(), MapsActivity.class);
             intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
             intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
             startActivity(intent);
         }
     }
-        //
-        // FOTOGRAFIA
-        //
+    //
+    // FOTOGRAFIA
+    //
 
     public void fesFoto() {
         if (mCurrentLocation != null) {
