@@ -31,8 +31,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,6 +161,9 @@ public class Captura extends Fragment {
 
         usuari = sharedPref.getString("usuari", "");
 
+        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(false);
+
         return v;
     }
 
@@ -272,6 +278,8 @@ public class Captura extends Fragment {
         }
     }
 
+    private boolean sortir=true;
+
     @Override
     public void onResume() {
         super.onResume();
@@ -286,6 +294,36 @@ public class Captura extends Fragment {
             imatge.setImageBitmap(bitmap);
             enableBotons();
         }
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    // handle back button's click listener
+                    Snackbar snackbar = Snackbar
+                            .make(getActivity().findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
+                            .setAction("SÍ", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    getActivity().finish();
+/*                                    Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(android.R.id.content), "Message is restored!", Snackbar.LENGTH_SHORT);
+                                    snackbar1.show();*/
+                                }
+                            });
+                    snackbar.show();
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     @Override
@@ -300,6 +338,10 @@ public class Captura extends Fragment {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
     }
+
+
+
+
 
     //
     // LOCALITZACIÓ

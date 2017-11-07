@@ -30,12 +30,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        // Get a support ActionBar corresponding to this toolbar
-        ActionBar ab = getSupportActionBar();
+/*        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);*/
 
-        // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
-        //MenuItem eduMenu= (MenuItem) findViewById(R.id.action_settings);
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
                 return;
@@ -93,9 +90,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+            super.onBackPressed();
     }
 
     @Override
