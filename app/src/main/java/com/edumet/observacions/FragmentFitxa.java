@@ -393,7 +393,7 @@ public class FragmentFitxa extends Fragment {
             startActivity(intent);
         }*/
 
-        Intent intent = new Intent(getActivity(), Visor.class);
+        Intent intent = new Intent(getActivity(), VeureFoto.class);
         intent.putExtra(MainActivity.EXTRA_PATH, elPath);
         startActivity(intent);
     }
