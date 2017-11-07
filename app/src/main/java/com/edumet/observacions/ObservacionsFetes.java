@@ -272,17 +272,17 @@ public class ObservacionsFetes extends Fragment {
             try {
                 sincronitza();
             } catch (Exception e) {
-                Log.i("exception", "error");
+                Log.i("Exception", "error");
             }
         } else {
             String missatge;
             if (numNoves==1) {
                 missatge="S'ha baixat una nova observació";
-                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_SHORT).show();
             }
             if (numNoves>1) {
                 missatge="S'han baixat "+String.valueOf(numNoves)+" noves observacions";
-                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
@@ -352,17 +352,12 @@ public class ObservacionsFetes extends Fragment {
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
-                                                Log.i("CLIENT", getString(R.string.error_connexio));
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
-                                                //Log.i("RESPONSE", response.toString());
                                                 String resposta = response.body().string().trim();
-                                                //Log.i("CONTENT", resposta);
-
-
 
                                                 try {
                                                     JSONArray jsonArray = new JSONArray(resposta);
@@ -381,15 +376,11 @@ public class ObservacionsFetes extends Fragment {
 
                                                         flagRepetida = false;
                                                         for (int j = 0; j < itemIdsEdumet.size(); j++) {
-                                                            //Log.i("itemIdsEdumet",itemIdsEdumet.get(j).toString());
-                                                            //Log.i("JSONobservacio",JSONobservacio.getString(0));
                                                             if (Integer.valueOf(itemIdsEdumet.get(j).toString()) == Integer.valueOf(JSONobservacio.getString(0))) {
                                                                 flagRepetida = true;
                                                             }
-                                                            //Log.i("flagRepetida", String.valueOf(flagRepetida));
                                                         }
                                                         if (!flagRepetida) {
-
                                                             numNovaObservacio++;
                                                             id_edumet.add(JSONobservacio.getString(0));
                                                             dia.add(JSONobservacio.getString(2));
@@ -400,8 +391,6 @@ public class ObservacionsFetes extends Fragment {
                                                             descripcio.add(JSONobservacio.getString(8));
                                                             nom_remot.add(JSONobservacio.getString(9));
 
-                                                            Log.i("NOM_REMOT", JSONobservacio.getString(9));
-
                                                             SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                                                             SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
@@ -411,7 +400,7 @@ public class ObservacionsFetes extends Fragment {
                                                             String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString(2)));
                                                             String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString(3)));
                                                             String nomFitxer = diaString + horaString;
-                                                            Log.i("nomFitxer", nomFitxer);
+
                                                             try {
                                                                 downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
                                                             } catch (Exception e) {
@@ -424,7 +413,7 @@ public class ObservacionsFetes extends Fragment {
                                                     nous_paths = new String[numNovesObservacions];
 
                                                 } catch (Exception e) {
-                                                    Log.i("error", "error");
+                                                    Log.i("ERROR", "error");
                                                 }
 
                                                 if (response.isSuccessful()) {
@@ -433,17 +422,13 @@ public class ObservacionsFetes extends Fragment {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
-
-
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("CLIENT", getString(R.string.error_servidor));
                                                 }
                                             }
                                         }
@@ -462,7 +447,6 @@ public class ObservacionsFetes extends Fragment {
                                                 if (!response.isSuccessful()) {
                                                     throw new IOException("Failed to download file: " + response);
                                                 }
-                                                Log.i("Download URL", downloadUrl);
 
                                                 File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                                                 File miniatura = File.createTempFile(nomFitxer, ".jpg", storageDir);
@@ -474,13 +458,10 @@ public class ObservacionsFetes extends Fragment {
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
-                                                Log.i("numNovaObservacio",String.valueOf(numNovaObservacio));
                                                 nous_paths[numNovaObservacio-1] = miniatura.getAbsolutePath();
-                                                Log.i("Baixada fitxer", nous_paths[numNovaObservacio-1]);
                                                 numObservacionsBaixades++;
                                                 if (numObservacionsBaixades == numNovesObservacions) {
-                                                    Log.i("Baixades", "Tot baixat");
-                                                    Log.i("Noves", String.valueOf(numNovesObservacions));
+                                                    Log.i("BAIXADES", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
                                                     redraw(numNovesObservacions);
                                                 }
@@ -508,14 +489,12 @@ public class ObservacionsFetes extends Fragment {
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
-            //Log.i("NOUPATH",nous_paths[i]);
 
             // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
-            String strLong = Long.toString(newRowId);
-            Log.i("SQL", strLong);
+
         }
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'han baixat les teves observacions", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.observacions_baixades), Snackbar.LENGTH_SHORT).show();
     }
 
 //

@@ -18,7 +18,6 @@
             android:layout_height="?attr/actionBarSize"
             android:elevation="4dp"
             android:background="@color/edumet"
-            app:title="Observacions"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:logo="@mipmap/ic_launcher"

@@ -239,7 +239,7 @@ public class FragmentFitxa extends Fragment {
             e.printStackTrace();
         }
 
-        Log.i("JSON sortida", jsonParam.toString());
+        //Log.i("JSON sortida", jsonParam.toString());
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 

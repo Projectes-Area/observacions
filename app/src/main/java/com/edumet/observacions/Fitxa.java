@@ -46,12 +46,10 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         Intent intent = getIntent();
-        latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
-        longitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
-        numFenomen= Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_NUMFENOMEN));
-        parametreID=Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_ID));
-
-        Log.i("numID-Activity",String.valueOf(parametreID));
+        latitud = Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
+        longitud = Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
+        numFenomen = Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_NUMFENOMEN));
+        parametreID = Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_ID));
 
         FragmentFitxa firstFragment = new FragmentFitxa();
         // In case this activity was started with special instructions from an
@@ -75,9 +73,9 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng observacio = new LatLng(latitud,longitud);
+        LatLng observacio = new LatLng(latitud, longitud);
         mMap.addMarker(new MarkerOptions().position(observacio).title(nomFenomen[numFenomen]));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio, 15.0f));
     }
 
     @Override
@@ -107,7 +105,6 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 

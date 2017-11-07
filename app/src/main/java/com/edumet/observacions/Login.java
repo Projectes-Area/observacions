@@ -58,14 +58,14 @@ public class Login extends Fragment {
     }
 
 //
-// SINCRONITZA
+// LOGIN
 //
 
     final OkHttpClient client = new OkHttpClient();
 
     public void sincronitza() throws Exception {
         String cadenaRequest="https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident="+Usuari.getText().toString()+"&psw="+Contrasenya.getText().toString()+"&tab=registrar_se";
-        Log.i("post",cadenaRequest);
+        Log.i("LOGIN",cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)
                 .build();
@@ -77,30 +77,24 @@ public class Login extends Fragment {
 
             @Override public void onResponse(Call call, Response response) throws IOException {
                 Log.i("RESPONSE", response.toString());
-
                 final String resposta=response.body().string().trim();
                 Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {
                     if(resposta.isEmpty()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Identificació incorrecta", Snackbar.LENGTH_LONG).show();
-                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.identificacio_incorrecta, Snackbar.LENGTH_SHORT).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
-                                //((MainActivity) getActivity()).captura();
                             }
                         });
                     }
                     else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
-                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                 Context context = getActivity();
                                 SharedPreferences sharedPref = context.getSharedPreferences(
                                         "com.edumet.observacions", Context.MODE_PRIVATE);
-
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);
@@ -114,12 +108,11 @@ public class Login extends Fragment {
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio,Snackbar.LENGTH_LONG).show();
-                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible,Snackbar.LENGTH_SHORT).show();
                             mProgressBar.setVisibility(ProgressBar.GONE);
                         }
                     });
-                    Log.i("CLIENT", getString(R.string.error_servidor));
+                    Log.i("LOGIN", getString(R.string.servidor_no_disponible));
                 }
             }
         });

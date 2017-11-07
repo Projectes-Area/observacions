@@ -330,7 +330,7 @@ public class Captura extends Fragment {
     public void onPause() {
         super.onPause();
         stopLocationUpdates();
-        Log.i("ONPAUSE", "Ok");
+        Log.i("ONPAUSE", String.valueOf(mRequestingLocationUpdates));
     }
 
     @Override
@@ -338,10 +338,6 @@ public class Captura extends Fragment {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
     }
-
-
-
-
 
     //
     // LOCALITZACIÓ
@@ -378,16 +374,16 @@ public class Captura extends Fragment {
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
-                        Log.i("onActivityResult", "User agreed to make required location settings changes.");
+                        Log.i("FRAGonActResult", "User agreed to make required location settings changes.");
                         mRequestingLocationUpdates = true;
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.i("onActivityResult", "User chose not to make required location settings changes.");
+                        Log.i("FRAGonActResult", "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
                         break;
                 }
                 updateLocationUI();
-                Log.i("onActivityResult", String.valueOf(mRequestingLocationUpdates));
+                Log.i("FRAGonActResult", String.valueOf(mRequestingLocationUpdates));
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -430,19 +426,19 @@ public class Captura extends Fragment {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i("startLocationUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
+                                Log.i("startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.i("startLocationUpdates", "PendingIntent unable to execute request.");
+                                    Log.i("startUpdates", "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                                 String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.i("startLocationUpdates", errorMessage);
+                                Log.i("startUpdates", errorMessage);
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
@@ -466,7 +462,7 @@ public class Captura extends Fragment {
 
     private void stopLocationUpdates() {
         if (!mRequestingLocationUpdates) {
-            Log.i("stopLocationUpdates", "stopLocationUpdates: updates never requested, no-op.");
+            Log.i("stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
             return;
         }
         mFusedLocationClient.removeLocationUpdates(mLocationCallback)
@@ -512,18 +508,16 @@ public class Captura extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
                 // If user interaction was interrupted, the permission request is cancelled and you
                 // receive empty arrays.
-                Log.i("onRequestPermResult", "User interaction was cancelled.");
+                Log.i("FRAGonReqPermResult", "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
-                    Log.i("onRequestPermResult", "Permission granted, updates requested, starting location updates");
+                    Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
                 }
             } else {
-                Log.i("onRequestPermResult", "Show Snackbar");
                 // Permission denied.
                 showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
@@ -685,8 +679,6 @@ public class Captura extends Fragment {
 
         final OkHttpClient client = new OkHttpClient();
 
-        Log.i("usuariJSON",usuari);
-
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("fitxer", encodedFoto);
@@ -702,8 +694,6 @@ public class Captura extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        Log.i("JSON ENVIAT", jsonParam.toString());
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
@@ -725,11 +715,10 @@ public class Captura extends Fragment {
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
-                                                Log.i("CLIENT", getString(R.string.error_connexio));
                                             }
 
                                             @Override
@@ -741,17 +730,14 @@ public class Captura extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_LONG).show();
-                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
-                                                    Log.i("APP.onResponse", getString(R.string.dades_enviades));
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -768,9 +754,8 @@ public class Captura extends Fragment {
 
     private void desa() {
 
-        fesMiniatura(midaEnvia); // envio
+        fesMiniatura(midaEnvia);
         pathEnvia = outputMiniatura.getAbsolutePath();
-        Log.i("pathEnvia", pathEnvia);
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -797,7 +782,15 @@ public class Captura extends Fragment {
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha desat l'observació", Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar
+                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                .setAction("SÍ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendPost();
+                    }
+                });
+        snackbar.show();
     }
 
     //
