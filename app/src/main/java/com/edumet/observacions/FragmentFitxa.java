@@ -95,7 +95,16 @@ public class FragmentFitxa extends Fragment {
         Esborra = (ImageButton) v.findViewById(R.id.btnEsborra);
         Esborra.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                esborra();
+                Snackbar snackbar = Snackbar
+                        .make(getActivity().findViewById(android.R.id.content), "Vols eliminar l'observació ?", Snackbar.LENGTH_LONG)
+                        .setAction("SÍ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                esborra();
+                            }
+                        });
+                snackbar.show();
+
             }
         });
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
@@ -113,7 +122,6 @@ public class FragmentFitxa extends Fragment {
                 "com.edumet.observacions", Context.MODE_PRIVATE);
 
         usuari = sharedPref.getString("usuari", "");
-        Log.i("usuari-FITXA", usuari);
 
         return v;
     }
@@ -129,8 +137,6 @@ public class FragmentFitxa extends Fragment {
 
         activity = (Fitxa) getActivity();
         numID = activity.getID();
-        Log.i("numID", String.valueOf(numID));
-
 
         // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
@@ -199,6 +205,9 @@ public class FragmentFitxa extends Fragment {
         }
     }
 
+
+
+
     //
     // ENVIA AL SERVIDOR EDUMET
     //
@@ -239,8 +248,6 @@ public class FragmentFitxa extends Fragment {
             e.printStackTrace();
         }
 
-        //Log.i("JSON sortida", jsonParam.toString());
-
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
         final Request request = new Request.Builder()
@@ -261,34 +268,29 @@ public class FragmentFitxa extends Fragment {
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
-                                                Log.i("CLIENT", getString(R.string.error_connexio));
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
 
                                                 Log.i("RESPONSE", response.toString());
-                                                Log.i("CONTENT", response.body().string());
+                                                Log.i("BODY.STRING", response.body().string());
+                                                Log.i("BODY.TOSTRING", response.body().toString());
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_LONG).show();
-                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            Envia.setEnabled(false);
-                                                            Envia.setImageResource(R.mipmap.ic_send_white);
                                                         }
                                                     });
-                                                    Log.i("CLIENT", getString(R.string.dades_enviades));
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -328,7 +330,7 @@ public class FragmentFitxa extends Fragment {
         final OkHttpClient client = new OkHttpClient();
 
         String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
-        Log.i("post", cadenaRequest);
+        Log.i("POSTDELETE", cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)
                 .build();
@@ -342,7 +344,6 @@ public class FragmentFitxa extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.i("RESPONSE", response.toString());
-
                 final String resposta = response.body().string().trim();
                 Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {
@@ -350,16 +351,12 @@ public class FragmentFitxa extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Identificació incorrecta", Snackbar.LENGTH_LONG).show();
-                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
-                                //((MainActivity) getActivity()).captura();
                             }
                         });
                     } else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                //Snackbar.make(getActivity().findViewById(android.R.id.content), "Benvingut/da", Snackbar.LENGTH_LONG).show();
-                                //Toast.makeText(getActivity().getBaseContext(), R.string.dades_enviades, Toast.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                             }
                         });
@@ -369,16 +366,14 @@ public class FragmentFitxa extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                            //Toast.makeText(getActivity().getBaseContext(), R.string.error_connexio, Toast.LENGTH_LONG).show();
                             mProgressBar.setVisibility(ProgressBar.GONE);
                         }
                     });
-                    Log.i("CLIENT", getString(R.string.error_servidor));
                 }
             }
         });
         }
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha esborrat l'observació", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha eliminat l'observació", Snackbar.LENGTH_LONG).show();
     }
 
 //
@@ -405,7 +400,6 @@ public class FragmentFitxa extends Fragment {
 /*        Intent intent = new Intent(getActivity(), VeureFoto.class);
         intent.putExtra(MainActivity.EXTRA_PATH, elPath);
         startActivity(intent);*/
-
 
     }
 }

@@ -10,14 +10,14 @@
         android:id="@+id/visor_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:elevation="4dp"
         android:background="@color/edumet"
+        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:logo="@mipmap/ic_launcher"/>
+        app:logo="@mipmap/ic_launcher"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <WebView
         android:id="@+id/elWebView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

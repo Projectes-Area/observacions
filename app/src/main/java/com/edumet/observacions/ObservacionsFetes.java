@@ -49,7 +49,7 @@ public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
 
-    private ProgressBar mProgressBar;
+    //private ProgressBar mProgressBar;
 
     private SQLiteDatabase db;
 
@@ -69,7 +69,7 @@ public class ObservacionsFetes extends Fragment {
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
+
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -260,6 +260,7 @@ public class ObservacionsFetes extends Fragment {
 
             lm.addView(line);
         }
+        //mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
         return v;
     }
 
@@ -340,7 +341,7 @@ public class ObservacionsFetes extends Fragment {
                 .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&tab=visuFeno")
                 .build();
 
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
 
@@ -349,7 +350,7 @@ public class ObservacionsFetes extends Fragment {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
                                             }
@@ -419,14 +420,14 @@ public class ObservacionsFetes extends Fragment {
                                                 if (response.isSuccessful()) {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
                                                 }

@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 
 public class Visor extends AppCompatActivity {
@@ -17,15 +18,12 @@ public class Visor extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.visor_toolbar);
         setSupportActionBar(myToolbar);
-        // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
-
-        // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         String imagePath = "file://"+ intent.getStringExtra(MainActivity.EXTRA_PATH);
-        String html = "<html><head></head><body> <img src=\""+ imagePath + "\"> </body></html>";
+        String html = "<html><head></head><body style=\"margin: 0; padding: 0\"> <img src=\""+ imagePath + "\"> </body></html>";
         WebView webView=(WebView) findViewById(R.id.elWebView);
         webView.loadDataWithBaseURL("", html, "text/html","utf-8", "");
     }
