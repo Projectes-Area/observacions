@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.desa();
+                    fragment.desa(0);
                 }
                 return true;
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("ACT", "ActivityResult");
+        Log.i("ACT", "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         Captura targetFragment = new Captura();
         Bundle args = new Bundle();

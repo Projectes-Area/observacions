@@ -200,7 +200,7 @@ public class Captura extends Fragment {
         Desa.setEnabled(false);
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                desa();
+                desa(0);
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -732,15 +732,15 @@ public class Captura extends Fragment {
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
-
-                                                Log.i("RESPONSE", response.toString());
-                                                Log.i("BODY.STRING", response.body().string());
-                                                Log.i("BODY.TOSTRING", response.body().toString());
                                                 if (response.isSuccessful()) {
+                                                    final String numResposta=response.body().string().trim();
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            Integer nouEdumetID=Integer.valueOf(numResposta);
+                                                            Log.i("EDUMET_ID", numResposta);
+                                                            desa(nouEdumetID);
                                                         }
                                                     });
                                                 } else {
@@ -761,7 +761,7 @@ public class Captura extends Fragment {
     // DESA
     //
 
-    public void desa() {
+    public void desa(int edumet_ID) {
 
         fesMiniatura(midaEnvia);
         pathEnvia = outputMiniatura.getAbsolutePath();
@@ -776,7 +776,7 @@ public class Captura extends Fragment {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, 0);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, edumet_ID);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
@@ -785,21 +785,27 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
+        if(edumet_ID>0) {
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
+        } else {
+            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
+        }
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         String strLong = Long.toString(newRowId);
         Log.i("SQL", strLong);
-        Snackbar snackbar = Snackbar
-                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
-                .setAction("SÍ", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        sendPost();
-                    }
-                });
-        snackbar.show();
+        if(edumet_ID==0) {
+            Snackbar snackbar = Snackbar
+                    .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                    .setAction("SÍ", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sendPost();
+                        }
+                    });
+            snackbar.show();
+        }
     }
 
     //
