@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -73,6 +75,8 @@ public class FragmentFitxa extends Fragment {
     String[] nomFenomen;
 
     String usuari;
+
+    MainActivity activitat;
 
 
     @Override
@@ -205,14 +209,11 @@ public class FragmentFitxa extends Fragment {
         }
     }
 
-
-
-
     //
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    private void sendPost() {
+    public void sendPost() {
 
         File fitxer_a_enviar = new File(elPath_Envia);
 
@@ -230,74 +231,17 @@ public class FragmentFitxa extends Fragment {
 
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
-        final OkHttpClient client = new OkHttpClient();
-
-        JSONObject jsonParam = new JSONObject();
-        try {
-            jsonParam.put("fitxer", encodedFoto);
-            jsonParam.put("usuari", usuari);
-            jsonParam.put("dia", elDia);
-            jsonParam.put("hora", laHora);
-            jsonParam.put("lat", laLatitud);
-            jsonParam.put("lon", laLongitud);
-            jsonParam.put("id_feno", Integer.valueOf(elFenomen));
-            jsonParam.put("descripcio", laDescripcio);
-            jsonParam.put("tab", "salvarFenoApp");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
-
-        final Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
-                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                //.url("http://tecnologia.isantandreu.net/prova.php")
-                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "auth")
-                .addHeader("cache-control", "no-cache")
-                .build();
-
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                            }
-
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-
-                                                Log.i("RESPONSE", response.toString());
-                                                Log.i("BODY.STRING", response.body().string());
-                                                Log.i("BODY.TOSTRING", response.body().toString());
-                                                if (response.isSuccessful()) {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                } else {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                    Log.i("CLIENT", getString(R.string.error_servidor));
-                                                }
-                                            }
-                                        }
+        MainActivity.enviaObservacio(
+                numID,
+                encodedFoto,
+                usuari,
+                elDia,
+                laHora,
+                laLatitud,
+                laLongitud,
+                Integer.valueOf(elFenomen),
+                laDescripcio,
+                this.getContext()
         );
     }
 

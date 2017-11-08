@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
     private Double latitud;
     private Double longitud;
 
-    private int nouEdumetID;
 
-    DadesHelper mDbHelper;
+
+
 
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        mDbHelper = new DadesHelper(this);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -269,6 +268,10 @@ public class MainActivity extends AppCompatActivity {
 
     public int desaObservacio(String dia,String hora,Double latitud,Double longitud,int num_fenomen,String observacio,String path,String pathEnvia) {
 
+        DadesHelper mDbHelper;
+
+        mDbHelper = new DadesHelper(this);
+
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -287,12 +290,13 @@ public class MainActivity extends AppCompatActivity {
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         Log.i("APP:SQL", String.valueOf(newRowId));
+        mDbHelper.close();
         return (int) newRowId;
     }
 
+    public static void enviaObservacio(final int AppID,String encodedFoto,String usuari,final String dia,final String hora,final Double latitud,final Double longitud,final int num_fenomen,final String observacio,final Context context) {
 
-
-    public void enviaObservacio(final int AppID,String encodedFoto,String usuari,final String dia,final String hora,final Double latitud,final Double longitud,final int num_fenomen,final String observacio) {
+        //final int nouEdumetID;
 
         final OkHttpClient client = new OkHttpClient();
 
@@ -330,42 +334,45 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
                                             @Override
                                             public void onFailure(Call call, IOException e) {
-                                                runOnUiThread(new Runnable() {
+/*                                                runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
                                                         //mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
-                                                });
+                                                });*/
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     final String numResposta=response.body().string().trim();
-                                                    runOnUiThread(new Runnable() {
-                                                        public void run() {
+                                                    //runOnUiThread(new Runnable() {
+                                                        //public void run() {
                                                             //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                             //mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            nouEdumetID=Integer.valueOf(numResposta);
+                                                            int nouEdumetID=Integer.valueOf(numResposta);
                                                             Log.i("EDUMET_ID", numResposta);
-                                                            updateID(AppID,nouEdumetID);
-                                                        }
-                                                    });
+                                                            updateID(AppID,nouEdumetID,context);
+                                                        //}
+                                                   // });
                                                 } else {
-                                                    runOnUiThread(new Runnable() {
+                                                    /*runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
                                                             //mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
-                                                    });
-                                                    Log.i("CLIENT", getString(R.string.error_servidor));
+                                                    });*/
+                                                    //Log.i("CLIENT", getString(R.string.error_servidor));
                                                 }
                                             }
                                         }
         );
     }
 
-    public void updateID(int AppID,int EdumetID) {
+    public static void updateID(int AppID,int EdumetID,Context context) {
+        DadesHelper mDbHelper;
+
+        mDbHelper = new DadesHelper(context);
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -381,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                 values,
                 selection,
                 selectionArgs);
-
+        mDbHelper.close();
         Log.i("UPDATEDROWS",String.valueOf(count));
     }
 

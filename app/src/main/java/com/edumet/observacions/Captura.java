@@ -137,8 +137,6 @@ public class Captura extends Fragment {
     private String hora;
     private int AppID;
 
-    DadesHelper mDbHelper;
-
     String[] nomFenomen;
 
     String usuari;
@@ -158,8 +156,6 @@ public class Captura extends Fragment {
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
-
-        mDbHelper = new DadesHelper(getContext());
 
         Context context = getActivity();
         SharedPreferences sharedPref = context.getSharedPreferences(
@@ -274,11 +270,7 @@ public class Captura extends Fragment {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
-    }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -696,7 +688,8 @@ public class Captura extends Fragment {
                 mCurrentLocation.getLatitude(),
                 mCurrentLocation.getLongitude(),
                 num_fenomen,
-                observacio.getText().toString()
+                observacio.getText().toString(),
+                this.getContext()
         );
     }
 
