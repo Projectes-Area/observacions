@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -18,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -311,7 +311,6 @@ public class Captura extends Fragment {
                 return false;
             }
         });
-
     }
 
     @Override
@@ -665,6 +664,8 @@ public class Captura extends Fragment {
                 this.getContext()
         );
     }
+
+
 
     //
     // DESA

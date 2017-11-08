@@ -15,7 +15,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,7 +55,6 @@ public class ObservacionsFetes extends Fragment {
     private SQLiteDatabase db;
 
     String[] nomFenomen;
-
     String usuari;
 
     Bitmap bitmap;
@@ -72,18 +70,13 @@ public class ObservacionsFetes extends Fragment {
         ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-
-
         mDbHelper = new DadesHelper(getContext());
-
         db = mDbHelper.getReadableDatabase();
 
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        Context context = getActivity();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                "com.edumet.observacions", Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
 
         usuari = sharedPref.getString("usuari", "");
 
@@ -103,7 +96,6 @@ public class ObservacionsFetes extends Fragment {
         // Filter results
         String selection = DadesEstructura.Parametres._ID + " > ?";
         String[] selectionArgs = {"0"};
-        //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
         String sortOrder = "dia DESC, hora DESC";
 
         Cursor cursor = db.query(
@@ -126,32 +118,23 @@ public class ObservacionsFetes extends Fragment {
         List itemPath_Envias = new ArrayList<>();
         List itemEnviats = new ArrayList<>();
         while (cursor.moveToNext()) {
-            String itemIdEdumet = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
+            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
             itemIdsEdumet.add(itemIdEdumet);
-            String itemId = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
+            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
             itemIds.add(itemId);
-            String itemDia = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
             itemDies.add(itemDia);
-            String itemHora = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
             itemHores.add(itemHora);
-            String itemLatitud = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
+            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
             itemLatituds.add(itemLatitud);
-            String itemLongitud = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
+            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
             itemLongituds.add(itemLongitud);
-            String itemFenomen = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
             itemFenomens.add(itemFenomen);
-            String itemPath_icon = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
             itemPath_Envias.add(itemPath_icon);
-            String itemEnviat = cursor.getString(
-                    cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
             itemEnviats.add(itemEnviat);
         }
         cursor.close();
@@ -162,7 +145,6 @@ public class ObservacionsFetes extends Fragment {
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
         for (int j = 0; j < itemDies.size(); j++) {
-            final int index = j;
             LinearLayout ll = new LinearLayout(getContext());
             ll.setGravity(Gravity.CENTER_VERTICAL);
             ll.setOrientation(LinearLayout.HORIZONTAL);
@@ -211,7 +193,6 @@ public class ObservacionsFetes extends Fragment {
             }
 
             LinearLayout.LayoutParams paramsData = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
 
             lblDia.setLayoutParams(paramsData);
             llData.addView(lblDia);
@@ -380,9 +361,6 @@ public class ObservacionsFetes extends Fragment {
 
                                                     for (int i = 0; i < jsonArray.length(); i++) {
                                                         JSONArray JSONobservacio = jsonArray.getJSONArray(i);
-                                                        //
-                                                        // comprova si és nova
-                                                        //
 
                                                         flagRepetida = false;
                                                         for (int j = 0; j < itemIdsEdumet.size(); j++) {
@@ -414,16 +392,17 @@ public class ObservacionsFetes extends Fragment {
                                                             try {
                                                                 downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
                                                             } catch (Exception e) {
+                                                                e.printStackTrace();
                                                             }
                                                         }
 
                                                     }
                                                     numNovesObservacions = numNovaObservacio;
-                                                    Log.i("NOVESOBS", String.valueOf(numNovesObservacions));
+                                                    Log.i("NovesObs", String.valueOf(numNovesObservacions));
                                                     nous_paths = new String[numNovesObservacions];
 
                                                 } catch (Exception e) {
-                                                    Log.i("ERROR", "error");
+                                                    e.printStackTrace();
                                                 }
 
                                                 if (response.isSuccessful()) {
@@ -471,24 +450,21 @@ public class ObservacionsFetes extends Fragment {
                                                 nous_paths[numNovaObservacio-1] = miniatura.getAbsolutePath();
                                                 numObservacionsBaixades++;
                                                 if (numObservacionsBaixades == numNovesObservacions) {
-                                                    Log.i("BAIXADES", String.valueOf(numNovesObservacions));
+                                                    Log.i("Baixades", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
                                                     redraw(numNovesObservacions);
                                                 }
                                             }
                                         }
-
         );
     }
 
     public void inclouNousRegistres() {
         db = mDbHelper.getWritableDatabase();
 
-        // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
 
         for (int i = 0; i < numNovesObservacions; i++) {
-
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, id_edumet.get(i).toString());
             values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia.get(i).toString());
             values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora.get(i).toString());
@@ -500,9 +476,7 @@ public class ObservacionsFetes extends Fragment {
             values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
             values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
 
-            // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
-
         }
         Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.observacions_baixades), Snackbar.LENGTH_SHORT).show();
     }

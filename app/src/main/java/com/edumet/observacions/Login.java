@@ -28,7 +28,6 @@ public class Login extends Fragment {
     private EditText Contrasenya;
     private ProgressBar mProgressBar;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,56 +44,52 @@ public class Login extends Fragment {
     public void onViewCreated(View v, Bundle savedInstanceState) {
         LoginOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 try {
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
                     sincronitza();
                 } catch (Exception e) {
-                    Log.i("Exception", "error");
+                    e.printStackTrace();
                 }
             }
         });
-
     }
 
 //
 // LOGIN
 //
-
     final OkHttpClient client = new OkHttpClient();
 
     public void sincronitza() throws Exception {
-        String cadenaRequest="https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident="+Usuari.getText().toString()+"&psw="+Contrasenya.getText().toString()+"&tab=registrar_se";
-        Log.i("LOGIN",cadenaRequest);
+        String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident=" + Usuari.getText().toString() + "&psw=" + Contrasenya.getText().toString() + "&tab=registrar_se";
+        Log.i("Login", cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {
+            @Override
+            public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
-            @Override public void onResponse(Call call, Response response) throws IOException {
-                Log.i("RESPONSE", response.toString());
-                final String resposta=response.body().string().trim();
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String resposta = response.body().string().trim();
                 Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {
-                    if(resposta.isEmpty()) {
+                    if (resposta.isEmpty()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.identificacio_incorrecta, Snackbar.LENGTH_SHORT).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                             }
                         });
-                    }
-                    else {
+                    } else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                 Context context = getActivity();
-                                SharedPreferences sharedPref = context.getSharedPreferences(
-                                        "com.edumet.observacions", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);
@@ -104,17 +99,16 @@ public class Login extends Fragment {
                             }
                         });
                     }
-
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible,Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_SHORT).show();
                             mProgressBar.setVisibility(ProgressBar.GONE);
                         }
                     });
-                    Log.i("LOGIN", getString(R.string.servidor_no_disponible));
+                    Log.i("Login", getString(R.string.servidor_no_disponible));
                 }
             }
         });
     }
-    }
+}

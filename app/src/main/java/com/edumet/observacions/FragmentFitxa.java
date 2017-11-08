@@ -1,6 +1,5 @@
 package com.edumet.observacions;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -31,7 +30,6 @@ import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -41,7 +39,6 @@ public class FragmentFitxa extends Fragment {
     DadesHelper mDbHelper;
 
     private ImageButton Envia;
-    private ImageButton Mapa;
     private ImageButton Esborra;
     private ImageView imatge;
     private TextView fenomen;
@@ -95,7 +92,6 @@ public class FragmentFitxa extends Fragment {
                             }
                         });
                 snackbar.show();
-
             }
         });
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
@@ -126,7 +122,6 @@ public class FragmentFitxa extends Fragment {
         activity = (Fitxa) getActivity();
         numID = activity.getID();
 
-        // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
                 DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
@@ -140,20 +135,12 @@ public class FragmentFitxa extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
-        // Filter results
+
         String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {String.valueOf(numID)};
         String sortOrder = null;
 
-        Cursor cursor = db.query(
-                DadesEstructura.Parametres.TABLE_NAME,    // The table to query
-                projection,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                selectionArgs,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
 
         while (cursor.moveToNext()) {
             if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
@@ -226,10 +213,12 @@ public class FragmentFitxa extends Fragment {
                 laDescripcio,
                 this.getContext()
         );
+        Envia.setEnabled(false);
+        Envia.setImageResource(R.mipmap.ic_send_white);
     }
 
 //
-// ESBORRA OBSERVACIÓ
+// ELIMINA OBSERVACIÓ
 //
 
     private void esborra() {
@@ -288,7 +277,6 @@ public class FragmentFitxa extends Fragment {
                             }
                         });
                     }
-
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
@@ -308,18 +296,6 @@ public class FragmentFitxa extends Fragment {
 //
 
     public void veure_foto() {
-/*        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        File newFile = new File(elPath);
-        Log.i("path", elPath);
-        Uri uri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
-        intent.setDataAndType(uri, "image*//*");
-
-        PackageManager pm = getActivity().getPackageManager();
-        if (intent.resolveActivity(pm) != null) {
-            startActivity(intent);
-        }*/
-
         Intent intent = new Intent(getActivity(), VeureFoto.class);
         intent.putExtra(MainActivity.EXTRA_PATH, elPath);
         startActivity(intent);

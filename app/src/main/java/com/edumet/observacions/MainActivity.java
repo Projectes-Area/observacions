@@ -1,5 +1,6 @@
 package com.edumet.observacions;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -240,6 +244,8 @@ public class MainActivity extends AppCompatActivity {
         return (int) newRowId;
     }
 
+
+
     public static void enviaObservacio(final int AppID, String encodedFoto,
                                        String usuari, final String dia, final String hora,
                                        final Double latitud, final Double longitud,
@@ -277,40 +283,31 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
+/*        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);*/
 
         client.newCall(request).enqueue(new Callback() {
+
                                             @Override
                                             public void onFailure(Call call, IOException e) {
-/*                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });*/
+                                                Snackbar.make(rootView, R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+                                                //mProgressBar.setVisibility(ProgressBar.GONE);
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
-                                                    final String numResposta = response.body().string().trim();
-                                                    //runOnUiThread(new Runnable() {
-                                                    //public void run() {
-                                                    //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
-                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    String numResposta = response.body().string().trim();
+                                                    Snackbar.make(rootView, R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                     int nouEdumetID = Integer.valueOf(numResposta);
-                                                    Log.i("EDUMET_ID", numResposta);
+                                                    Log.i("Edumet_ID", numResposta);
                                                     updateID(AppID, nouEdumetID, context);
-                                                    //}
-                                                    // });
-                                                } else {
-                                                    /*runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
-                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });*/
-                                                    //Log.i("CLIENT", getString(R.string.error_servidor));
+                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                }
+                                                else {
+                                                    Snackbar.make(rootView.findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
+                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
                                                 }
                                             }
                                         }
@@ -319,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void updateID(int AppID, int EdumetID, Context context) {
         DadesHelper mDbHelper;
-
         mDbHelper = new DadesHelper(context);
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -331,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         String selection = DadesEstructura.Parametres._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(AppID)};
 
-        int count = db.update(DadesEstructura.Parametres.TABLE_NAME,values,selection,selectionArgs);
+        int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
         Log.i("UpdatedRows", String.valueOf(count));
     }
