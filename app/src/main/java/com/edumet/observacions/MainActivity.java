@@ -1,20 +1,44 @@
 package com.edumet.observacions;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static java.lang.String.valueOf;
 
@@ -31,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private Double latitud;
     private Double longitud;
 
+    private int nouEdumetID;
+
+    DadesHelper mDbHelper;
+
+    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        mDbHelper = new DadesHelper(this);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -115,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
+                    fragment.desa();
                     fragment.sendPost();
                 }
                 return true;
@@ -123,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.desa(0);
+                    fragment.desa();
                 }
                 return true;
 
@@ -233,6 +265,124 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.fragment_container, newFragment);
         //transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public int desaObservacio(String dia,String hora,Double latitud,Double longitud,int num_fenomen,String observacio,String path,String pathEnvia) {
+
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, 0);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, String.valueOf(latitud));
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, String.valueOf(longitud));
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH,path);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
+        Log.i("APP:SQL", String.valueOf(newRowId));
+        return (int) newRowId;
+    }
+
+
+
+    public void enviaObservacio(final int AppID,String encodedFoto,String usuari,final String dia,final String hora,final Double latitud,final Double longitud,final int num_fenomen,final String observacio) {
+
+        final OkHttpClient client = new OkHttpClient();
+
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("fitxer", encodedFoto);
+            jsonParam.put("usuari", usuari);
+            jsonParam.put("dia", dia);
+            jsonParam.put("hora", hora);
+            jsonParam.put("lat", latitud);
+            jsonParam.put("lon", longitud);
+            jsonParam.put("id_feno", num_fenomen);
+            jsonParam.put("descripcio", observacio);
+            jsonParam.put("tab", "salvarFenoApp");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
+
+        final Request request = new Request.Builder()
+                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
+                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
+                //.url("http://tecnologia.isantandreu.net/prova.php")
+                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "auth")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    final String numResposta=response.body().string().trim();
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            nouEdumetID=Integer.valueOf(numResposta);
+                                                            Log.i("EDUMET_ID", numResposta);
+                                                            updateID(AppID,nouEdumetID);
+                                                        }
+                                                    });
+                                                } else {
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                    Log.i("CLIENT", getString(R.string.error_servidor));
+                                                }
+                                            }
+                                        }
+        );
+    }
+
+    public void updateID(int AppID,int EdumetID) {
+
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, EdumetID);
+
+        String selection = DadesEstructura.Parametres._ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(AppID)};
+
+        int count = db.update(
+                DadesEstructura.Parametres.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        Log.i("UPDATEDROWS",String.valueOf(count));
     }
 
 }

@@ -133,6 +133,9 @@ public class Captura extends Fragment {
     private int num_fenomen = 1;
     public int angle_foto;
     private boolean jaLocalitzat = false;
+    private String dia;
+    private String hora;
+    private int AppID;
 
     DadesHelper mDbHelper;
 
@@ -194,13 +197,23 @@ public class Captura extends Fragment {
         Envia.setEnabled(false);
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                desa();
                 sendPost();
             }
         });
         Desa.setEnabled(false);
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                desa(0);
+                desa();
+                Snackbar snackbar = Snackbar
+                        .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                        .setAction("SÍ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                sendPost();
+                            }
+                        });
+                snackbar.show();
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -552,13 +565,6 @@ public class Captura extends Fragment {
     //
 
     public void mapa() {
-/*        String laUri = "geo:" + String.valueOf(mCurrentLocation.getLatitude()) + "," + valueOf(mCurrentLocation.getLongitude() + "?z=15");
-        Uri gmmIntentUri = Uri.parse(laUri);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(mapIntent);
-        }*/
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             startLocationUpdates();
@@ -622,7 +628,7 @@ public class Captura extends Fragment {
         return image;
     }
 
-    private void fesMiniatura(int x) {
+  public void fesMiniatura(int x) {
         try {
             String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
             File storageDir = getActivity().getFilesDir();
@@ -675,85 +681,22 @@ public class Captura extends Fragment {
     //
 
     public void sendPost() {
+
         ByteArrayOutputStream baosEnv = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosEnv);
         byte[] fotografia = baosEnv.toByteArray();
-
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss", Locale.US);
-        String dia = sdf.format(Calendar.getInstance().getTime());
-        String hora = shf.format(Calendar.getInstance().getTime());
-
-        final OkHttpClient client = new OkHttpClient();
-
-        JSONObject jsonParam = new JSONObject();
-        try {
-            jsonParam.put("fitxer", encodedFoto);
-            jsonParam.put("usuari", usuari);
-            jsonParam.put("dia", dia);
-            jsonParam.put("hora", hora);
-            jsonParam.put("lat", mCurrentLocation.getLatitude());
-            jsonParam.put("lon", mCurrentLocation.getLongitude());
-            jsonParam.put("id_feno", num_fenomen);
-            jsonParam.put("descripcio", observacio.getText());
-            jsonParam.put("tab", "salvarFenoApp");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
-
-        final Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
-                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                //.url("http://tecnologia.isantandreu.net/prova.php")
-                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "auth")
-                .addHeader("cache-control", "no-cache")
-                .build();
-
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                            }
-
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    final String numResposta=response.body().string().trim();
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            Integer nouEdumetID=Integer.valueOf(numResposta);
-                                                            Log.i("EDUMET_ID", numResposta);
-                                                            desa(nouEdumetID);
-                                                        }
-                                                    });
-                                                } else {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                    Log.i("CLIENT", getString(R.string.error_servidor));
-                                                }
-                                            }
-                                        }
+        ((MainActivity) getActivity()).enviaObservacio(
+                AppID,
+                encodedFoto,
+                usuari,
+                dia,
+                hora,
+                mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude(),
+                num_fenomen,
+                observacio.getText().toString()
         );
     }
 
@@ -761,51 +704,25 @@ public class Captura extends Fragment {
     // DESA
     //
 
-    public void desa(int edumet_ID) {
+    public void desa() {
 
         fesMiniatura(midaEnvia);
-        pathEnvia = outputMiniatura.getAbsolutePath();
-
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         SimpleDateFormat shf = new SimpleDateFormat("HH:mm:ss", Locale.US);
-        String dia = sdf.format(Calendar.getInstance().getTime());
-        String hora = shf.format(Calendar.getInstance().getTime());
+        dia = sdf.format(Calendar.getInstance().getTime());
+        hora = shf.format(Calendar.getInstance().getTime());
 
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, edumet_ID);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, mCurrentLocation.getLatitude());
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, mCurrentLocation.getLongitude());
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, mCurrentPhotoPath);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
-        if(edumet_ID>0) {
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
-        } else {
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
-        }
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
-        String strLong = Long.toString(newRowId);
-        Log.i("SQL", strLong);
-        if(edumet_ID==0) {
-            Snackbar snackbar = Snackbar
-                    .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
-                    .setAction("SÍ", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            sendPost();
-                        }
-                    });
-            snackbar.show();
-        }
+        AppID=((MainActivity) getActivity()).desaObservacio(
+                dia,
+                hora,
+                mCurrentLocation.getLatitude(),
+                mCurrentLocation.getLongitude(),
+                num_fenomen,
+                observacio.getText().toString(),
+                mCurrentPhotoPath,
+                outputMiniatura.getAbsolutePath()
+        );
     }
 
     //
