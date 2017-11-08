@@ -31,7 +31,6 @@ public class VeureFoto extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.veure_toolbar, menu);
         return true;
     }
@@ -53,10 +52,6 @@ public class VeureFoto extends AppCompatActivity {
                 Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
-
-/*                Intent intent = new Intent(this, Visor.class);
-                intent.putExtra(MainActivity.EXTRA_PATH, "edumet_web");
-                startActivity(intent);*/
                 return true;
 
             case R.id.action_settings:

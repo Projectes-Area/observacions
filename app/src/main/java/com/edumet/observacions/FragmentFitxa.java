@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -21,10 +20,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,7 +34,6 @@ import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class FragmentFitxa extends Fragment {
@@ -69,22 +63,15 @@ public class FragmentFitxa extends Fragment {
 
     private SQLiteDatabase db;
 
-    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
-
     Fitxa activity;
     String[] nomFenomen;
-
     String usuari;
-
-    MainActivity activitat;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
-
 
         mDbHelper = new DadesHelper(getContext());
         db = mDbHelper.getReadableDatabase();
@@ -121,10 +108,7 @@ public class FragmentFitxa extends Fragment {
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
 
-        Context context = getActivity();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                "com.edumet.observacions", Context.MODE_PRIVATE);
-
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
 
         return v;
@@ -159,7 +143,6 @@ public class FragmentFitxa extends Fragment {
         // Filter results
         String selection = DadesEstructura.Parametres._ID + " = ?";
         String[] selectionArgs = {String.valueOf(numID)};
-        //String sortOrder = DadesEstructura.Parametres.COLUMN_NAME_DIA+ " DESC";
         String sortOrder = null;
 
         Cursor cursor = db.query(
@@ -274,7 +257,7 @@ public class FragmentFitxa extends Fragment {
         final OkHttpClient client = new OkHttpClient();
 
         String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
-        Log.i("POSTDELETE", cadenaRequest);
+        Log.i("PostDelete", cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)
                 .build();
@@ -287,7 +270,7 @@ public class FragmentFitxa extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.i("RESPONSE", response.toString());
+                Log.i("Response", response.toString());
                 final String resposta = response.body().string().trim();
                 Log.i("Resposta", resposta);
                 if (response.isSuccessful()) {

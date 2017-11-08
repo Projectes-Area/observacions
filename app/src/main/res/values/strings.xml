@@ -9,7 +9,7 @@
     </string-array>
     <string name="app_name">Observacions</string>
     <string name="location_settings_inadequate_warning">S\'ha d\'activar la localització</string>
-    <string name="permission_rationale">L\'App necesita el permís de localització</string>
+    <string name="permission_rationale">Es necesita el permís de localització</string>
     <string name="permission_denied_explanation">El permís de localització és necessari</string>
     <string name="settings">Ajustaments</string>
     <string name="msg_no_camera">No hi ha cap càmera instal·lada</string>
