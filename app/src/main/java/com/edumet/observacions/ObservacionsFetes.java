@@ -398,7 +398,7 @@ public class ObservacionsFetes extends Fragment {
                                                         numNovesObservacions = numNovaObservacio;
                                                         Log.i("NovesObs", String.valueOf(numNovesObservacions));
                                                         nous_paths = new String[numNovesObservacions];
-
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
                                                     }
