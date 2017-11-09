@@ -646,16 +646,6 @@ public class Captura extends Fragment {
         }
     }
 
-    //
-    // GENERAL
-    //
-
-/*    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
-        Snackbar.make(
-                getActivity().findViewById(android.R.id.content),
-                getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
-    }*/
 }
 
 
