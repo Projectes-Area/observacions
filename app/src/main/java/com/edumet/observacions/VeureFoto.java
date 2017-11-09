@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,8 @@ public class VeureFoto extends AppCompatActivity {
 
         ZoomImageView imatge=(ZoomImageView) findViewById(R.id.zoomImageView);
         imatge.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+
+        Snackbar.make(findViewById(android.R.id.content), "Mou la foto amb 1 dit, fes zoom amb 2 dits", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -78,4 +81,3 @@ public class VeureFoto extends AppCompatActivity {
         }
     }
 }
-

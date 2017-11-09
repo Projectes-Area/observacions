@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -173,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.desa();
+                    fragment.informaDesat();
                 }
                 return true;
             case R.id.edumet_web:
@@ -316,16 +319,22 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-        final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
-/*        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);*/
+        final View rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        final Handler mHandler = new Handler(context.getMainLooper());
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
 
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 Snackbar.make(rootView, R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                mHandler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
                                             }
 
                                             @Override
@@ -336,11 +345,21 @@ public class MainActivity extends AppCompatActivity {
                                                     int nouEdumetID = Integer.valueOf(numResposta);
                                                     Log.i("Edumet_ID", numResposta);
                                                     updateID(AppID, nouEdumetID, context);
-                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
-                                                }
-                                                else {
+
+                                                    mHandler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                } else {
                                                     Snackbar.make(rootView.findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
-                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    mHandler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
                                                 }
                                             }
                                         }

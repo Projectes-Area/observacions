@@ -102,7 +102,7 @@ public class FragmentFitxa extends Fragment {
         });
         data = (TextView) v.findViewById(R.id.lblData);
         descripcio = (TextView) v.findViewById(R.id.lblDescripcio);
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");

@@ -175,15 +175,7 @@ public class Captura extends Fragment {
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 desa();
-                Snackbar snackbar = Snackbar
-                        .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
-                        .setAction("SÍ", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                sendPost();
-                            }
-                        });
-                snackbar.show();
+                informaDesat();
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -194,6 +186,11 @@ public class Captura extends Fragment {
         Mapa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mapa();
+            }
+        });
+        imatge.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                veure_foto();
             }
         });
 
@@ -460,6 +457,7 @@ public class Captura extends Fragment {
             Intent intent = new Intent(getActivity(), MapsActivity.class);
             intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
             intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
+            intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
             startActivity(intent);
         }
     }
@@ -622,6 +620,30 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
+    }
+
+    public void informaDesat() {
+        Snackbar snackbar = Snackbar
+                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                .setAction("SÍ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendPost();
+                    }
+                });
+        snackbar.show();
+    }
+
+//
+// VEURE FOTO
+//
+
+    public void veure_foto() {
+        if (output != null) {
+            Intent intent = new Intent(getActivity(), VeureFoto.class);
+            intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
+            startActivity(intent);
+        }
     }
 
     //
