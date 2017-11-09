@@ -1,6 +1,5 @@
 package com.edumet.observacions;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -17,16 +16,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
@@ -64,7 +60,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -81,8 +76,6 @@ import java.util.Locale;
 import static android.app.Activity.RESULT_OK;
 
 public class Captura extends Fragment {
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
@@ -139,11 +132,6 @@ public class Captura extends Fragment {
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
-        imatge.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                veure_foto();
-            }
-        });
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
@@ -187,7 +175,15 @@ public class Captura extends Fragment {
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 desa();
-                informaDesat();
+                Snackbar snackbar = Snackbar
+                        .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                        .setAction("SÍ", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                sendPost();
+                            }
+                        });
+                snackbar.show();
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -216,7 +212,6 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -241,11 +236,7 @@ public class Captura extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (!checkPermissions()) {
-            requestPermissions();
-        } else {
             startLocationUpdates();
-        }
     }
 
     @Override
@@ -272,10 +263,8 @@ public class Captura extends Fragment {
     public void onResume() {
         super.onResume();
         Log.i("OnResume", String.valueOf(mRequestingLocationUpdates));
-        if (mRequestingLocationUpdates && checkPermissions()) {
+        if (mRequestingLocationUpdates ) {
             startLocationUpdates();
-        } else if (!checkPermissions()) {
-            requestPermissions();
         }
         updateLocationUI();
         if (output != null) {
@@ -458,59 +447,6 @@ public class Captura extends Fragment {
                 });
     }
 
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-        if (shouldProvideRationale) {
-            Log.i("requestPermissions", "Displaying permission rationale to provide additional context.");
-            showSnackbar(R.string.permission_rationale,
-                    android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ActivityCompat.requestPermissions(getActivity(),
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_PERMISSIONS_REQUEST_CODE);
-                        }
-                    });
-        } else {
-            Log.i("requestPermissions", "Requesting permission");
-            ActivityCompat.requestPermissions(getActivity(), new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                Log.i("FRAGonReqPermResult", "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (mRequestingLocationUpdates) {
-                    Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
-                }
-            } else {
-                showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
-        }
-    }
-
     //
     // MAPA
     //
@@ -579,7 +515,7 @@ public class Captura extends Fragment {
         return image;
     }
 
-    public void fesMiniatura(int x) {
+  public void fesMiniatura(int x) {
         try {
             String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
             File storageDir = getActivity().getFilesDir();
@@ -663,10 +599,9 @@ public class Captura extends Fragment {
         );
     }
 
-
-//
-// DESA
-//
+    //
+    // DESA
+    //
 
     public void desa() {
 
@@ -677,7 +612,7 @@ public class Captura extends Fragment {
         dia = sdf.format(Calendar.getInstance().getTime());
         hora = shf.format(Calendar.getInstance().getTime());
 
-        AppID = ((MainActivity) getActivity()).desaObservacio(
+        AppID=((MainActivity) getActivity()).desaObservacio(
                 dia,
                 hora,
                 mCurrentLocation.getLatitude(),
@@ -689,40 +624,16 @@ public class Captura extends Fragment {
         );
     }
 
-    public void informaDesat() {
-        Snackbar snackbar = Snackbar
-                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
-                .setAction("SÍ", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        sendPost();
-                    }
-                });
-        snackbar.show();
-    }
+    //
+    // GENERAL
+    //
 
-//
-// VEURE FOTO
-//
-
-    public void veure_foto() {
-        if (output != null) {
-            Intent intent = new Intent(getActivity(), VeureFoto.class);
-            intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
-            startActivity(intent);
-        }
-    }
-
-//
-// GENERAL
-//
-
-    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
+/*    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
                 getActivity().findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show();
-    }
+    }*/
 }
 
 

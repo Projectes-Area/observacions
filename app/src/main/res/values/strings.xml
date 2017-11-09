@@ -15,7 +15,7 @@
     <string name="msg_no_camera">No hi ha cap càmera instal·lada</string>
     <string name="encara_sense_lloc">No es pot localitzar la ubicació</string>
     <string name="dades_enviades">L\'observació s\'ha enviat correctament</string>
-    <string name="error_connexio">S\'ha produït un error de connexió</string>
+    <string name="error_connexio">S\'ha produït un error en l\'enviament</string>
     <string name="fitxer_error">S\'ha produït un error en crear el fitxer</string>
     <string name="error_servidor">No s\'ha pogut enviar l\'observació</string>
     <string name="descriu">Descriu aquí les teves observacions</string>
@@ -37,9 +37,5 @@
     <string name="desa_observacio">Desa aquesta observació</string>
     <string name="envia_observacio">Envia aquesta observació</string>
     <string name="gira_imatge">Gira la fotografia</string>
-    <string name="veure_mapa">Amplia el mapa</string>
-    <string name="elimina">Elimina aquesta observació</string>
-    <string name="mostra_imatge">Mostra la fotografia</string>
-    <string name="sincronitza">Sincronitza amb el servidor</string>
 
 </resources>

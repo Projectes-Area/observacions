@@ -1,17 +1,19 @@
 package com.edumet.observacions;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +22,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_ID = "com.edumet.observacions.ID";
     public static final String EXTRA_NUMFENOMEN = "com.edumet.observacions.NUMFENOMEN";
     public static final String EXTRA_PATH = "com.edumet.observacions.PATH";
+
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private boolean jaLocalitzat = false;
     private boolean jaHiHaFoto = false;
@@ -75,6 +84,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (!checkPermissions()) {
+            requestPermissions();
+        }
+    }
+
+    private boolean checkPermissions() {
+        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermissions() {
+            Log.i("requestPermissions", "Requesting permission");
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length <= 0) {
+                Log.i("FRAGonReqPermResult", "User interaction was cancelled.");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
+
+            } else {
+                finish();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
         return true;
@@ -82,10 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        FragmentManager fm = getSupportFragmentManager();
-        Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-        Intent intent;
-        Uri uri;
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -95,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.la_meva_ubicacio:
                 if (jaLocalitzat) {
-                    intent = new Intent(this, MapsActivity.class);
+                    Intent intent = new Intent(this, MapsActivity.class);
                     intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(latitud));
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(longitud));
                     startActivity(intent);
@@ -103,11 +143,15 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.fotografia:
                 if (jaLocalitzat) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.fesFoto();
                 }
                 return true;
             case R.id.gira_imatge:
                 if (jaHiHaFoto) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.angle_foto += 90;
                     if (fragment.angle_foto >= 360) {
                         fragment.angle_foto = 0;
@@ -116,41 +160,34 @@ public class MainActivity extends AppCompatActivity {
                     fragment.imatge.setImageBitmap(fragment.bitmap);
                 }
                 return true;
-            case R.id.mostra_imatge:
-                fragment.veure_foto();
-                return true;
             case R.id.envia_observacio:
                 if (jaHiHaFoto) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.desa();
                     fragment.sendPost();
                 }
                 return true;
             case R.id.desa_observacio:
                 if (jaHiHaFoto) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.desa();
-                    fragment.informaDesat();
                 }
                 return true;
-            case R.id.sincronitza:
-                ObservacionsFetes fragment1 = (ObservacionsFetes) fm.findFragmentById(R.id.fragment_container);
-                try {
-                    fragment1.sincronitza();
-                } catch (Exception e) {
-                    Log.i("Exception", "error");
-                }
             case R.id.edumet_web:
-                uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
-                intent = new Intent(Intent.ACTION_VIEW, uri);
+                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
-                intent = new Intent();
-                intent.setAction(
+                Intent intent2 = new Intent();
+                intent2.setAction(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                intent.setData(uri);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                Uri uri2 = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                intent2.setData(uri2);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent2);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -160,16 +197,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i("ACT", "OnRequest");
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Captura targetFragment = new Captura();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        targetFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        transaction.commit();
     }
 
     @Override
@@ -252,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
         return (int) newRowId;
     }
 
-
     public static void enviaObservacio(final int AppID, String encodedFoto,
                                        String usuari, final String dia, final String hora,
                                        final Double latitud, final Double longitud,
@@ -290,22 +316,16 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("cache-control", "no-cache")
                 .build();
 
-        final View rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
-        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        final Handler mHandler = new Handler(context.getMainLooper());
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        final View rootView = ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
+/*        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        mProgressBar.setVisibility(ProgressBar.VISIBLE);*/
 
         client.newCall(request).enqueue(new Callback() {
 
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 Snackbar.make(rootView, R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                mHandler.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
+                                                //mProgressBar.setVisibility(ProgressBar.GONE);
                                             }
 
                                             @Override
@@ -316,21 +336,11 @@ public class MainActivity extends AppCompatActivity {
                                                     int nouEdumetID = Integer.valueOf(numResposta);
                                                     Log.i("Edumet_ID", numResposta);
                                                     updateID(AppID, nouEdumetID, context);
-
-                                                    mHandler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                } else {
+                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                }
+                                                else {
                                                     Snackbar.make(rootView.findViewById(android.R.id.content), R.string.error_servidor, Snackbar.LENGTH_SHORT).show();
-                                                    mHandler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
+                                                    //mProgressBar.setVisibility(ProgressBar.GONE);
                                                 }
                                             }
                                         }

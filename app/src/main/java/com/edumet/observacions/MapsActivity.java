@@ -1,7 +1,6 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +20,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private double latitud;
     private double longitud;
-    String[] nomFenomen;
-    private int numFenomen=0;
+    private String etiqueta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +29,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar myToolbar = (Toolbar) findViewById(R.id.map_toolbar);
         setSupportActionBar(myToolbar);
 
+
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        Resources res = getResources();
-        nomFenomen = res.getStringArray(R.array.nomFenomen);
-
         Intent intent = getIntent();
+        etiqueta = "Ubicació actual";
         latitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
         longitud= Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
-        numFenomen=Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_NUMFENOMEN));
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -48,13 +44,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        String etiqueta;
-        if(numFenomen>0) {
-            etiqueta=nomFenomen[numFenomen];
-        }else {
-            etiqueta = "Ubicació actual";
-        }
         mMap = googleMap;
+
         LatLng observacio = new LatLng(latitud,longitud);
         mMap.addMarker(new MarkerOptions().position(observacio).title(etiqueta));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio,15.0f));

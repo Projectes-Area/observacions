@@ -45,9 +45,8 @@ public class Login extends Fragment {
         LoginOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    ((MainActivity) getActivity()).captura();
-/*                    mProgressBar.setVisibility(ProgressBar.VISIBLE);
-                    sincronitza();*/
+                    mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                    sincronitza();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

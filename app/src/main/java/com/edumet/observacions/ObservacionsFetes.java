@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -49,7 +50,7 @@ public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
 
-    private ProgressBar mProgressBar;
+    //private ProgressBar mProgressBar;
 
     private SQLiteDatabase db;
 
@@ -66,7 +67,7 @@ public class ObservacionsFetes extends Fragment {
         View v = inflater.inflate(R.layout.observacions_fetes, container, false);
         setHasOptionsMenu(true);
 
-        ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar ab = ((AppCompatActivity)getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
         mDbHelper = new DadesHelper(getContext());
@@ -159,7 +160,7 @@ public class ObservacionsFetes extends Fragment {
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, parametreLON);
                     intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, numFenomen);
                     intent.putExtra(MainActivity.EXTRA_ID, parametreID);
-                    startActivityForResult(intent, 1);
+                    startActivityForResult(intent,1);
                 }
             });
             final ImageView img = new ImageView(getContext());
@@ -224,7 +225,7 @@ public class ObservacionsFetes extends Fragment {
             llCheck.setHorizontalGravity(Gravity.RIGHT);
 
             ImageView chk = new ImageView(getContext());
-            if (Integer.valueOf(itemEnviats.get(j).toString()) == 1) {
+            if(Integer.valueOf(itemEnviats.get(j).toString())==1) {
                 chk.setImageResource(R.mipmap.ic_chech_on);
             } else {
                 chk.setImageResource(R.mipmap.ic_check_off);
@@ -243,14 +244,14 @@ public class ObservacionsFetes extends Fragment {
 
             lm.addView(line);
         }
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
+        //mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
         return v;
     }
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-        Boolean actualitzar = getArguments().getBoolean("actualitzar", false);
-        int numNoves = getArguments().getInt("noves", 0);
+        Boolean actualitzar= getArguments().getBoolean("actualitzar", false);
+        int numNoves=getArguments().getInt("noves", 0);
         if (actualitzar) {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Sincronitzant amb el servidor ...", Snackbar.LENGTH_SHORT).show();
             try {
@@ -260,12 +261,12 @@ public class ObservacionsFetes extends Fragment {
             }
         } else {
             String missatge;
-            if (numNoves == 1) {
-                missatge = "S'ha baixat una nova observació";
+            if (numNoves==1) {
+                missatge="S'ha baixat una nova observació";
                 Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_SHORT).show();
             }
-            if (numNoves > 1) {
-                missatge = "S'han baixat " + String.valueOf(numNoves) + " noves observacions";
+            if (numNoves>1) {
+                missatge="S'han baixat "+String.valueOf(numNoves)+" noves observacions";
                 Snackbar.make(getActivity().findViewById(android.R.id.content), missatge, Snackbar.LENGTH_SHORT).show();
             }
         }
@@ -330,7 +331,7 @@ public class ObservacionsFetes extends Fragment {
                 .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&tab=visuFeno")
                 .build();
 
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        //mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
 
@@ -339,74 +340,82 @@ public class ObservacionsFetes extends Fragment {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        //mProgressBar.setVisibility(ProgressBar.GONE);
                                                     }
                                                 });
                                             }
 
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    String resposta = response.body().string().trim();
-                                                    try {
-                                                        JSONArray jsonArray = new JSONArray(resposta);
 
-                                                        numNovesObservacions = 0;
-                                                        numObservacionsBaixades = 0;
-                                                        int numNovaObservacio = 0;
+                                                String resposta = response.body().string().trim();
 
-                                                        Boolean flagRepetida;
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(resposta);
 
-                                                        for (int i = 0; i < jsonArray.length(); i++) {
-                                                            JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+                                                    numNovesObservacions = 0;
+                                                    numObservacionsBaixades = 0;
+                                                    int numNovaObservacio = 0;
 
-                                                            flagRepetida = false;
-                                                            for (int j = 0; j < itemIdsEdumet.size(); j++) {
-                                                                if (Integer.valueOf(itemIdsEdumet.get(j).toString()) == Integer.valueOf(JSONobservacio.getString(0))) {
-                                                                    flagRepetida = true;
-                                                                }
+                                                    Boolean flagRepetida;
+
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+
+                                                        flagRepetida = false;
+                                                        for (int j = 0; j < itemIdsEdumet.size(); j++) {
+                                                            if (Integer.valueOf(itemIdsEdumet.get(j).toString()) == Integer.valueOf(JSONobservacio.getString(0))) {
+                                                                flagRepetida = true;
                                                             }
-                                                            if (!flagRepetida) {
-                                                                numNovaObservacio++;
-                                                                id_edumet.add(JSONobservacio.getString(0));
-                                                                dia.add(JSONobservacio.getString(2));
-                                                                hora.add(JSONobservacio.getString(3));
-                                                                latitud.add(JSONobservacio.getString(4));
-                                                                longitud.add(JSONobservacio.getString(5));
-                                                                numFenomen.add(JSONobservacio.getString(7));
-                                                                descripcio.add(JSONobservacio.getString(8));
-                                                                nom_remot.add(JSONobservacio.getString(9));
-
-                                                                SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                                                                SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
-
-                                                                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-                                                                SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
-
-                                                                String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString(2)));
-                                                                String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString(3)));
-                                                                String nomFitxer = diaString + horaString;
-
-                                                                try {
-                                                                    downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
-                                                                } catch (Exception e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            }
-
                                                         }
-                                                        numNovesObservacions = numNovaObservacio;
-                                                        Log.i("NovesObs", String.valueOf(numNovesObservacions));
-                                                        nous_paths = new String[numNovesObservacions];
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
+                                                        if (!flagRepetida) {
+                                                            numNovaObservacio++;
+                                                            id_edumet.add(JSONobservacio.getString(0));
+                                                            dia.add(JSONobservacio.getString(2));
+                                                            hora.add(JSONobservacio.getString(3));
+                                                            latitud.add(JSONobservacio.getString(4));
+                                                            longitud.add(JSONobservacio.getString(5));
+                                                            numFenomen.add(JSONobservacio.getString(7));
+                                                            descripcio.add(JSONobservacio.getString(8));
+                                                            nom_remot.add(JSONobservacio.getString(9));
+
+                                                            SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                                            SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
+
+                                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+                                                            SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
+
+                                                            String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString(2)));
+                                                            String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString(3)));
+                                                            String nomFitxer = diaString + horaString;
+
+                                                            try {
+                                                                downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+
                                                     }
+                                                    numNovesObservacions = numNovaObservacio;
+                                                    Log.i("NovesObs", String.valueOf(numNovesObservacions));
+                                                    nous_paths = new String[numNovesObservacions];
+
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                if (response.isSuccessful()) {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            //mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
                                                 }
@@ -438,7 +447,7 @@ public class ObservacionsFetes extends Fragment {
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
-                                                nous_paths[numNovaObservacio - 1] = miniatura.getAbsolutePath();
+                                                nous_paths[numNovaObservacio-1] = miniatura.getAbsolutePath();
                                                 numObservacionsBaixades++;
                                                 if (numObservacionsBaixades == numNovesObservacions) {
                                                     Log.i("Baixades", String.valueOf(numNovesObservacions));
@@ -472,7 +481,7 @@ public class ObservacionsFetes extends Fragment {
         Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.observacions_baixades), Snackbar.LENGTH_SHORT).show();
     }
 
-    //
+//
 // GENERAL
 //
     public static int dpToPx(int dp) {
