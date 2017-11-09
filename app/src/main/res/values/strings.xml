@@ -40,5 +40,6 @@
     <string name="veure_mapa">Amplia el mapa</string>
     <string name="elimina">Elimina aquesta observació</string>
     <string name="mostra_imatge">Mostra la fotografia</string>
+    <string name="sincronitza">Sincronitza amb el servidor</string>
 
 </resources>

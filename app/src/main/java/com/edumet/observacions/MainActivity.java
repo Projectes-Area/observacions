@@ -131,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
                     fragment.informaDesat();
                 }
                 return true;
+            case R.id.sincronitza:
+                ObservacionsFetes fragment1 = (ObservacionsFetes) fm.findFragmentById(R.id.fragment_container);
+                try {
+                    fragment1.sincronitza();
+                } catch (Exception e) {
+                    Log.i("Exception", "error");
+                }
             case R.id.edumet_web:
                 uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
                 intent = new Intent(Intent.ACTION_VIEW, uri);

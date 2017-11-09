@@ -187,7 +187,7 @@ public class Captura extends Fragment {
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 desa();
-informaDesat();
+                informaDesat();
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +216,7 @@ informaDesat();
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -500,7 +501,7 @@ informaDesat();
                                 // Build intent that displays the App settings screen.
                                 Intent intent = new Intent();
                                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",BuildConfig.APPLICATION_ID, null);
+                                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
                                 intent.setData(uri);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
@@ -578,7 +579,7 @@ informaDesat();
         return image;
     }
 
-  public void fesMiniatura(int x) {
+    public void fesMiniatura(int x) {
         try {
             String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
             File storageDir = getActivity().getFilesDir();
@@ -663,7 +664,6 @@ informaDesat();
     }
 
 
-
 //
 // DESA
 //
@@ -677,7 +677,7 @@ informaDesat();
         dia = sdf.format(Calendar.getInstance().getTime());
         hora = shf.format(Calendar.getInstance().getTime());
 
-        AppID=((MainActivity) getActivity()).desaObservacio(
+        AppID = ((MainActivity) getActivity()).desaObservacio(
                 dia,
                 hora,
                 mCurrentLocation.getLatitude(),

@@ -32,9 +32,6 @@ public class VeureFoto extends AppCompatActivity {
         Snackbar.make(findViewById(android.R.id.content), "Mou la foto amb 1 dit, fes zoom amb 2 dits", Snackbar.LENGTH_LONG).show();
     }
 
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.veure_toolbar, menu);
