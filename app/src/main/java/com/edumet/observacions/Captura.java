@@ -139,6 +139,11 @@ public class Captura extends Fragment {
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
+        imatge.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                veure_foto();
+            }
+        });
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
@@ -182,15 +187,7 @@ public class Captura extends Fragment {
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 desa();
-                Snackbar snackbar = Snackbar
-                        .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
-                        .setAction("SÍ", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                sendPost();
-                            }
-                        });
-                snackbar.show();
+informaDesat();
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -667,9 +664,9 @@ public class Captura extends Fragment {
 
 
 
-    //
-    // DESA
-    //
+//
+// DESA
+//
 
     public void desa() {
 
@@ -692,9 +689,33 @@ public class Captura extends Fragment {
         );
     }
 
-    //
-    // GENERAL
-    //
+    public void informaDesat() {
+        Snackbar snackbar = Snackbar
+                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+                .setAction("SÍ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sendPost();
+                    }
+                });
+        snackbar.show();
+    }
+
+//
+// VEURE FOTO
+//
+
+    public void veure_foto() {
+        if (output != null) {
+            Intent intent = new Intent(getActivity(), VeureFoto.class);
+            intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
+            startActivity(intent);
+        }
+    }
+
+//
+// GENERAL
+//
 
     private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(

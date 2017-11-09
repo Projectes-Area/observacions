@@ -18,6 +18,9 @@
     <item android:id="@+id/gira_imatge"
         android:title="@string/gira_imatge"
         app:showAsAction="never"/>
+    <item android:id="@+id/mostra_imatge"
+        android:title="@string/mostra_imatge"
+        app:showAsAction="never"/>
     <item android:id="@+id/desa_observacio"
         android:title="@string/desa_observacio"
         app:showAsAction="never"/>

@@ -29,7 +29,7 @@ public class VeureFoto extends AppCompatActivity {
         ZoomImageView imatge=(ZoomImageView) findViewById(R.id.zoomImageView);
         imatge.setImageBitmap(BitmapFactory.decodeFile(imagePath));
 
-        Snackbar.make(findViewById(android.R.id.content), "PAN (1 dit) i ZOOM (2 dits)", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(android.R.id.content), "Mou la foto amb 1 dit, fes zoom amb 2 dits", Snackbar.LENGTH_LONG).show();
     }
 
 

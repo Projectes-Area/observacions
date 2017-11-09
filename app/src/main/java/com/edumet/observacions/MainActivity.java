@@ -82,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        FragmentManager fm = getSupportFragmentManager();
+        Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
+        Intent intent;
+        Uri uri;
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -91,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.la_meva_ubicacio:
                 if (jaLocalitzat) {
-                    Intent intent = new Intent(this, MapsActivity.class);
+                    intent = new Intent(this, MapsActivity.class);
                     intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(latitud));
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(longitud));
                     startActivity(intent);
@@ -99,15 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.fotografia:
                 if (jaLocalitzat) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.fesFoto();
                 }
                 return true;
             case R.id.gira_imatge:
                 if (jaHiHaFoto) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.angle_foto += 90;
                     if (fragment.angle_foto >= 360) {
                         fragment.angle_foto = 0;
@@ -116,34 +116,34 @@ public class MainActivity extends AppCompatActivity {
                     fragment.imatge.setImageBitmap(fragment.bitmap);
                 }
                 return true;
+            case R.id.mostra_imatge:
+                fragment.veure_foto();
+                return true;
             case R.id.envia_observacio:
                 if (jaHiHaFoto) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.desa();
                     fragment.sendPost();
                 }
                 return true;
             case R.id.desa_observacio:
                 if (jaHiHaFoto) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.desa();
+                    fragment.informaDesat();
                 }
                 return true;
             case R.id.edumet_web:
-                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
-                Intent intent2 = new Intent();
-                intent2.setAction(
+                intent = new Intent();
+                intent.setAction(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri2 = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                intent2.setData(uri2);
-                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent2);
+                uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                intent.setData(uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
