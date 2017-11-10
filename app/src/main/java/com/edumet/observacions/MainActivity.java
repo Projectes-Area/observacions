@@ -395,6 +395,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void updateID(int AppID, int EdumetID, Context context) {
+        String unlog=String.valueOf(AppID)+"-"+String.valueOf(EdumetID);
+        Log.i("update",unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(context);
 
