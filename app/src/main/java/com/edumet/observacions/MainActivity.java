@@ -25,12 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean jaLocalitzat = false;
     private boolean jaHiHaFoto = false;
+    private boolean jaDesada=false;
     private Double latitud;
     private Double longitud;
 
@@ -128,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        Uri uri;
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -137,9 +134,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.la_meva_ubicacio:
                 if (jaLocalitzat) {
-                    Intent intent = new Intent(this, MapsActivity.class);
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
+                    intent = new Intent(this, MapsActivity.class);
                     intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(latitud));
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(longitud));
+                    intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
                     startActivity(intent);
                 }
                 return true;
@@ -166,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.desa();
+                    if (!jaDesada) {
+                        fragment.desa();
+                    }
                     fragment.sendPost();
                 }
                 return true;
@@ -174,23 +176,43 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.desa();
-                    fragment.informaDesat();
+                    if (!jaDesada) {
+                        fragment.desa();
+                        fragment.informaDesada();
+                    }
+                    else {
+                        fragment.informaJaDesada();
+                    }
                 }
                 return true;
+            case R.id.mostra_imatge:
+                if (jaHiHaFoto) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
+                    fragment.veure_foto();
+                }
+                return true;
+/*            case R.id.sincronitza:
+                FragmentManager fm2 = getSupportFragmentManager();
+                ObservacionsFetes fragment2 = (ObservacionsFetes) fm2.findFragmentById(R.id.fragment_container);
+                try {
+                    fragment2.sincronitza();
+                } catch (Exception e) {
+                    Log.i("Exception", "error");
+                }
+                return true;*/
             case R.id.edumet_web:
-                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
             case R.id.action_settings:
-                Intent intent2 = new Intent();
-                intent2.setAction(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri2 = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                intent2.setData(uri2);
-                intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent2);
+                intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                intent.setData(uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -221,6 +243,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void hihaFoto() {
         jaHiHaFoto = true;
+    }
+    public void sHaDesat() {
+        jaDesada = true;
+    }
+    public void NosHaDesat() {
+        jaDesada = false;
     }
 
     public void redrawObservacionsFetes(int numNoves) {

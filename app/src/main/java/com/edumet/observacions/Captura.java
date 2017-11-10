@@ -115,6 +115,7 @@ public class Captura extends Fragment {
     private String dia;
     private String hora;
     private int AppID;
+    private boolean jaDesada=false;
 
     String[] nomFenomen;
     String usuari;
@@ -167,15 +168,22 @@ public class Captura extends Fragment {
         Envia.setEnabled(false);
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                desa();
+                 if (!jaDesada) {
+                     desa();
+                 }
                 sendPost();
             }
         });
         Desa.setEnabled(false);
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                desa();
-                informaDesat();
+                if (!jaDesada) {
+                    desa();
+                    informaDesada();
+                } else {
+                    informaJaDesada();
+                }
+
             }
         });
         Pendents.setOnClickListener(new View.OnClickListener() {
@@ -267,6 +275,8 @@ public class Captura extends Fragment {
         if (output != null) {
             imatge.setImageBitmap(bitmap);
             enableBotons();
+        } else {
+            imatge.setImageResource(R.drawable.estacions);
         }
 
         if (getView() == null) {
@@ -363,6 +373,8 @@ public class Captura extends Fragment {
                     galleryAddPic();
                     enableBotons();
                     ((MainActivity) getActivity()).hihaFoto();
+                    ((MainActivity) getActivity()).NosHaDesat();
+                    jaDesada=false;
                     Log.i("onActivityResult", "Foto");
                 }
                 break;
@@ -620,9 +632,11 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
+        jaDesada=true;
+        ((MainActivity) getActivity()).sHaDesat();
     }
 
-    public void informaDesat() {
+    public void informaDesada() {
         Snackbar snackbar = Snackbar
                 .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
                 .setAction("SÍ", new View.OnClickListener() {
@@ -632,6 +646,9 @@ public class Captura extends Fragment {
                     }
                 });
         snackbar.show();
+    }
+    public void informaJaDesada() {
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "Ja has desat aquesta observació", Snackbar.LENGTH_SHORT).show();
     }
 
 //

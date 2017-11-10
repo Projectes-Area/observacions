@@ -288,7 +288,8 @@ public class FragmentFitxa extends Fragment {
             }
         });
         }
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha eliminat l'observació", Snackbar.LENGTH_LONG).show();
+        //Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha eliminat l'observació", Snackbar.LENGTH_LONG).show();
+        getActivity().onBackPressed();
     }
 
 //

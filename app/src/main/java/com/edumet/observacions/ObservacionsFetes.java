@@ -63,7 +63,7 @@ public class ObservacionsFetes extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        //super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.observacions_fetes, container, false);
         setHasOptionsMenu(true);
 
