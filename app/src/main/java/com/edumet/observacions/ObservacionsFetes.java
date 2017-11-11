@@ -141,17 +141,68 @@ public class ObservacionsFetes extends Fragment {
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
+        LinearLayout.LayoutParams paramsTitolIcona = new LinearLayout.LayoutParams(dpToPx(70), LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramsTitolData = new LinearLayout.LayoutParams(dpToPx(90), LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramsTitolFenomen = new LinearLayout.LayoutParams(dpToPx(80),LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramsTitolEnviada = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60),dpToPx(60));
+        LinearLayout.LayoutParams paramsData = new LinearLayout.LayoutParams(dpToPx(90), dpToPx(70));
+        LinearLayout.LayoutParams paramsFenomen = new LinearLayout.LayoutParams(dpToPx(80), dpToPx(70));
+        LinearLayout.LayoutParams paramsEnviada = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,dpToPx(40));
+
+        LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,dpToPx(70));
+
+        // TITOLS
+
+        final LinearLayout lc = (LinearLayout) v.findViewById(R.id.llCapsalera);
+
+        LinearLayout llTitol = new LinearLayout(getContext());
+        llTitol.setOrientation(LinearLayout.HORIZONTAL);
+
+        TextView lblFoto =new TextView(getContext());
+        lblFoto.setText("Foto");
+        TextView lblData =new TextView(getContext());
+        lblData.setText("Data");
+        TextView lblFenomen =new TextView(getContext());
+        lblFenomen.setText("Observació");
+        TextView lblEnviada =new TextView(getContext());
+        lblEnviada.setText("Enviada");
+
+        lblFoto.setLayoutParams(paramsTitolIcona);
+        lblFoto.setGravity(Gravity.CENTER_HORIZONTAL);
+        lblData.setLayoutParams(paramsTitolData);
+        lblData.setGravity(Gravity.CENTER_HORIZONTAL);
+        lblFenomen.setLayoutParams(paramsTitolFenomen);
+        lblFenomen.setGravity(Gravity.CENTER_HORIZONTAL);
+        lblEnviada.setLayoutParams(paramsTitolEnviada);
+        lblEnviada.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        llTitol.addView(lblFoto);
+        llTitol.addView(lblData);
+        llTitol.addView(lblFenomen);
+        llTitol.addView(lblEnviada);
+
+        lc.addView(llTitol);
+
+        View line0 = new View(getContext());
+        RelativeLayout.LayoutParams lineparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 1);
+        line0.setLayoutParams(lineparams);
+        line0.setBackgroundColor(getResources().getColor(R.color.edumet));
+
+        lc.addView(line0);
+
         final LinearLayout lm = (LinearLayout) v.findViewById(R.id.linearLY);
 
         for (int j = 0; j < itemDies.size(); j++) {
-            LinearLayout ll = new LinearLayout(getContext());
-            ll.setGravity(Gravity.CENTER_VERTICAL);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
             final String parametreID = itemIds.get(j).toString();
             final String parametreLAT = itemLatituds.get(j).toString();
             final String parametreLON = itemLongituds.get(j).toString();
             final String numFenomen = itemFenomens.get(j).toString();
 
+            LinearLayout ll = new LinearLayout(getContext());
+            ll.setGravity(Gravity.CENTER_VERTICAL);
+            ll.setOrientation(LinearLayout.HORIZONTAL);
             ll.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), Fitxa.class);
@@ -164,25 +215,22 @@ public class ObservacionsFetes extends Fragment {
             });
             final ImageView img = new ImageView(getContext());
             img.setId(j + 1);
-            LinearLayout.LayoutParams paramsIcona = new LinearLayout.LayoutParams(dpToPx(60), dpToPx(60));
-            paramsIcona.setMargins(dpToPx(10), dpToPx(10), 0, dpToPx(10));
-            img.setLayoutParams(paramsIcona);
-            setPic(60, 60, itemPath_Envias.get(j).toString());
-            img.setImageBitmap(bitmap);
 
+            // ICONA
+
+            setPic(60, 60, itemPath_Envias.get(j).toString());
+            paramsIcona.setMargins(dpToPx(5),dpToPx(5),dpToPx(5),dpToPx(5));
+            img.setLayoutParams(paramsIcona);
+            img.setImageBitmap(bitmap);
             ll.addView(img);
 
+            // DATA
+
             LinearLayout llData = new LinearLayout(getContext());
-            llData.setGravity(Gravity.CENTER_HORIZONTAL);
+            llData.setGravity(Gravity.CENTER_HORIZONTAL+Gravity.CENTER_VERTICAL);
             llData.setOrientation(LinearLayout.VERTICAL);
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(dpToPx(10), 0, 0, 0);
-
-            llData.setLayoutParams(layoutParams);
-
+            llData.setLayoutParams(paramsData);
             TextView lblDia = new TextView(getContext());
-
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 Date date = format.parse(itemDies.get(j).toString());
@@ -191,11 +239,10 @@ public class ObservacionsFetes extends Fragment {
                 e.printStackTrace();
             }
 
-            LinearLayout.LayoutParams paramsData = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            // DIA
 
-            lblDia.setLayoutParams(paramsData);
+            lblDia.setGravity(Gravity.CENTER_HORIZONTAL+Gravity.CENTER_VERTICAL);
             llData.addView(lblDia);
-
             TextView lblHora = new TextView(getContext());
             try {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -204,43 +251,39 @@ public class ObservacionsFetes extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            lblHora.setLayoutParams(paramsData);
+
+            //HORA
+
+            lblHora.setGravity(Gravity.CENTER_HORIZONTAL+Gravity.CENTER_VERTICAL);
             llData.addView(lblHora);
             ll.addView(llData);
 
-            TextView lblFenomen = new TextView(getContext());
-            lblFenomen.setText(nomFenomen[Integer.parseInt(itemFenomens.get(j).toString())]);
-            lblFenomen.setLayoutParams(layoutParams);
-            ll.addView(lblFenomen);
+            // FENOMEN
 
-            LinearLayout llCheck = new LinearLayout(getContext());
-            llCheck.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams paramsChk = new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24));
-            paramsChk.setMargins(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10));
-            LinearLayout.LayoutParams paramsLLChk = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            paramsLLChk.setMargins(0, 0, 0, 0);
-            llCheck.setLayoutParams(paramsLLChk);
-            llCheck.setVerticalGravity(Gravity.CENTER_VERTICAL);
-            llCheck.setHorizontalGravity(Gravity.RIGHT);
+            TextView lblFen = new TextView(getContext());
+            lblFen.setText(nomFenomen[Integer.parseInt(itemFenomens.get(j).toString())]);
+            lblFen.setGravity(Gravity.CENTER_HORIZONTAL+Gravity.CENTER_VERTICAL);
+            lblFen.setLayoutParams(paramsFenomen);
+            ll.addView(lblFen);
+
+            // CHECK
 
             ImageView chk = new ImageView(getContext());
             if (Integer.valueOf(itemEnviats.get(j).toString()) == 1) {
-                chk.setImageResource(R.mipmap.ic_chech_on);
+                chk.setImageResource(R.mipmap.ic_check_on);
             } else {
                 chk.setImageResource(R.mipmap.ic_check_off);
             }
-            chk.setLayoutParams(paramsChk);
-            llCheck.addView(chk);
-
-            ll.addView(llCheck);
-
+            paramsEnviada.setMargins(0,20,0,20);
+            chk.setLayoutParams(paramsEnviada);
+            ll.addView(chk);
             lm.addView(ll);
 
+            // LINE
+
             View line = new View(getContext());
-            RelativeLayout.LayoutParams lineparams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 1);
             line.setLayoutParams(lineparams);
             line.setBackgroundColor(getResources().getColor(R.color.edumet));
-
             lm.addView(line);
         }
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
@@ -409,6 +452,12 @@ public class ObservacionsFetes extends Fragment {
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
                                                     }
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
@@ -450,8 +499,7 @@ public class ObservacionsFetes extends Fragment {
                                                 if (numObservacionsBaixades == numNovesObservacions) {
                                                     Log.i("Baixades", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
-                                                    //redraw(numNovesObservacions);
-
+                                                    redraw(numNovesObservacions);
                                                 }
                                             }
                                         }
@@ -477,11 +525,9 @@ public class ObservacionsFetes extends Fragment {
 
             long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         }
-/*        Snackbar.make(getActivity().findViewById(android.R.id.content), getString(R.string.observacions_baixades), Snackbar.LENGTH_SHORT).show();
-        mProgressBar.setVisibility(ProgressBar.GONE);*/
     }
 
-    //
+//
 // GENERAL
 //
     public static int dpToPx(int dp) {
