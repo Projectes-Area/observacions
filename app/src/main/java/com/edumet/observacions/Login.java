@@ -46,6 +46,7 @@ public class Login extends Fragment {
             public void onClick(View v) {
                 try {
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                    LoginOK.setEnabled(false);
                     sincronitza();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -82,12 +83,14 @@ public class Login extends Fragment {
                             public void run() {
                                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.identificacio_incorrecta, Snackbar.LENGTH_SHORT).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
+                                LoginOK.setEnabled(true);
                             }
                         });
                     } else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
                                 mProgressBar.setVisibility(ProgressBar.GONE);
+                                LoginOK.setEnabled(true);
                                 Context context = getActivity();
                                 SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -104,6 +107,7 @@ public class Login extends Fragment {
                         public void run() {
                             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_SHORT).show();
                             mProgressBar.setVisibility(ProgressBar.GONE);
+                            LoginOK.setEnabled(true);
                         }
                     });
                     Log.i("Login", getString(R.string.servidor_no_disponible));

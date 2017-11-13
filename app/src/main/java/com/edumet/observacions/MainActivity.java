@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import org.json.JSONException;
@@ -349,8 +350,11 @@ public class MainActivity extends AppCompatActivity {
 
         final View rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
         final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        final ImageButton Envia= (ImageButton) rootView.findViewById(R.id.btnEnvia);
         final Handler mHandler = new Handler(context.getMainLooper());
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
+        Envia.setEnabled(false);
+        Envia.setImageResource(R.mipmap.ic_send_white);
 
         client.newCall(request).enqueue(new Callback() {
 
@@ -361,6 +365,8 @@ public class MainActivity extends AppCompatActivity {
                                                     @Override
                                                     public void run() {
                                                         mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        Envia.setEnabled(true);
+                                                        Envia.setImageResource(R.mipmap.ic_send_edumet);
                                                     }
                                                 });
                                             }
@@ -378,6 +384,8 @@ public class MainActivity extends AppCompatActivity {
                                                         @Override
                                                         public void run() {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            Envia.setEnabled(true);
+                                                            Envia.setImageResource(R.mipmap.ic_send_edumet);
                                                         }
                                                     });
                                                 } else {
@@ -386,6 +394,8 @@ public class MainActivity extends AppCompatActivity {
                                                         @Override
                                                         public void run() {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            Envia.setEnabled(true);
+                                                            Envia.setImageResource(R.mipmap.ic_send_edumet);
                                                         }
                                                     });
                                                 }

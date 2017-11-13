@@ -270,7 +270,7 @@ public class ObservacionsFetes extends Fragment {
 
             ImageView chk = new ImageView(getContext());
             if (Integer.valueOf(itemEnviats.get(j).toString()) == 1) {
-                chk.setImageResource(R.mipmap.ic_check_on);
+                chk.setImageResource(R.mipmap.ic_check_off);
             } else {
                 chk.setImageResource(R.mipmap.ic_check_off);
             }

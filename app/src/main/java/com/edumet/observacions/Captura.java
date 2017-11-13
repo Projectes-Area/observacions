@@ -115,7 +115,7 @@ public class Captura extends Fragment {
     private String dia;
     private String hora;
     private int AppID;
-    private boolean jaDesada=false;
+    private boolean jaDesada = false;
 
     String[] nomFenomen;
     String usuari;
@@ -168,9 +168,9 @@ public class Captura extends Fragment {
         Envia.setEnabled(false);
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                 if (!jaDesada) {
-                     desa();
-                 }
+                if (!jaDesada) {
+                    desa();
+                }
                 sendPost();
             }
         });
@@ -217,6 +217,7 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -241,7 +242,7 @@ public class Captura extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-            startLocationUpdates();
+        startLocationUpdates();
     }
 
     @Override
@@ -268,7 +269,7 @@ public class Captura extends Fragment {
     public void onResume() {
         super.onResume();
         Log.i("OnResume", String.valueOf(mRequestingLocationUpdates));
-        if (mRequestingLocationUpdates ) {
+        if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
         updateLocationUI();
@@ -374,8 +375,10 @@ public class Captura extends Fragment {
                     enableBotons();
                     ((MainActivity) getActivity()).hihaFoto();
                     ((MainActivity) getActivity()).NosHaDesat();
-                    jaDesada=false;
+                    jaDesada = false;
                     Log.i("onActivityResult", "Foto");
+                } else {
+                    imatge.setImageResource(R.drawable.estacions);
                 }
                 break;
         }
@@ -525,7 +528,7 @@ public class Captura extends Fragment {
         return image;
     }
 
-  public void fesMiniatura(int x) {
+    public void fesMiniatura(int x) {
         try {
             String minTimeStamp = String.valueOf(x) + "_" + timeStamp;
             File storageDir = getActivity().getFilesDir();
@@ -622,7 +625,7 @@ public class Captura extends Fragment {
         dia = sdf.format(Calendar.getInstance().getTime());
         hora = shf.format(Calendar.getInstance().getTime());
 
-        AppID=((MainActivity) getActivity()).desaObservacio(
+        AppID = ((MainActivity) getActivity()).desaObservacio(
                 dia,
                 hora,
                 mCurrentLocation.getLatitude(),
@@ -632,7 +635,7 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
-        jaDesada=true;
+        jaDesada = true;
         ((MainActivity) getActivity()).sHaDesat();
     }
 
@@ -647,6 +650,7 @@ public class Captura extends Fragment {
                 });
         snackbar.show();
     }
+
     public void informaJaDesada() {
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Ja has desat aquesta observació", Snackbar.LENGTH_SHORT).show();
     }
