@@ -167,13 +167,14 @@ public class MainActivity extends AppCompatActivity {
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    if (!jaDesada) {
+ //                   if (!jaDesada) {
                         fragment.desa();
-                    }
+                        fragment.updateDescripcio();
+ //                   }
                     fragment.sendPost();
                 }
                 return true;
-            case R.id.desa_observacio:
+/*            case R.id.desa_observacio:
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment.informaJaDesada();
                     }
                 }
-                return true;
+                return true;*/
             case R.id.mostra_imatge:
                 if (jaHiHaFoto) {
                     FragmentManager fm = getSupportFragmentManager();
@@ -246,10 +247,10 @@ public class MainActivity extends AppCompatActivity {
         jaHiHaFoto = true;
     }
     public void sHaDesat() {
-        jaDesada = true;
+        //jaDesada = true;
     }
     public void NosHaDesat() {
-        jaDesada = false;
+        //jaDesada = false;
     }
 
     public void redrawObservacionsFetes(int numNoves) {
@@ -406,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void updateID(int AppID, int EdumetID, Context context) {
         String unlog=String.valueOf(AppID)+"-"+String.valueOf(EdumetID);
-        Log.i("update",unlog);
+        Log.i("updateID",unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(context);
 
@@ -423,4 +424,6 @@ public class MainActivity extends AppCompatActivity {
         mDbHelper.close();
         Log.i("UpdatedRows", String.valueOf(count));
     }
+
+
 }

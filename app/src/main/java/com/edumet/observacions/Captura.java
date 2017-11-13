@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -11,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -77,7 +80,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class Captura extends Fragment {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 30000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final static String KEY_LOCATION = "location";
@@ -98,7 +101,7 @@ public class Captura extends Fragment {
     private ImageButton Mapa;
     public ImageView imatge;
     private EditText observacio;
-    private ProgressBar mProgressBar;
+    //private ProgressBar mProgressBar;
     private Spinner spinner;
 
     private String timeStamp;
@@ -115,7 +118,7 @@ public class Captura extends Fragment {
     private String dia;
     private String hora;
     private int AppID;
-    private boolean jaDesada = false;
+    //private boolean jaDesada = false;
 
     String[] nomFenomen;
     String usuari;
@@ -131,7 +134,7 @@ public class Captura extends Fragment {
         Desa = (ImageButton) v.findViewById(R.id.btnDesa);
         Pendents = (ImageButton) v.findViewById(R.id.btnPendents);
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+        //mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
@@ -168,21 +171,22 @@ public class Captura extends Fragment {
         Envia.setEnabled(false);
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (!jaDesada) {
+                //if (!jaDesada) {
                     desa();
-                }
+                updateDescripcio();
+                //}
                 sendPost();
             }
         });
         Desa.setEnabled(false);
         Desa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (!jaDesada) {
+               /* if (!jaDesada) {
                     desa();
                     informaDesada();
                 } else {
                     informaJaDesada();
-                }
+                }*/
 
             }
         });
@@ -375,7 +379,9 @@ public class Captura extends Fragment {
                     enableBotons();
                     ((MainActivity) getActivity()).hihaFoto();
                     ((MainActivity) getActivity()).NosHaDesat();
-                    jaDesada = false;
+                    //jaDesada = false;
+                    desa(); // No cal desar, es desa en fer la foto
+                    informaDesada();
                     Log.i("onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
@@ -635,20 +641,42 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
-        jaDesada = true;
+        //jaDesada = true;
         ((MainActivity) getActivity()).sHaDesat();
     }
 
+    public void updateDescripcio() {
+        String unlog=String.valueOf(AppID);
+        Log.i("updateDesc",unlog);
+        DadesHelper mDbHelper;
+        mDbHelper = new DadesHelper(getContext());
+
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
+
+        String selection = DadesEstructura.Parametres._ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(AppID)};
+
+        int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
+        mDbHelper.close();
+        Log.i("UpdatedRows", String.valueOf(count));
+    }
+
+
     public void informaDesada() {
-        Snackbar snackbar = Snackbar
-                .make(getActivity().findViewById(android.R.id.content), "Observació desada. Vols enviar-la ?", Snackbar.LENGTH_LONG)
+/*        Snackbar snackbar = Snackbar
+                .make(getActivity().findViewById(android.R.id.content), "S'ha desat. Vols enviar-la ?", Snackbar.LENGTH_LONG)
                 .setAction("SÍ", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         sendPost();
                     }
                 });
-        snackbar.show();
+        snackbar.show();*/
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha desat l'observació", Snackbar.LENGTH_SHORT).show();
     }
 
     public void informaJaDesada() {

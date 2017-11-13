@@ -116,7 +116,7 @@ public class FragmentFitxa extends Fragment {
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy",Locale.US);
+        SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
         activity = (Fitxa) getActivity();
@@ -140,7 +140,7 @@ public class FragmentFitxa extends Fragment {
         String[] selectionArgs = {String.valueOf(numID)};
         String sortOrder = null;
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
         while (cursor.moveToNext()) {
             if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
@@ -243,53 +243,49 @@ public class FragmentFitxa extends Fragment {
 
         if (enviat == 1) { // esborrar del servidor
 
-        final OkHttpClient client = new OkHttpClient();
+            final OkHttpClient client = new OkHttpClient();
 
-        String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
-        Log.i("PostDelete", cadenaRequest);
-        Request request = new Request.Builder()
-                .url(cadenaRequest)
-                .build();
+            String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
+            Log.i("PostDelete", cadenaRequest);
+            Request request = new Request.Builder()
+                    .url(cadenaRequest)
+                    .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(ProgressBar.GONE);
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.i("Response", response.toString());
-                final String resposta = response.body().string().trim();
-                Log.i("Resposta", resposta);
-                if (response.isSuccessful()) {
-                    if (resposta.isEmpty()) {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Log.i("Response", response.toString());
+                    final String resposta = response.body().string().trim();
+                    Log.i("Resposta", resposta);
+                    if (response.isSuccessful()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                Snackbar.make(getActivity().findViewById(android.R.id.content), "Identificació incorrecta", Snackbar.LENGTH_LONG).show();
+                                //Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha eliminat l'observació", Snackbar.LENGTH_LONG).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
+                                getActivity().onBackPressed();
                             }
                         });
+
                     } else {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                             }
                         });
                     }
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                            mProgressBar.setVisibility(ProgressBar.GONE);
-                        }
-                    });
                 }
-            }
-        });
+            });
+        } else {
+            mProgressBar.setVisibility(ProgressBar.GONE);
+            getActivity().onBackPressed();
         }
-        //Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha eliminat l'observació", Snackbar.LENGTH_LONG).show();
-        getActivity().onBackPressed();
     }
 
 //
