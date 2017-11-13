@@ -213,8 +213,8 @@ public class FragmentFitxa extends Fragment {
                 laDescripcio,
                 this.getContext()
         );
-        Envia.setEnabled(false);
-        Envia.setImageResource(R.mipmap.ic_send_white);
+        //Envia.setEnabled(false);
+        //Envia.setImageResource(R.mipmap.ic_send_white);
     }
 
 //

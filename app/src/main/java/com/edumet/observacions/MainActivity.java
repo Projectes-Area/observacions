@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -57,12 +58,38 @@ public class MainActivity extends AppCompatActivity {
 
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    //mTextMessage.setText(R.string.title_home);
+                    return true;
+                case R.id.navigation_estacions:
+                    //mTextMessage.setText(R.string.title_home);
+                    return true;
+                case R.id.navigation_radar:
+                    //mTextMessage.setText(R.string.title_dashboard);
+                    return true;
+                case R.id.navigation_pronostic:
+                    //mTextMessage.setText(R.string.title_notifications);
+                    return true;
+            }
+            return false;
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -387,8 +414,8 @@ public class MainActivity extends AppCompatActivity {
                                                         @Override
                                                         public void run() {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            Envia.setEnabled(true);
-                                                            Envia.setImageResource(R.mipmap.ic_send_edumet);
+                                                            //Envia.setEnabled(true);
+                                                            //Envia.setImageResource(R.mipmap.ic_send_edumet);
                                                         }
                                                     });
                                                 } else {
