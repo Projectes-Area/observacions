@@ -61,7 +61,9 @@ public class Login extends Fragment {
     final OkHttpClient client = new OkHttpClient();
 
     public void sincronitza() throws Exception {
-        String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?ident=" + Usuari.getText().toString() + "&psw=" + Contrasenya.getText().toString() + "&tab=registrar_se";
+
+        String laUrl=getResources().getString(R.string.url_servidor);
+        String cadenaRequest = laUrl+"?ident=" + Usuari.getText().toString() + "&psw=" + Contrasenya.getText().toString() + "&tab=registrar_se";
         Log.i("Login", cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)

@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
  //                   if (!jaDesada) {
-                        fragment.desa();
+                        //fragment.desa();
                         fragment.updateDescripcio();
  //                   }
                     fragment.sendPost();
@@ -338,8 +338,10 @@ public class MainActivity extends AppCompatActivity {
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
+        String laUrl=context.getResources().getString(R.string.url_servidor);
+
         final Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php")
+                .url(laUrl)
                 //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
                 //.url("http://tecnologia.isantandreu.net/prova.php")
                 //.url("https://edumet.cat/edumet/meteo_proves/prova.php")

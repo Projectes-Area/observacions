@@ -270,7 +270,7 @@ public class ObservacionsFetes extends Fragment {
 
             ImageView chk = new ImageView(getContext());
             if (Integer.valueOf(itemEnviats.get(j).toString()) == 1) {
-                chk.setImageResource(R.mipmap.ic_check_off);
+                chk.setImageResource(R.mipmap.ic_check_on);
             } else {
                 chk.setImageResource(R.mipmap.ic_check_off);
             }
@@ -369,8 +369,9 @@ public class ObservacionsFetes extends Fragment {
     String nous_paths[];
 
     public void sincronitza() throws Exception {
+        String laUrl=getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url("https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&tab=visuFeno")
+                .url(laUrl+"?usuari=" + usuari + "&tab=visuFeno")
                 .build();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);

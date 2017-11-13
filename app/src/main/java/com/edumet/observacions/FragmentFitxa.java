@@ -245,7 +245,8 @@ public class FragmentFitxa extends Fragment {
 
             final OkHttpClient client = new OkHttpClient();
 
-            String cadenaRequest = "https://edumet.cat/edumet/meteo_proves/dades_recarregar.php?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
+            String laUrl=getResources().getString(R.string.url_servidor);
+            String cadenaRequest = laUrl+"?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
             Log.i("PostDelete", cadenaRequest);
             Request request = new Request.Builder()
                     .url(cadenaRequest)

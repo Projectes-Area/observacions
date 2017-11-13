@@ -42,8 +42,8 @@
 
         <ImageButton
             android:id="@+id/btnEsborra"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="50dp"
+            android:layout_height="64dp"
             android:layout_marginRight="4dp"
             android:src="@mipmap/ic_delete_edumet" />
 
@@ -57,8 +57,8 @@
 
         <ImageButton
             android:id="@+id/btnEnvia"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="50dp"
+            android:layout_height="64dp"
             android:layout_marginLeft="4dp"
             android:src="@mipmap/ic_send_edumet" />
 

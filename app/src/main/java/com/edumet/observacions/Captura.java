@@ -172,7 +172,7 @@ public class Captura extends Fragment {
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //if (!jaDesada) {
-                    desa();
+                    //desa();
                 updateDescripcio();
                 //}
                 sendPost();
