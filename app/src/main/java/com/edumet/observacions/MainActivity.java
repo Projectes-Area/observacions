@@ -435,8 +435,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void updateID(int AppID, int EdumetID, Context context) {
-        String unlog=String.valueOf(AppID)+"-"+String.valueOf(EdumetID);
-        Log.i("updateID",unlog);
+        String unlog = String.valueOf(AppID) + "-" + String.valueOf(EdumetID);
+        Log.i("updateID", unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(context);
 
@@ -452,7 +452,8 @@ public class MainActivity extends AppCompatActivity {
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
         Log.i("UpdatedRows", String.valueOf(count));
+        Captura frag=new Captura();
+        frag.setEnviada();
+
     }
-
-
 }

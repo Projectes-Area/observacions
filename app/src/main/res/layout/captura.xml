@@ -16,27 +16,58 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
+            app:layout_constraintRight_toRightOf="@+id/imgFoto"
+            app:layout_constraintTop_toTopOf="parent">
 
+            <ImageButton
+                android:id="@+id/btnFoto"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@mipmap/ic_camera_white"
+                app:srcCompat="@mipmap/ic_camera_white" />
 
-       <!-- <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:background="@color/edumet"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/app_name"
-            app:titleTextColor="#ffffff"
-            tools:layout_constraintTop_creator="1" />-->
+            <ImageButton
+                android:id="@+id/btnGirar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:src="@mipmap/ic_rotate_white" />
+
+            <ImageButton
+                android:id="@+id/btnEnvia"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:scaleType="fitEnd"
+                android:src="@mipmap/ic_send_white" />
+
+            <ImageButton
+                android:id="@+id/btnMapa"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_weight="1"
+                android:src="@mipmap/ic_location_edumet" />
+
+            <ImageButton
+                android:id="@+id/btnPendents"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@mipmap/ic_time_edumet" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/imgFoto"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             android:layout_marginTop="4dp"
             android:src="@drawable/estacions"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -45,7 +76,7 @@
 
         <EditText
             android:id="@+id/txtObservacions"
-            android:layout_width="250dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:ems="10"
@@ -72,7 +103,7 @@
 
         <Spinner
             android:id="@+id/spinner"
-            android:layout_width="250dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -84,37 +115,6 @@
             app:layout_constraintTop_toBottomOf="@+id/imgFoto" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
-            app:layout_constraintRight_toRightOf="@+id/imgFoto"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageButton
-                android:id="@+id/btnFoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_camera_white"
-                app:srcCompat="@mipmap/ic_camera_white" />
-
-            <ImageButton
-                android:id="@+id/btnEnvia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_send_white" />
-
-            <ImageButton
-                android:id="@+id/btnPendents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_time_edumet" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -124,25 +124,15 @@
             app:layout_constraintRight_toRightOf="@+id/imgFoto"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-            <ImageButton
-                android:id="@+id/btnGirar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_rotate_white" />
-
 
             <ImageButton
                 android:id="@+id/btnDesa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_save_white" />
+                android:src="@mipmap/ic_save_white"
+                android:visibility="gone" />
 
 
-            <ImageButton
-                android:id="@+id/btnMapa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_location_edumet" />
         </LinearLayout>
 
         <ImageView

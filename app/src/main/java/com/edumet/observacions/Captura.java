@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -43,7 +42,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -119,6 +117,7 @@ public class Captura extends Fragment {
     private String hora;
     private int AppID;
     //private boolean jaDesada = false;
+    public static boolean jaEnviada = false;
 
     String[] nomFenomen;
     String usuari;
@@ -172,7 +171,7 @@ public class Captura extends Fragment {
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //if (!jaDesada) {
-                    //desa();
+                //desa();
                 updateDescripcio();
                 //}
                 sendPost();
@@ -279,11 +278,9 @@ public class Captura extends Fragment {
         updateLocationUI();
         if (output != null) {
             imatge.setImageBitmap(bitmap);
-            enableBotons();
         } else {
             imatge.setImageResource(R.drawable.estacions);
         }
-
         if (getView() == null) {
             return;
         }
@@ -380,6 +377,7 @@ public class Captura extends Fragment {
                     ((MainActivity) getActivity()).hihaFoto();
                     ((MainActivity) getActivity()).NosHaDesat();
                     //jaDesada = false;
+                    jaEnviada=false;
                     desa(); // No cal desar, es desa en fer la foto
                     informaDesada();
                     Log.i("onActivityResult", "Foto");
@@ -618,6 +616,11 @@ public class Captura extends Fragment {
         );
     }
 
+    public void setEnviada() {
+        jaEnviada = true;
+        Log.i("jaEnviada", String.valueOf(jaEnviada));
+    }
+
     //
     // DESA
     //
@@ -646,8 +649,8 @@ public class Captura extends Fragment {
     }
 
     public void updateDescripcio() {
-        String unlog=String.valueOf(AppID);
-        Log.i("updateDesc",unlog);
+        String unlog = String.valueOf(AppID);
+        Log.i("updateDesc", unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(getContext());
 
