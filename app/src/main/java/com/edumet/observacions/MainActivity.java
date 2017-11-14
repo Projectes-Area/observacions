@@ -50,9 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-    private boolean jaLocalitzat = false;
-    private boolean jaHiHaFoto = false;
-    private boolean jaDesada=false;
+    private boolean jaLocalitzada = false;
+    private boolean jaDesada = false;
     private Double latitud;
     private Double longitud;
 
@@ -158,10 +157,15 @@ public class MainActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.les_meves_observacions:
+                if (jaDesada) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
+                    fragment.updateObservacio();
+                }
                 observacionsFetes();
                 return true;
             case R.id.la_meva_ubicacio:
-                if (jaLocalitzat) {
+                if (jaLocalitzada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     intent = new Intent(this, MapsActivity.class);
@@ -172,14 +176,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.fotografia:
-                if (jaLocalitzat) {
+                if (jaLocalitzada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.fesFoto();
                 }
                 return true;
             case R.id.gira_imatge:
-                if (jaHiHaFoto) {
+                if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.angle_foto += 90;
@@ -191,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.envia_observacio:
-                if (jaHiHaFoto) {
+                if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
  //                   if (!jaDesada) {
                         //fragment.desa();
-                        fragment.updateDescripcio();
+                        fragment.updateObservacio();
  //                   }
                     fragment.sendPost();
                 }
@@ -215,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;*/
             case R.id.mostra_imatge:
-                if (jaHiHaFoto) {
+                if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.veure_foto();
@@ -264,14 +268,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void ubicacio(double lat, double lon) {
-        jaLocalitzat = true;
+        jaLocalitzada = true;
         latitud = lat;
         longitud = lon;
         Log.i("ACT-Ubicació", String.valueOf(lat) + "," + String.valueOf(lon));
     }
 
     public void hihaFoto() {
-        jaHiHaFoto = true;
+        jaDesada = true;
     }
     public void sHaDesat() {
         //jaDesada = true;

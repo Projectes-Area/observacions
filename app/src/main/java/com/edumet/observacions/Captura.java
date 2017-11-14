@@ -95,7 +95,7 @@ public class Captura extends Fragment {
     private ImageButton Girar;
     private ImageButton Envia;
     private ImageButton Desa;
-    private ImageButton Pendents;
+    private ImageButton ObservacionsFetes;
     private ImageButton Mapa;
     public ImageView imatge;
     private EditText observacio;
@@ -105,19 +105,22 @@ public class Captura extends Fragment {
     private String timeStamp;
     private String pathEnvia;
     private String mCurrentPhotoPath;
-    static private boolean mRequestingLocationUpdates;
+    private static boolean mRequestingLocationUpdates;
     private File output = null;
     private File outputMiniatura = null;
     private int midaEnvia = 800;
     public Bitmap bitmap;
     private int num_fenomen = 1;
     public int angle_foto;
-    private boolean jaLocalitzat = false;
     private String dia;
     private String hora;
     private int AppID;
     //private boolean jaDesada = false;
-    public static boolean jaEnviada = false;
+    private boolean flagLocalitzada = false;
+    private boolean flagGirada = false;
+    private boolean flagDesada;
+    private static boolean flagEnviada = false;
+
 
     String[] nomFenomen;
     String usuari;
@@ -131,7 +134,7 @@ public class Captura extends Fragment {
         Girar = (ImageButton) v.findViewById(R.id.btnGirar);
         Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
         Desa = (ImageButton) v.findViewById(R.id.btnDesa);
-        Pendents = (ImageButton) v.findViewById(R.id.btnPendents);
+        ObservacionsFetes = (ImageButton) v.findViewById(R.id.btnPendents);
         Mapa = (ImageButton) v.findViewById(R.id.btnMapa);
         //mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
@@ -165,6 +168,7 @@ public class Captura extends Fragment {
                 Log.i("ANGLE", String.valueOf(angle_foto));
                 bitmap = rotateViaMatrix(bitmap, 90);
                 imatge.setImageBitmap(bitmap);
+                flagGirada = true;
             }
         });
         Envia.setEnabled(false);
@@ -172,7 +176,7 @@ public class Captura extends Fragment {
             public void onClick(View v) {
                 //if (!jaDesada) {
                 //desa();
-                updateDescripcio();
+                updateObservacio();
                 //}
                 sendPost();
             }
@@ -189,8 +193,11 @@ public class Captura extends Fragment {
 
             }
         });
-        Pendents.setOnClickListener(new View.OnClickListener() {
+        ObservacionsFetes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                if (flagDesada) {
+                    updateObservacio();
+                }
                 ((MainActivity) getActivity()).observacionsFetes();
             }
         });
@@ -278,9 +285,13 @@ public class Captura extends Fragment {
         updateLocationUI();
         if (output != null) {
             imatge.setImageBitmap(bitmap);
+            if (!flagEnviada) {
+                enableBotons();
+            }
         } else {
             imatge.setImageResource(R.drawable.estacions);
         }
+
         if (getView() == null) {
             return;
         }
@@ -293,11 +304,15 @@ public class Captura extends Fragment {
 
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
                     // handle back button's click listener
+
                     Snackbar snackbar = Snackbar
                             .make(getActivity().findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
                             .setAction("SÍ", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    if (flagDesada) {
+                                        updateObservacio();
+                                    }
                                     getActivity().finish();
                                 }
                             });
@@ -321,6 +336,7 @@ public class Captura extends Fragment {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
     }
+
 
     //
     // LOCALITZACIÓ
@@ -377,9 +393,11 @@ public class Captura extends Fragment {
                     ((MainActivity) getActivity()).hihaFoto();
                     ((MainActivity) getActivity()).NosHaDesat();
                     //jaDesada = false;
-                    jaEnviada=false;
-                    desa(); // No cal desar, es desa en fer la foto
-                    informaDesada();
+                    desa(); // No cal desar manualmeny, es desa en fer la foto
+                    flagGirada = false;
+                    flagEnviada = false;
+                    flagDesada = true;
+                    //informaDesada();
                     Log.i("onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
@@ -393,8 +411,8 @@ public class Captura extends Fragment {
         Girar.setEnabled(true);
         Envia.setImageResource(R.mipmap.ic_send_edumet);
         Envia.setEnabled(true);
-        Desa.setImageResource(R.mipmap.ic_save_edumet);
-        Desa.setEnabled(true);
+/*        Desa.setImageResource(R.mipmap.ic_save_edumet);
+        Desa.setEnabled(true);*/
     }
 
     private void startLocationUpdates() {
@@ -437,10 +455,10 @@ public class Captura extends Fragment {
 
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
-            if (!jaLocalitzat) {
+            if (!flagLocalitzada) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
                 ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                jaLocalitzat = true;
+                flagLocalitzada = true;
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);
@@ -617,8 +635,8 @@ public class Captura extends Fragment {
     }
 
     public void setEnviada() {
-        jaEnviada = true;
-        Log.i("jaEnviada", String.valueOf(jaEnviada));
+        flagEnviada = true;
+        Log.i("flagEnviada", String.valueOf(flagEnviada));
     }
 
     //
@@ -648,17 +666,26 @@ public class Captura extends Fragment {
         ((MainActivity) getActivity()).sHaDesat();
     }
 
-    public void updateDescripcio() {
+    public void updateObservacio() {
         String unlog = String.valueOf(AppID);
         Log.i("updateDesc", unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(getContext());
+
+        if (flagGirada) {
+            File fitxer = new File(outputMiniatura.getAbsolutePath());
+            if (fitxer.exists()) {
+                fitxer.delete();
+            }
+            fesMiniatura(midaEnvia);
+        }
 
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
         values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, outputMiniatura.getAbsolutePath());
 
         String selection = DadesEstructura.Parametres._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(AppID)};
@@ -669,8 +696,8 @@ public class Captura extends Fragment {
     }
 
 
-    public void informaDesada() {
-/*        Snackbar snackbar = Snackbar
+/*    public void informaDesada() {
+*//*        Snackbar snackbar = Snackbar
                 .make(getActivity().findViewById(android.R.id.content), "S'ha desat. Vols enviar-la ?", Snackbar.LENGTH_LONG)
                 .setAction("SÍ", new View.OnClickListener() {
                     @Override
@@ -678,13 +705,13 @@ public class Captura extends Fragment {
                         sendPost();
                     }
                 });
-        snackbar.show();*/
+        snackbar.show();*//*
         Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha desat l'observació", Snackbar.LENGTH_SHORT).show();
-    }
+    }*/
 
-    public void informaJaDesada() {
+/*    public void informaJaDesada() {
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Ja has desat aquesta observació", Snackbar.LENGTH_SHORT).show();
-    }
+    }*/
 
 //
 // VEURE FOTO
