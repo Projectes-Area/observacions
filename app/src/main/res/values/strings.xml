@@ -7,7 +7,7 @@
         <item>Ametller</item>
         <item>Cirerer</item>
     </string-array>
-    <string name="app_name">Observacions</string>
+    <string name="app_name">Edumet</string>
     <string name="location_settings_inadequate_warning">S\'ha d\'activar la localització</string>
     <string name="permission_rationale">Es necesita el permís de localització</string>
     <string name="permission_denied_explanation">El permís de localització és necessari</string>

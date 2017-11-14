@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -118,6 +119,8 @@ public class Captura extends Fragment {
     private boolean flagDesada;
     private static boolean flagEnviada = false;
 
+    private DadesHelper mDbHelper;
+
 
     String[] nomFenomen;
     String usuari;
@@ -213,6 +216,12 @@ public class Captura extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        int numPendents=checkPendents();
+        if (numPendents>0) {
+            //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(numPendents), Snackbar.LENGTH_LONG).show();
+            ObservacionsFetes.setImageResource(R.mipmap.ic_bookmark_red);
+        }
 
         updateValuesFromBundle(savedInstanceState);
 
@@ -641,7 +650,7 @@ public class Captura extends Fragment {
     public void updateObservacio() {
         String unlog = String.valueOf(AppID);
         Log.i("updateDesc", unlog);
-        DadesHelper mDbHelper;
+
         mDbHelper = new DadesHelper(getContext());
 
         if (flagGirada) {
@@ -677,6 +686,23 @@ public class Captura extends Fragment {
             intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
             startActivity(intent);
         }
+    }
+
+//
+// GENERAL
+//
+
+    public int checkPendents() {
+        mDbHelper = new DadesHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        String[] projection = {};
+        String selection = DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " = ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = "enviat DESC";
+
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                             // The sort order
+        return cursor.getCount();
     }
 
 }

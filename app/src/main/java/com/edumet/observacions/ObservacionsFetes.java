@@ -79,7 +79,6 @@ public class ObservacionsFetes extends Fragment {
 
         usuari = sharedPref.getString("usuari", "");
 
-        // Define a projection that specifies which columns from the database you will actually use after this query.
         String[] projection = {
                 DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
@@ -92,20 +91,11 @@ public class ObservacionsFetes extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
-        // Filter results
         String selection = DadesEstructura.Parametres._ID + " > ?";
         String[] selectionArgs = {"0"};
         String sortOrder = "dia DESC, hora DESC";
 
-        Cursor cursor = db.query(
-                DadesEstructura.Parametres.TABLE_NAME,    // The table to query
-                projection,                               // The columns to return
-                selection,                                // The columns for the WHERE clause
-                selectionArgs,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
 
         itemIdsEdumet = new ArrayList<>();
         List itemIds = new ArrayList<>();
