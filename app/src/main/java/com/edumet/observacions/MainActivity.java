@@ -121,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-            Log.i("requestPermissions", "Requesting permission");
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
+        Log.i("requestPermissions", "Requesting permission");
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+    }
 
 
     @Override
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("FRAGonReqPermResult", "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
+                Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
 
             } else {
                 finish();
@@ -198,26 +198,10 @@ public class MainActivity extends AppCompatActivity {
                 if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
- //                   if (!jaDesada) {
-                        //fragment.desa();
-                        fragment.updateObservacio();
- //                   }
+                    fragment.updateObservacio();
                     fragment.sendPost();
                 }
                 return true;
-/*            case R.id.desa_observacio:
-                if (jaHiHaFoto) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    if (!jaDesada) {
-                        fragment.desa();
-                        fragment.informaDesada();
-                    }
-                    else {
-                        fragment.informaJaDesada();
-                    }
-                }
-                return true;*/
             case R.id.mostra_imatge:
                 if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
@@ -276,12 +260,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void hihaFoto() {
         jaDesada = true;
-    }
-    public void sHaDesat() {
-        //jaDesada = true;
-    }
-    public void NosHaDesat() {
-        //jaDesada = false;
     }
 
     public void redrawObservacionsFetes(int numNoves) {
@@ -369,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
 
-        String laUrl=context.getResources().getString(R.string.url_servidor);
+        String laUrl = context.getResources().getString(R.string.url_servidor);
 
         final Request request = new Request.Builder()
                 .url(laUrl)
@@ -383,8 +361,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         final View rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
-        final ProgressBar mProgressBar= (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        final ImageButton Envia= (ImageButton) rootView.findViewById(R.id.btnEnvia);
+        final ProgressBar mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        final ImageButton Envia = (ImageButton) rootView.findViewById(R.id.btnEnvia);
         final Handler mHandler = new Handler(context.getMainLooper());
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
         Envia.setEnabled(false);
@@ -418,8 +396,6 @@ public class MainActivity extends AppCompatActivity {
                                                         @Override
                                                         public void run() {
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            //Envia.setEnabled(true);
-                                                            //Envia.setImageResource(R.mipmap.ic_send_edumet);
                                                         }
                                                     });
                                                 } else {
@@ -456,8 +432,7 @@ public class MainActivity extends AppCompatActivity {
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
         Log.i("UpdatedRows", String.valueOf(count));
-        Captura frag=new Captura();
+        Captura frag = new Captura();
         frag.setEnviada();
-
     }
 }
