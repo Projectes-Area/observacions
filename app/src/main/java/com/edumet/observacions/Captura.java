@@ -635,6 +635,7 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
+
     }
 
     public void updateObservacio() {

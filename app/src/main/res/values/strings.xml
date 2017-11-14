@@ -42,8 +42,9 @@
     <string name="mostra_imatge">Mostra la fotografia</string>
     <string name="sincronitza">Sincronitza amb el servidor</string>
     <string name="url_servidor">https://edumet.cat/edumet/meteo_proves/dades_recarregar.php</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashbboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_observacions">Observacions</string>
+    <string name="title_estacions">Estacions</string>
+    <string name="title_radar">Radar</string>
+    <string name="title_pronostic">Pronòstic</string>
 
 </resources>
