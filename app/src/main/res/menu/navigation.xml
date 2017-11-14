@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/navigation_observacions"
+    <item android:id="@+id/navigation_observacions"
         android:icon="@drawable/ic_local_see_black_24dp"
         android:title="@string/title_observacions" />
 
-    <item
-        android:id="@+id/navigation_estacions"
+    <item android:id="@+id/navigation_estacions"
         android:icon="@drawable/ic_router_black_24dp"
         android:title="@string/title_estacions" />
 
-    <item
-        android:id="@+id/navigation_radar"
+    <item android:id="@+id/navigation_radar"
         android:icon="@drawable/ic_wifi_tethering_black_24dp"
         android:title="@string/title_radar" />
 
