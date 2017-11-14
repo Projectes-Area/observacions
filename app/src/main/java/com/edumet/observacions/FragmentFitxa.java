@@ -40,6 +40,7 @@ public class FragmentFitxa extends Fragment {
 
     private ImageButton Envia;
     private ImageButton Esborra;
+    private ImageButton Edit;
     private ImageView imatge;
     private TextView fenomen;
     private TextView data;
@@ -57,6 +58,7 @@ public class FragmentFitxa extends Fragment {
     private String elPath;
     private String elPath_Envia;
     private int enviat;
+    private static boolean flagEnviada = false;
 
     private SQLiteDatabase db;
 
@@ -65,8 +67,7 @@ public class FragmentFitxa extends Fragment {
     String usuari;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
 
@@ -92,6 +93,15 @@ public class FragmentFitxa extends Fragment {
                             }
                         });
                 snackbar.show();
+            }
+        });
+        Edit = (ImageButton) v.findViewById(R.id.btnEdit);
+        Edit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (flagEnviada) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),"No es pot editar una observació ja enviada", Snackbar.LENGTH_LONG).show();
+                    Edit.setImageResource(R.mipmap.ic_edit_white);
+                }
             }
         });
         imatge = (ImageView) v.findViewById(R.id.imgFoto);
@@ -174,8 +184,13 @@ public class FragmentFitxa extends Fragment {
         imatge.setImageBitmap(BitmapFactory.decodeFile(elPath_Envia));
 
         if (enviat == 1) {
+            Edit.setEnabled(false);
+            Edit.setImageResource(R.mipmap.ic_edit_white);
             Envia.setEnabled(false);
             Envia.setImageResource(R.mipmap.ic_send_white);
+        } else
+        {
+            flagEnviada=false;
         }
     }
 
@@ -213,8 +228,10 @@ public class FragmentFitxa extends Fragment {
                 laDescripcio,
                 this.getContext()
         );
-        //Envia.setEnabled(false);
-        //Envia.setImageResource(R.mipmap.ic_send_white);
+    }
+
+    public void setEnviada() {
+        flagEnviada = true;
     }
 
 //

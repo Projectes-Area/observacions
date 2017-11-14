@@ -406,7 +406,9 @@ public class MainActivity extends AppCompatActivity {
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
         Log.i("UpdatedRows", String.valueOf(count));
-        Captura frag = new Captura();
-        frag.setEnviada();
+        Captura frag1 = new Captura();
+        frag1.setEnviada();
+        FragmentFitxa frag2 = new FragmentFitxa();
+        frag2.setEnviada();
     }
 }
