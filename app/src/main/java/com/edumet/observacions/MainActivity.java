@@ -177,10 +177,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.envia_observacio:
                 if (jaDesada) {
-                    FragmentManager fm = getSupportFragmentManager();
+/*                    FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.updateObservacio();
-                    fragment.sendPost();
+                    fragment.sendPost();*/
                 }
                 return true;
             case R.id.mostra_imatge:

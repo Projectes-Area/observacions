@@ -117,11 +117,14 @@ public class Captura extends Fragment {
     public int angle_foto;
     private String dia;
     private String hora;
+    private Double laLatitud;
+    private Double laLongitud;
     private int AppID;
 
     private boolean flagLocalitzada = false;
     private boolean flagGirada = false;
-    private boolean flagDesada;
+    private boolean flagDesada = false;
+    private boolean flagEdicio = false;
     private static boolean flagEnviada = false;
 
     private DadesHelper mDbHelper;
@@ -158,17 +161,8 @@ public class Captura extends Fragment {
     }
 
 
-
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-
-        AppID= getArguments().getInt("AppID", 0);
-        if (AppID>0){
-            //loadObservacio();
-            Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
-
-        }
-
 
         Foto.setEnabled(false);
         Foto.setOnClickListener(new View.OnClickListener() {
@@ -183,7 +177,7 @@ public class Captura extends Fragment {
                 if (angle_foto >= 360) {
                     angle_foto = 0;
                 }
-                Log.i("ANGLE", String.valueOf(angle_foto));
+                Log.i("Angle", String.valueOf(angle_foto));
                 bitmap = rotateViaMatrix(bitmap, 90);
                 imatge.setImageBitmap(bitmap);
                 flagGirada = true;
@@ -193,7 +187,11 @@ public class Captura extends Fragment {
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 updateObservacio();
-                sendPost();
+                if (flagEdicio) {
+                    sendPost(laLatitud, laLongitud);
+                } else {
+                    sendPost(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                }
             }
         });
 
@@ -237,8 +235,15 @@ public class Captura extends Fragment {
             }
         });
 
-        int numPendents=checkPendents();
-        if (numPendents>0) {
+        AppID = getArguments().getInt("AppID", 0);
+        if (AppID > 0) {
+            flagEdicio = true;
+            loadObservacio();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
+        }
+
+        int numPendents = checkPendents();
+        if (numPendents > 0) {
             //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(numPendents), Snackbar.LENGTH_LONG).show();
             ObservacionsFetes.setImageResource(R.mipmap.ic_bookmark_red);
         }
@@ -420,10 +425,11 @@ public class Captura extends Fragment {
                     galleryAddPic();
                     enableBotons();
                     ((MainActivity) getActivity()).hihaFoto();
-                    desa(); // No cal desar manualmeny, es desa en fer la foto Aixo es pot simplificar
+                    desa(); // No cal desar manualment, es desa en fer la foto Aixo es pot simplificar
                     flagDesada = true;
                     flagGirada = false;
                     flagEnviada = false;
+                    flagEdicio = false;
                     Log.i("onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
@@ -510,16 +516,26 @@ public class Captura extends Fragment {
     //
 
     public void mapa() {
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
-            startLocationUpdates();
-        }
-        if (mCurrentLocation != null) {
+        if (flagEdicio) {
             Intent intent = new Intent(getActivity(), MapsActivity.class);
-            intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
-            intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
-            intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
+            intent.putExtra(MainActivity.EXTRA_LATITUD, laLatitud);
+            intent.putExtra(MainActivity.EXTRA_LONGITUD, laLongitud);
+            intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, num_fenomen);
             startActivity(intent);
+        } else {
+
+            if (!mRequestingLocationUpdates) {
+                mRequestingLocationUpdates = true;
+                startLocationUpdates();
+            }
+
+            if (mCurrentLocation != null) {
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
+                intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
+                intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
+                startActivity(intent);
+            }
         }
     }
     //
@@ -626,7 +642,7 @@ public class Captura extends Fragment {
     // ENVIA AL SERVIDOR EDUMET
     //
 
-    public void sendPost() {
+    public void sendPost(Double latitud, Double longitud) {
 
         File fitxer_a_enviar = new File(outputMiniatura.getAbsolutePath());
 
@@ -650,8 +666,8 @@ public class Captura extends Fragment {
                 usuari,
                 dia,
                 hora,
-                mCurrentLocation.getLatitude(),
-                mCurrentLocation.getLongitude(),
+                latitud, //mCurrentLocation.getLatitude(),
+                longitud, //mCurrentLocation.getLongitude(),
                 num_fenomen,
                 observacio.getText().toString(),
                 this.getContext()
@@ -687,6 +703,72 @@ public class Captura extends Fragment {
                 outputMiniatura.getAbsolutePath()
         );
 
+    }
+
+    public void loadObservacio() {
+        String[] projection = {
+                DadesEstructura.Parametres._ID,
+                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
+                DadesEstructura.Parametres.COLUMN_NAME_DIA,
+                DadesEstructura.Parametres.COLUMN_NAME_HORA,
+                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
+                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
+                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
+                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
+                DadesEstructura.Parametres.COLUMN_NAME_PATH,
+                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
+                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
+        };
+
+        String selection = DadesEstructura.Parametres._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(AppID)};
+        String sortOrder = null;
+
+        mDbHelper = new DadesHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+
+        String laDescripcio = "";
+        String elFenomen = "";
+        String elPath = "";
+        String elPath_Envia = "";
+        String elDia = "";
+        String laHora = "";
+
+        while (cursor.moveToNext()) {
+            //if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
+            //id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
+            elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+            laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
+            laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
+            elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
+            elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
+            elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+//                enviat = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            //  }
+        }
+        cursor.close();
+
+        observacio.setText(laDescripcio);
+        num_fenomen = Integer.valueOf(elFenomen);
+        spinner.setSelection(num_fenomen - 1);
+        bitmap = BitmapFactory.decodeFile(elPath_Envia);
+        imatge.setImageBitmap(bitmap);
+        output = new File(elPath);
+        outputMiniatura = new File(elPath_Envia);
+        mCurrentPhotoPath = elPath;
+        dia = elDia;
+        hora = laHora;
+
+        angle_foto = 0;
+        enableBotons();
+        ((MainActivity) getActivity()).hihaFoto();
+        flagDesada = true;
+        flagGirada = false;
+        flagEnviada = false;
     }
 
     public void updateObservacio() {
@@ -743,9 +825,10 @@ public class Captura extends Fragment {
         String[] selectionArgs = {"0"};
         String sortOrder = "enviat DESC";
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                             // The sort order
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                             // The sort order
         return cursor.getCount();
     }
+
 
 }
 
