@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean jaDesada = false;
     private Double latitud;
     private Double longitud;
+    private int AppID;
 
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
@@ -63,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        Intent intent = getIntent();
+        AppID = getIntent().getIntExtra(MainActivity.EXTRA_ID, 0);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -76,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             } else {
                 Captura firstFragment = new Captura();
+                Bundle args = new Bundle();
+                args.putInt("AppID", AppID);
+                firstFragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             }
         }

@@ -20,7 +20,7 @@
     <string name="error_servidor">No s\'ha pogut enviar l\'observació</string>
     <string name="descriu">Descriu aquí les teves observacions</string>
     <string name="no_location_detected">Sense dades de localització</string>
-    <string name="title_activity_maps">Observacions</string>
+    <string name="title_activity_maps">Edumet</string>
     <string name="contrasenya">contrasenya</string>
     <string name="usuari" translatable="false">usuari</string>
     <string name="identificat">Identifica\'t</string>
@@ -42,7 +42,7 @@
     <string name="mostra_imatge">Mostra la fotografia</string>
     <string name="sincronitza">Sincronitza amb el servidor</string>
     <string name="url_servidor">https://edumet.cat/edumet/meteo_proves/dades_recarregar.php</string>
-    <string name="title_observacions">Fenologia</string>
+    <string name="title_observacions">Observació</string>
     <string name="title_estacions">Estacions</string>
     <string name="title_radar">Radar</string>
     <string name="title_pronostic">Pronòstic</string>

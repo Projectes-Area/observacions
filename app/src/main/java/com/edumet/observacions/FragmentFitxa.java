@@ -101,6 +101,11 @@ public class FragmentFitxa extends Fragment {
                 if (flagEnviada) {
                     Snackbar.make(getActivity().findViewById(android.R.id.content),"No es pot editar una observació ja enviada", Snackbar.LENGTH_LONG).show();
                     Edit.setImageResource(R.mipmap.ic_edit_white);
+                } else {
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.putExtra(MainActivity.EXTRA_ID, numID);
+                    startActivity(intent);
                 }
             }
         });

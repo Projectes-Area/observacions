@@ -161,6 +161,15 @@ public class Captura extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
+
+        AppID= getArguments().getInt("AppID", 0);
+        if (AppID>0){
+            //loadObservacio();
+            Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
+
+        }
+
+
         Foto.setEnabled(false);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
