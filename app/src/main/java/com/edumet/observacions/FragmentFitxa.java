@@ -138,7 +138,6 @@ public class FragmentFitxa extends Fragment {
         numID = activity.getID();
 
         String[] projection = {
-                DadesEstructura.Parametres._ID,
                 DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
@@ -156,9 +155,7 @@ public class FragmentFitxa extends Fragment {
         String sortOrder = null;
 
         Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-
-        while (cursor.moveToNext()) {
-            if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
+        cursor.moveToFirst();
                 id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
                 elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
                 laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
@@ -169,8 +166,6 @@ public class FragmentFitxa extends Fragment {
                 elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
                 enviat = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
-            }
-        }
         cursor.close();
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);

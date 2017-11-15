@@ -714,8 +714,6 @@ public class Captura extends Fragment {
 
     public void loadObservacio() {
         String[] projection = {
-                DadesEstructura.Parametres._ID,
-                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstructura.Parametres.COLUMN_NAME_DIA,
                 DadesEstructura.Parametres.COLUMN_NAME_HORA,
                 DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
@@ -724,7 +722,6 @@ public class Captura extends Fragment {
                 DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH,
                 DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
-                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
         };
 
         String selection = DadesEstructura.Parametres._ID + " = ?";
@@ -735,41 +732,26 @@ public class Captura extends Fragment {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-
-        String laDescripcio = "";
-        String elFenomen = "";
-        String elPath = "";
-        String elPath_Envia = "";
-        String elDia = "";
-        String laHora = "";
-
-        while (cursor.moveToNext()) {
-            //if (Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID))) == numID) {
-            //id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
-            elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-            laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+        cursor.moveToFirst();
+            dia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            hora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
             laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
             laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
-            elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-            laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
-            elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
-            elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-//                enviat = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
-            //  }
-        }
+            String elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            String laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
+            String elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
+            String elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
         cursor.close();
-        Log.i("passo", "per aqui");
 
-        observacio.setText(laDescripcio);
         num_fenomen = Integer.valueOf(elFenomen);
         spinner.setSelection(num_fenomen - 1);
-        bitmap = BitmapFactory.decodeFile(elPath_Envia);
-        imatge.setImageBitmap(bitmap);
+        observacio.setText(laDescripcio);
         output = new File(elPath);
         outputMiniatura = new File(elPath_Envia);
+        bitmap = BitmapFactory.decodeFile(elPath_Envia);
+        imatge.setImageBitmap(bitmap);
         mCurrentPhotoPath = elPath;
-        dia = elDia;
-        hora = laHora;
+
 
         angle_foto = 0;
         enableBotons();
