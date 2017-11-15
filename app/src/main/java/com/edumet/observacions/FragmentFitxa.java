@@ -99,7 +99,7 @@ public class FragmentFitxa extends Fragment {
         Edit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (flagEnviada) {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),"No es pot editar una observació ja enviada", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "No es pot editar una observació ja enviada", Snackbar.LENGTH_LONG).show();
                     Edit.setImageResource(R.mipmap.ic_edit_white);
                 } else {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -193,9 +193,8 @@ public class FragmentFitxa extends Fragment {
             Edit.setImageResource(R.mipmap.ic_edit_white);
             Envia.setEnabled(false);
             Envia.setImageResource(R.mipmap.ic_send_white);
-        } else
-        {
-            flagEnviada=false;
+        } else {
+            flagEnviada = false;
         }
     }
 
@@ -265,10 +264,12 @@ public class FragmentFitxa extends Fragment {
 
         if (enviat == 1) { // esborrar del servidor
 
+            mProgressBar.setVisibility(ProgressBar.VISIBLE);
+
             final OkHttpClient client = new OkHttpClient();
 
-            String laUrl=getResources().getString(R.string.url_servidor);
-            String cadenaRequest = laUrl+"?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
+            String laUrl = getResources().getString(R.string.url_servidor);
+            String cadenaRequest = laUrl + "?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
             Log.i("PostDelete", cadenaRequest);
             Request request = new Request.Builder()
                     .url(cadenaRequest)
@@ -307,8 +308,8 @@ public class FragmentFitxa extends Fragment {
             });
         } else {
             mProgressBar.setVisibility(ProgressBar.GONE);
-            getActivity().onBackPressed();
         }
+       getActivity().onBackPressed();
     }
 
 //

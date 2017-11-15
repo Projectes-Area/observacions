@@ -25,8 +25,6 @@ import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -72,7 +70,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -124,7 +121,8 @@ public class Captura extends Fragment {
     private boolean flagLocalitzada = false;
     private boolean flagGirada = false;
     private boolean flagDesada = false;
-    private boolean flagEdicio = false;
+    private boolean flagEditada = false;
+    private boolean flagEnEdicio = false;
     private static boolean flagEnviada = false;
 
     private DadesHelper mDbHelper;
@@ -187,7 +185,7 @@ public class Captura extends Fragment {
         Envia.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 updateObservacio();
-                if (flagEdicio) {
+                if (flagEnEdicio) {
                     sendPost(laLatitud, laLongitud);
                 } else {
                     sendPost(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
@@ -200,6 +198,7 @@ public class Captura extends Fragment {
                 if (flagDesada) {
                     updateObservacio();
                 }
+                flagEnEdicio = false;
                 ((MainActivity) getActivity()).observacionsFetes();
             }
         });
@@ -235,11 +234,19 @@ public class Captura extends Fragment {
             }
         });
 
-        AppID = getArguments().getInt("AppID", 0);
+        Bundle arguments = getArguments();
+
+        if (arguments != null && !flagEditada) {
+            AppID = getArguments().getInt("AppID", 0);
+            flagEditada = true;
+        } else {
+            AppID = 0;
+        }
+
         if (AppID > 0) {
-            flagEdicio = true;
+            flagEnEdicio = true;
             loadObservacio();
-            Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
         }
 
         int numPendents = checkPendents();
@@ -429,7 +436,7 @@ public class Captura extends Fragment {
                     flagDesada = true;
                     flagGirada = false;
                     flagEnviada = false;
-                    flagEdicio = false;
+                    flagEnEdicio = false;
                     Log.i("onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
@@ -516,11 +523,11 @@ public class Captura extends Fragment {
     //
 
     public void mapa() {
-        if (flagEdicio) {
+        if (flagEnEdicio) {
             Intent intent = new Intent(getActivity(), MapsActivity.class);
-            intent.putExtra(MainActivity.EXTRA_LATITUD, laLatitud);
-            intent.putExtra(MainActivity.EXTRA_LONGITUD, laLongitud);
-            intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, num_fenomen);
+            intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(laLatitud));
+            intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(laLongitud));
+            intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, String.valueOf(num_fenomen));
             startActivity(intent);
         } else {
 
@@ -751,6 +758,7 @@ public class Captura extends Fragment {
             //  }
         }
         cursor.close();
+        Log.i("passo", "per aqui");
 
         observacio.setText(laDescripcio);
         num_fenomen = Integer.valueOf(elFenomen);

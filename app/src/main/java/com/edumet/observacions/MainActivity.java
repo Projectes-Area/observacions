@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 Login firstFragment = new Login();
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             } else {
+                Log.i("captura","acaptura");
                 Captura firstFragment = new Captura();
                 Bundle args = new Bundle();
                 args.putInt("AppID", AppID);
@@ -175,14 +176,14 @@ public class MainActivity extends AppCompatActivity {
                     fragment.imatge.setImageBitmap(fragment.bitmap);
                 }
                 return true;
-            case R.id.envia_observacio:
-                if (jaDesada) {
+ //           case R.id.envia_observacio:
+   //             if (jaDesada) {
 /*                    FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.updateObservacio();
                     fragment.sendPost();*/
-                }
-                return true;
+   //             }
+         //       return true;
             case R.id.mostra_imatge:
                 if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();
@@ -271,6 +272,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void captura() {
         Captura newFragment = new Captura();
+        Bundle args = new Bundle();
+        args.putInt("AppID", 0);
+        newFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.commit();

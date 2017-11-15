@@ -27,9 +27,9 @@
 <!--    <item android:id="@+id/desa_observacio"
         android:title="@string/desa_observacio"
         app:showAsAction="never"/>-->
-    <item android:id="@+id/envia_observacio"
+<!--    <item android:id="@+id/envia_observacio"
         android:title="@string/envia_observacio"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/>-->
     <item android:id="@+id/edumet_web"
         android:title="@string/edumet_web"
         app:showAsAction="never"/>
