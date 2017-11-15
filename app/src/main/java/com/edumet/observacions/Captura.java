@@ -175,7 +175,7 @@ public class Captura extends Fragment {
                 if (angle_foto >= 360) {
                     angle_foto = 0;
                 }
-                Log.i("Angle", String.valueOf(angle_foto));
+                Log.i(".Angle", String.valueOf(angle_foto));
                 bitmap = rotateViaMatrix(bitmap, 90);
                 imatge.setImageBitmap(bitmap);
                 flagGirada = true;
@@ -252,7 +252,7 @@ public class Captura extends Fragment {
         int numPendents = checkPendents();
         if (numPendents > 0) {
             //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(numPendents), Snackbar.LENGTH_LONG).show();
-            ObservacionsFetes.setImageResource(R.mipmap.ic_bookmark_red);
+            ObservacionsFetes.setImageResource(R.mipmap.ic_time_red);
         }
 
         updateValuesFromBundle(savedInstanceState);
@@ -300,7 +300,7 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.i("OnResume", String.valueOf(mRequestingLocationUpdates));
+        Log.i(".OnResume", String.valueOf(mRequestingLocationUpdates));
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
@@ -347,7 +347,7 @@ public class Captura extends Fragment {
     public void onPause() {
         super.onPause();
         stopLocationUpdates();
-        Log.i("OnPause", String.valueOf(mRequestingLocationUpdates));
+        Log.i(".OnPause", String.valueOf(mRequestingLocationUpdates));
     }
 
     @Override
@@ -413,16 +413,16 @@ public class Captura extends Fragment {
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
-                        Log.i("FRAGonActResult", "User agreed to make required location settings changes.");
+                        Log.i(".FRAGonActResult", "User agreed to make required location settings changes.");
                         mRequestingLocationUpdates = true;
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.i("FRAGonActResult", "User chose not to make required location settings changes.");
+                        Log.i(".FRAGonActResult", "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
                         break;
                 }
                 updateLocationUI();
-                Log.i("FRAGonActResult", String.valueOf(mRequestingLocationUpdates));
+                Log.i(".FRAGonActResult", String.valueOf(mRequestingLocationUpdates));
                 break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -437,7 +437,7 @@ public class Captura extends Fragment {
                     flagGirada = false;
                     flagEnviada = false;
                     flagEnEdicio = false;
-                    Log.i("onActivityResult", "Foto");
+                    Log.i(".onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
                 }
@@ -458,7 +458,7 @@ public class Captura extends Fragment {
                     @SuppressLint("MissingPermission")
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i("startLocation", "All location settings are satisfied.");
+                        Log.i(".startLocation", "All location settings are satisfied.");
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                         mRequestingLocationUpdates = true;
                         updateLocationUI();
@@ -471,17 +471,17 @@ public class Captura extends Fragment {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i("startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
+                                Log.i(".startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
                                 try {
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.i("startUpdates", "PendingIntent unable to execute request.");
+                                    Log.i(".startUpdates", "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                                 String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.i("startUpdates", errorMessage);
+                                Log.i(".startUpdates", errorMessage);
                                 Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
@@ -506,7 +506,7 @@ public class Captura extends Fragment {
 
     private void stopLocationUpdates() {
         if (!mRequestingLocationUpdates) {
-            Log.i("stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
+            Log.i(".stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
             return;
         }
         mFusedLocationClient.removeLocationUpdates(mLocationCallback)
@@ -683,7 +683,6 @@ public class Captura extends Fragment {
 
     public void setEnviada() {
         flagEnviada = true;
-        Log.i("flagEnviada", String.valueOf(flagEnviada));
     }
 
     //
@@ -763,7 +762,7 @@ public class Captura extends Fragment {
 
     public void updateObservacio() {
         String unlog = String.valueOf(AppID);
-        Log.i("updateDesc", unlog);
+        Log.i(".UpdateID", unlog);
 
         mDbHelper = new DadesHelper(getContext());
 
@@ -787,7 +786,7 @@ public class Captura extends Fragment {
 
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
-        Log.i("UpdatedRows", String.valueOf(count));
+        Log.i(".UpdatedRows", String.valueOf(count));
     }
 
 //

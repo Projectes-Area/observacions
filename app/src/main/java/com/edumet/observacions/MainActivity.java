@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 Login firstFragment = new Login();
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             } else {
-                Log.i("captura","acaptura");
                 Captura firstFragment = new Captura();
                 Bundle args = new Bundle();
                 args.putInt("AppID", AppID);
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-        Log.i("requestPermissions", "Requesting permission");
+        Log.i(".requestPermissions", "Requesting permission");
         ActivityCompat.requestPermissions(this, new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
@@ -113,10 +112,10 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
-                Log.i("FRAGonReqPermResult", "User interaction was cancelled.");
+                Log.i(".FRAGonReqPermResult", "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                Log.i("FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
+                Log.i(".FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
 
             } else {
                 finish();
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     fragment2.sincronitza();
                 } catch (Exception e) {
-                    Log.i("Exception", "error");
+                    Log.i(".Exception", "error");
                 }
                 return true;*/
             case R.id.edumet_web:
@@ -225,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("ACT", "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         Captura targetFragment = new Captura();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -237,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         jaLocalitzada = true;
         latitud = lat;
         longitud = lon;
-        Log.i("ACT-Ubicació", String.valueOf(lat) + "," + String.valueOf(lon));
+        Log.i(".ACT-ubicació", String.valueOf(lat) + "," + String.valueOf(lon));
     }
 
     public void hihaFoto() {
@@ -302,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         mDbHelper.close();
-        Log.i("AppID", String.valueOf(newRowId));
+        Log.i(".AppID", String.valueOf(newRowId));
         return (int) newRowId;
     }
 
@@ -374,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
                                                     String numResposta = response.body().string().trim();
                                                     Snackbar.make(rootView, R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                     int nouEdumetID = Integer.valueOf(numResposta);
-                                                    Log.i("Edumet_ID", numResposta);
                                                     updateID(AppID, nouEdumetID, context);
 
                                                     mHandler.post(new Runnable() {
@@ -401,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static void updateID(int AppID, int EdumetID, Context context) {
         String unlog = String.valueOf(AppID) + "-" + String.valueOf(EdumetID);
-        Log.i("updateID", unlog);
+        Log.i(".updateID", unlog);
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(context);
 
@@ -416,7 +413,6 @@ public class MainActivity extends AppCompatActivity {
 
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
-        Log.i("UpdatedRows", String.valueOf(count));
         Captura frag1 = new Captura();
         frag1.setEnviada();
         FragmentFitxa frag2 = new FragmentFitxa();

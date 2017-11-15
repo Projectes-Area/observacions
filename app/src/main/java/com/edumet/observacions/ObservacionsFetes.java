@@ -289,7 +289,7 @@ public class ObservacionsFetes extends Fragment {
             try {
                 sincronitza();
             } catch (Exception e) {
-                Log.i("Exception", "error");
+                Log.i(".Exception", "error");
             }
         } else {
             String missatge;
@@ -394,19 +394,14 @@ public class ObservacionsFetes extends Fragment {
                                                         for (int i = 0; i < jsonArray.length(); i++) {
 
                                                             JSONArray JSONobservacio = jsonArray.getJSONArray(i);
-                                                            Log.i("remota",String.valueOf(JSONobservacio.getString(0)));
                                                             flagRepetida = false;
                                                             for (int j = 0; j < itemIdsEdumet.size(); j++) {
-
                                                                 int Num1=Integer.valueOf(itemIdsEdumet.get(j).toString());
                                                                 int Num2=Integer.valueOf(JSONobservacio.getString(0).toString());
-                                                                //Log.i("flag",String.valueOf(Num1)+String.valueOf(Num2));
                                                                 if (Num1 == Num2) {
                                                                     flagRepetida = true;
-                                                                    //Log.i("flag",String.valueOf(flagRepetida));
                                                                 }
                                                             }
-                                                            Log.i("flag",String.valueOf(flagRepetida));
                                                             if (!flagRepetida) {
                                                                 numNovaObservacio++;
                                                                 id_edumet.add(JSONobservacio.getString(0));
@@ -437,7 +432,7 @@ public class ObservacionsFetes extends Fragment {
 
                                                         }
                                                         numNovesObservacions = numNovaObservacio;
-                                                        Log.i("NovesObs", String.valueOf(numNovesObservacions));
+                                                        Log.i(".NovesObs", String.valueOf(numNovesObservacions));
                                                         nous_paths = new String[numNovesObservacions];
 
                                                     } catch (Exception e) {
@@ -488,7 +483,7 @@ public class ObservacionsFetes extends Fragment {
                                                 nous_paths[numNovaObservacio - 1] = miniatura.getAbsolutePath();
                                                 numObservacionsBaixades++;
                                                 if (numObservacionsBaixades == numNovesObservacions) {
-                                                    Log.i("Baixades", String.valueOf(numNovesObservacions));
+                                                    Log.i(".Baixades", String.valueOf(numNovesObservacions));
                                                     inclouNousRegistres();
                                                     redraw(numNovesObservacions);
                                                 }

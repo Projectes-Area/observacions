@@ -265,7 +265,6 @@ public class FragmentFitxa extends Fragment {
 
             String laUrl = getResources().getString(R.string.url_servidor);
             String cadenaRequest = laUrl + "?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
-            Log.i("PostDelete", cadenaRequest);
             Request request = new Request.Builder()
                     .url(cadenaRequest)
                     .build();
@@ -279,9 +278,8 @@ public class FragmentFitxa extends Fragment {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    Log.i("Response", response.toString());
                     final String resposta = response.body().string().trim();
-                    Log.i("Resposta", resposta);
+                    Log.i(".Resposta", resposta);
                     if (response.isSuccessful()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
