@@ -36,7 +36,7 @@
             app:srcCompat="@android:drawable/btn_star_big_on" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/lblNom"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -47,42 +47,42 @@
             app:layout_constraintTop_toBottomOf="@+id/spinner2" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/lblPoblacio"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Població"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintEnd_toEndOf="@+id/lblNom"
+            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintTop_toBottomOf="@+id/lblNom" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/lblLatitud"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Latitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintTop_toBottomOf="@+id/lblPoblacio" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/lblLongitud"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Longitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintTop_toBottomOf="@+id/lblLatitud" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/lblAltitud"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Altitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintTop_toBottomOf="@+id/lblLongitud" />
 
         <ImageView
             android:id="@+id/imageView4"
@@ -92,7 +92,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintStart_toEndOf="@+id/lblNom"
             app:layout_constraintTop_toBottomOf="@+id/spinner2"
             app:srcCompat="@drawable/edumet" />
     </android.support.constraint.ConstraintLayout>

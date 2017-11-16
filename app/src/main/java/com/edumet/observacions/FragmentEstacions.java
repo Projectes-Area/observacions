@@ -11,14 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,8 +34,14 @@ public class FragmentEstacions extends Fragment {
 
     private final OkHttpClient client = new OkHttpClient();
 
-    private int numNovesObservacions;
-    private int numObservacionsBaixades;
+    private int numNovesEstacions;
+    private int numEstacionsBaixades;
+
+    private TextView nom;
+    private TextView poblacio;
+    private TextView latitud;
+    private TextView longitud;
+    private TextView altitud;
 
     List itemIdsEdumet = new ArrayList<>();
 
@@ -54,14 +59,19 @@ public class FragmentEstacions extends Fragment {
 
         mDbHelper = new EstacionsHelper(getContext());
         db = mDbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
         while (cursor.moveToNext()) {
             String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
             itemIdsEdumet.add(itemIdEdumet);
         }
         cursor.close();
-        //db.close();
+
+        nom=(TextView) v.findViewById(R.id.lblNom);
+        poblacio=(TextView) v.findViewById(R.id.lblPoblacio);
+        latitud=(TextView) v.findViewById(R.id.lblLatitud);
+        longitud=(TextView) v.findViewById(R.id.lblLongitud);
+        altitud=(TextView) v.findViewById(R.id.lblAltitud);
 
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarEstacions);
         return v;
@@ -74,18 +84,8 @@ public class FragmentEstacions extends Fragment {
         } catch (Exception e) {
             Log.i(".Exception", "error");
         }
+        mostraEstacio(4);
     }
-
-/*    List id_edumet = new ArrayList<>();
-    List codi = new ArrayList<>();
-    List nom = new ArrayList<>();
-    List poblacio = new ArrayList<>();
-    List latitud = new ArrayList<>();
-    List longitud = new ArrayList<>();
-    List altitud = new ArrayList<>();
-    List situacio = new ArrayList<>();
-    List estacio = new ArrayList<>();
-    List clima = new ArrayList<>();*/
 
     @Override
     public void onDestroy() {
@@ -120,9 +120,9 @@ public class FragmentEstacions extends Fragment {
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
 
-                                                        numNovesObservacions = 0;
-                                                        numObservacionsBaixades = 0;
-                                                        int numNovaObservacio = 0;
+                                                        numNovesEstacions = 0;
+                                                        numEstacionsBaixades = 0;
+                                                        int numNovaEstacio = 0;
 
                                                         Boolean flagRepetida;
 
@@ -132,52 +132,41 @@ public class FragmentEstacions extends Fragment {
 
                                                         for (int i = 0; i < jsonArray.length(); i++) {
 
-                                                            JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+                                                            JSONArray JSONEstacio = jsonArray.getJSONArray(i);
                                                             flagRepetida = false;
                                                             for (int j = 0; j < itemIdsEdumet.size(); j++) {
-                                                                int Num1=Integer.valueOf(itemIdsEdumet.get(j).toString());
-                                                                int Num2=Integer.valueOf(JSONobservacio.getString(0).toString());
+                                                                int Num1 = Integer.valueOf(itemIdsEdumet.get(j).toString());
+                                                                int Num2 = Integer.valueOf(JSONEstacio.getString(0).toString());
                                                                 if (Num1 == Num2) {
                                                                     flagRepetida = true;
                                                                 }
                                                             }
                                                             if (!flagRepetida) {
-                                                                numNovaObservacio++;
-/*                                                                id_edumet.add(JSONobservacio.getString(0));
-                                                                codi.add(JSONobservacio.getString(1));
-                                                                nom.add(JSONobservacio.getString(2));
-                                                                poblacio.add(JSONobservacio.getString(3));
-                                                                latitud.add(JSONobservacio.getString(4));
-                                                                longitud.add(JSONobservacio.getString(5));
-                                                                altitud.add(JSONobservacio.getString(6));
-                                                                situacio.add(JSONobservacio.getString(7));
-                                                                estacio.add(JSONobservacio.getString(8));
-                                                                clima.add(JSONobservacio.getString(9));*/
+                                                                numNovaEstacio++;
 
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONobservacio.getString(0));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONobservacio.getString(1));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONobservacio.getString(2));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,JSONobservacio.getString(3));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LATITUD, JSONobservacio.getString(4));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD, JSONobservacio.getString(5));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD, JSONobservacio.getString(6));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_SITUACIO, JSONobservacio.getString(7));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ESTACIO, JSONobservacio.getString(8));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONobservacio.getString(9));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONEstacio.getString(1));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONEstacio.getString(2));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
+                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
                                                                 long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
-                                                                //mDbHelper.close();
                                                                 Log.i(".Estacio_ID", String.valueOf(newRowId));/*
 
                                                                 try {
-                                                                    downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
+                                                                    downloadFileAsync(numNovaEstacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONEstacio.getString(9), nomFitxer);
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }*/
                                                             }
                                                         }
-                                                        numNovesObservacions = numNovaObservacio;
-                                                        Log.i(".NovesEst", String.valueOf(numNovesObservacions));
+                                                        numNovesEstacions = numNovaEstacio;
+                                                        Log.i(".NovesEst", String.valueOf(numNovesEstacions));
 
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
@@ -201,5 +190,28 @@ public class FragmentEstacions extends Fragment {
         );
     }
 
+    public void mostraEstacio(int EstacioID) {
+        String[] projection = {
+
+                DadesEstacions.Parametres.COLUMN_NAME_NOM,
+                DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
+                DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
+                DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
+                DadesEstacions.Parametres.COLUMN_NAME_ALTITUD,
+        };
+
+        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " = ?";
+        String[] selectionArgs = {String.valueOf(EstacioID)};
+        String sortOrder = null;
+
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        cursor.moveToFirst();
+        nom.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)));
+        poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
+        latitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
+        longitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+        altitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))));
+        cursor.close();
+    }
 
 }
