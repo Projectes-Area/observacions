@@ -480,9 +480,7 @@ public class Captura extends Fragment {
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "Location settings are inadequate, and cannot be fixed here. Fix in Settings.";
-                                Log.i(".startUpdates", errorMessage);
-                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), R.string.fix_settings, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
                         updateLocationUI();
@@ -814,11 +812,11 @@ public class Captura extends Fragment {
         String[] selectionArgs = {"0"};
         String sortOrder = "enviat DESC";
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                             // The sort order
-        return cursor.getCount();
+        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        int nPendents=cursor.getCount();
+        cursor.close();
+        return nPendents;
     }
-
-
 }
 
 

@@ -29,7 +29,7 @@
     <string name="action_favorite">Ubicació</string>
     <string name="servidor_no_disponible">No s\'ha pogut connectar amb el servidor</string>
     <string name="identificacio_incorrecta">Identificació incorrecta</string>
-    <string name="observacions_baixades">\"S\'han baixat les teves observacions</string>
+    <string name="observacions_baixades">S\'han baixat les teves observacions</string>
     <string name="edumet_web">EDUMET web</string>
     <string name="les_meves_observacions">Les meves observacions</string>
     <string name="la_meva_ubicacio">La meva ubicació</string>
@@ -46,5 +46,6 @@
     <string name="title_estacions">Estacions</string>
     <string name="title_radar">Radar</string>
     <string name="title_pronostic">Pronòstic</string>
+    <string name="fix_settings">Els ajustos de localització no són els adients i no es poden canviar des d\'aquí. Canvia\'ls des dels ajustaments del sistema.</string>
 
 </resources>
