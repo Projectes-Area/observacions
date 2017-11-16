@@ -366,7 +366,9 @@ public class Captura extends Fragment {
                     //mTextMessage.setText(R.string.title_home);
                     return true;
                 case R.id.navigation_estacions:
-                    //mTextMessage.setText(R.string.title_dashboard);
+                    Intent intent = new Intent(getActivity(), Estacions.class);
+                    //intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(laLatitud));
+                    startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
                     //mTextMessage.setText(R.string.title_notifications);
