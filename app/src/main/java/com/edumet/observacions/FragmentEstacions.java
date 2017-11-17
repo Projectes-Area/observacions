@@ -42,15 +42,12 @@ public class FragmentEstacions extends Fragment {
     private final OkHttpClient client = new OkHttpClient();
 
     private int numNovesEstacions;
-    private int numEstacionsBaixades;
 
-    //private TextView nom;
     private TextView poblacio;
     private TextView latitud;
     private TextView longitud;
     private TextView altitud;
     private ImageView foto;
-
     private Spinner spinner;
 
     List itemIdsEdumet = new ArrayList<>();
@@ -77,7 +74,6 @@ public class FragmentEstacions extends Fragment {
         }
         cursor.close();
 
-        //nom = (TextView) v.findViewById(R.id.lblNom);
         poblacio = (TextView) v.findViewById(R.id.lblPoblacio);
         latitud = (TextView) v.findViewById(R.id.lblLatitud);
         longitud = (TextView) v.findViewById(R.id.lblLongitud);
@@ -134,7 +130,6 @@ public class FragmentEstacions extends Fragment {
                                                         JSONArray jsonArray = new JSONArray(resposta);
 
                                                         numNovesEstacions = 0;
-                                                        numEstacionsBaixades = 0;
                                                         int numNovaEstacio = 0;
 
                                                         Boolean flagRepetida;
@@ -169,13 +164,7 @@ public class FragmentEstacions extends Fragment {
                                                                 values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
                                                                 long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
-                                                                Log.i(".Estacio_ID", String.valueOf(newRowId));/*
-
-                                                                try {
-                                                                    downloadFileAsync(numNovaEstacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONEstacio.getString(9), nomFitxer);
-                                                                } catch (Exception e) {
-                                                                    e.printStackTrace();
-                                                                }*/
+                                                                Log.i(".Estacio_ID", String.valueOf(newRowId));
                                                             }
                                                         }
                                                         numNovesEstacions = numNovaEstacio;
@@ -184,7 +173,6 @@ public class FragmentEstacions extends Fragment {
                                                             public void run() {
                                                                 try {
                                                                     ompleSpinner();
-                                                                    //mostraEstacio(1);
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }
@@ -231,9 +219,9 @@ public class FragmentEstacions extends Fragment {
 
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
-        latitud.setText("Latitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
-        longitud.setText("Longitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
-        altitud.setText("Altitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD)))+" metres");
+        latitud.setText("Latitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
+        longitud.setText("Longitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+        altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
@@ -263,9 +251,7 @@ public class FragmentEstacions extends Fragment {
                                                             foto.setImageBitmap(bitmap);
                                                         }
                                                     });
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             foto.setImageResource(R.drawable.edumet);
@@ -276,8 +262,6 @@ public class FragmentEstacions extends Fragment {
                                         }
         );
     }
-
-    private int numSpinner = 0;
 
     public void ompleSpinner() {
         String[] projection = {
@@ -294,7 +278,6 @@ public class FragmentEstacions extends Fragment {
         List<String> noms = new ArrayList<String>();
         final List IDsEdumet = new ArrayList<>();
 
-
         while (cursor.moveToNext()) {
             String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
             noms.add(itemIdNom);
@@ -303,7 +286,6 @@ public class FragmentEstacions extends Fragment {
         }
         cursor.close();
 
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, noms);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
@@ -311,7 +293,6 @@ public class FragmentEstacions extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }

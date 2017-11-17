@@ -1,6 +1,8 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -9,13 +11,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
+    EstacionsHelper mDbHelper;
+    private SQLiteDatabase db;
 
 
     @Override
@@ -37,10 +46,33 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-/*        mMap = googleMap;
-        LatLng observacio = new LatLng(latitud, longitud);
-        mMap.addMarker(new MarkerOptions().position(observacio).title(nomFenomen[numFenomen]));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio, 15.0f));*/
+
+        String[] projection = {
+                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
+                DadesEstacions.Parametres.COLUMN_NAME_NOM,
+                DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
+                DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
+        };
+
+        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " > ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = "id_edumet ASC";
+
+        mDbHelper = new EstacionsHelper(this);
+        db = mDbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+
+        mMap = googleMap;
+        LatLng observacio=new LatLng(0,0);
+
+        while (cursor.moveToNext()) {
+            observacio = new LatLng(Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
+                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+            mMap.addMarker(new MarkerOptions().position(observacio).title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM))));
+        }
+        cursor.close();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio, 7.0f));
     }
 
     @Override
