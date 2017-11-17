@@ -100,53 +100,7 @@ public class FragmentEstacions extends Fragment {
             e.printStackTrace();
         }
 
-        String[] projection = {
-                DadesEstacions.Parametres._ID,
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstacions.Parametres.COLUMN_NAME_NOM
-        };
 
-        String selection = DadesEstacions.Parametres._ID + " > ?";
-        String[] selectionArgs = {"0"};
-        String sortOrder = "id_edumet DESC";
-
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
-
-        List<String> categories = new ArrayList<String>();
-
-        while (cursor.moveToNext()) {
-            String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
-            categories.add(itemIdNom);
-/*            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
-            itemIds.add(itemId);
-            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-            itemDies.add(itemDia);
-            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
-            itemHores.add(itemHora);
-            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
-            itemLatituds.add(itemLatitud);
-            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
-            itemLongituds.add(itemLongitud);
-            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-            itemFenomens.add(itemFenomen);
-            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-            itemPath_Envias.add(itemPath_icon);
-            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
-            itemEnviats.add(itemEnviat);*/
-        }
-        cursor.close();
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,categories);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //num_fenomen = position + 1;
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
     }
 
 
@@ -235,6 +189,7 @@ public class FragmentEstacions extends Fragment {
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 try {
+                                                                    ompleSpinner();
                                                                     mostraEstacio(4);
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
@@ -327,6 +282,55 @@ public class FragmentEstacions extends Fragment {
                                             }
                                         }
         );
+    }
+
+    public void ompleSpinner() {
+        String[] projection = {
+                DadesEstacions.Parametres._ID,
+                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
+                DadesEstacions.Parametres.COLUMN_NAME_NOM
+        };
+        String selection = DadesEstacions.Parametres._ID + " > ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = "id_edumet DESC";
+
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
+
+        List<String> categories = new ArrayList<String>();
+
+        while (cursor.moveToNext()) {
+            String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
+            categories.add(itemIdNom);
+/*            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
+            itemIds.add(itemId);
+            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            itemDies.add(itemDia);
+            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+            itemHores.add(itemHora);
+            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
+            itemLatituds.add(itemLatitud);
+            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
+            itemLongituds.add(itemLongitud);
+            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            itemFenomens.add(itemFenomen);
+            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+            itemPath_Envias.add(itemPath_icon);
+            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            itemEnviats.add(itemEnviat);*/
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,categories);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //num_fenomen = position + 1;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 }
 
