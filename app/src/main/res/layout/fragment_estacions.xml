@@ -36,66 +36,61 @@
             app:srcCompat="@android:drawable/btn_star_big_on" />
 
         <TextView
-            android:id="@+id/lblNom"
-            android:layout_width="200dp"
+            android:id="@+id/lblPoblacio"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:text="Nom de l'estació"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            android:text="Població"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/lblLatitud"
+            app:layout_constraintStart_toStartOf="@+id/spinnerEstacions"
             app:layout_constraintTop_toBottomOf="@+id/spinnerEstacions" />
 
         <TextView
-            android:id="@+id/lblPoblacio"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="Població"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/lblNom"
-            app:layout_constraintStart_toStartOf="@+id/lblNom"
-            app:layout_constraintTop_toBottomOf="@+id/lblNom" />
-
-        <TextView
             android:id="@+id/lblLatitud"
-            android:layout_width="200dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Latitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblPoblacio" />
 
         <TextView
             android:id="@+id/lblLongitud"
-            android:layout_width="200dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="Longitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblLatitud" />
 
         <TextView
             android:id="@+id/lblAltitud"
-            android:layout_width="200dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="Altitud"
             android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/lblNom"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblLongitud" />
 
         <ImageView
             android:id="@+id/imgFoto"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:src="@drawable/edumet"
+            app:layout_constraintBottom_toBottomOf="@+id/lblAltitud"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/lblNom"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerEstacions"
-            app:srcCompat="@drawable/edumet" />
+            app:layout_constraintStart_toEndOf="@+id/lblPoblacio"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerEstacions" />
     </android.support.constraint.ConstraintLayout>
 
     <ProgressBar

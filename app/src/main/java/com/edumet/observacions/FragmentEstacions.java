@@ -44,7 +44,7 @@ public class FragmentEstacions extends Fragment {
     private int numNovesEstacions;
     private int numEstacionsBaixades;
 
-    private TextView nom;
+    //private TextView nom;
     private TextView poblacio;
     private TextView latitud;
     private TextView longitud;
@@ -54,7 +54,6 @@ public class FragmentEstacions extends Fragment {
     private Spinner spinner;
 
     List itemIdsEdumet = new ArrayList<>();
-    List itemIdsEdumet2 = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,7 +77,7 @@ public class FragmentEstacions extends Fragment {
         }
         cursor.close();
 
-        nom = (TextView) v.findViewById(R.id.lblNom);
+        //nom = (TextView) v.findViewById(R.id.lblNom);
         poblacio = (TextView) v.findViewById(R.id.lblPoblacio);
         latitud = (TextView) v.findViewById(R.id.lblLatitud);
         longitud = (TextView) v.findViewById(R.id.lblLongitud);
@@ -95,15 +94,10 @@ public class FragmentEstacions extends Fragment {
     public void onViewCreated(View v, Bundle savedInstanceState) {
         try {
             sincronitza();
-            mostraEstacio(4);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
-
 
 
     @Override
@@ -190,7 +184,7 @@ public class FragmentEstacions extends Fragment {
                                                             public void run() {
                                                                 try {
                                                                     ompleSpinner();
-                                                                    mostraEstacio(4);
+                                                                    //mostraEstacio(1);
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }
@@ -222,7 +216,6 @@ public class FragmentEstacions extends Fragment {
     public void mostraEstacio(int EstacioID) {
         String[] projection = {
                 DadesEstacions.Parametres.COLUMN_NAME_CODI,
-                DadesEstacions.Parametres.COLUMN_NAME_NOM,
                 DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
                 DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
@@ -237,11 +230,10 @@ public class FragmentEstacions extends Fragment {
         cursor.moveToFirst();
 
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
-        nom.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
-        latitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
-        longitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
-        altitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))));
+        latitud.setText("Latitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
+        longitud.setText("Longitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+        altitud.setText("Altitud: "+String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD)))+" metres");
         cursor.close();
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
@@ -254,11 +246,11 @@ public class FragmentEstacions extends Fragment {
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 e.printStackTrace();
-/*                                                getActivity().runOnUiThread(new Runnable() {
+                                                getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        foto.setImageResource(R.drawable.edumet);
                                                     }
-                                                });*/
+                                                });
                                             }
 
                                             @Override
@@ -272,17 +264,20 @@ public class FragmentEstacions extends Fragment {
                                                         }
                                                     });
                                                 }
-/*                                                else {
+                                                else
+                                                {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                            foto.setImageResource(R.drawable.edumet);
                                                         }
                                                     });
-                                                }*/
+                                                }
                                             }
                                         }
         );
     }
+
+    private int numSpinner = 0;
 
     public void ompleSpinner() {
         String[] projection = {
@@ -294,39 +289,29 @@ public class FragmentEstacions extends Fragment {
         String[] selectionArgs = {"0"};
         String sortOrder = "id_edumet DESC";
 
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                               // The sort order
 
-        List<String> categories = new ArrayList<String>();
+        List<String> noms = new ArrayList<String>();
+        final List IDsEdumet = new ArrayList<>();
+
 
         while (cursor.moveToNext()) {
             String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
-            categories.add(itemIdNom);
-/*            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
-            itemIds.add(itemId);
-            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-            itemDies.add(itemDia);
-            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
-            itemHores.add(itemHora);
-            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
-            itemLatituds.add(itemLatitud);
-            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
-            itemLongituds.add(itemLongitud);
-            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-            itemFenomens.add(itemFenomen);
-            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-            itemPath_Envias.add(itemPath_icon);
-            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
-            itemEnviats.add(itemEnviat);*/
+            noms.add(itemIdNom);
+            int ID_Edumet = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
+            IDsEdumet.add(ID_Edumet);
         }
         cursor.close();
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,categories);
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, noms);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //num_fenomen = position + 1;
+                mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
