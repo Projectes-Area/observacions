@@ -3,6 +3,8 @@ package com.edumet.observacions;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,12 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,7 @@ public class FragmentEstacions extends Fragment {
     private TextView latitud;
     private TextView longitud;
     private TextView altitud;
+    private ImageView foto;
 
     List itemIdsEdumet = new ArrayList<>();
 
@@ -67,11 +72,12 @@ public class FragmentEstacions extends Fragment {
         }
         cursor.close();
 
-        nom=(TextView) v.findViewById(R.id.lblNom);
-        poblacio=(TextView) v.findViewById(R.id.lblPoblacio);
-        latitud=(TextView) v.findViewById(R.id.lblLatitud);
-        longitud=(TextView) v.findViewById(R.id.lblLongitud);
-        altitud=(TextView) v.findViewById(R.id.lblAltitud);
+        nom = (TextView) v.findViewById(R.id.lblNom);
+        poblacio = (TextView) v.findViewById(R.id.lblPoblacio);
+        latitud = (TextView) v.findViewById(R.id.lblLatitud);
+        longitud = (TextView) v.findViewById(R.id.lblLongitud);
+        altitud = (TextView) v.findViewById(R.id.lblAltitud);
+        foto = (ImageView) v.findViewById(R.id.imgFoto);
 
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarEstacions);
         return v;
@@ -81,10 +87,10 @@ public class FragmentEstacions extends Fragment {
     public void onViewCreated(View v, Bundle savedInstanceState) {
         try {
             sincronitza();
+            mostraEstacio(4);
         } catch (Exception e) {
-            Log.i(".Exception", "error");
+            e.printStackTrace();
         }
-        mostraEstacio(4);
     }
 
     @Override
@@ -167,6 +173,15 @@ public class FragmentEstacions extends Fragment {
                                                         }
                                                         numNovesEstacions = numNovaEstacio;
                                                         Log.i(".NovesEst", String.valueOf(numNovesEstacions));
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                try {
+                                                                    mostraEstacio(4);
+                                                                } catch (Exception e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
+                                                        });
 
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
@@ -192,7 +207,7 @@ public class FragmentEstacions extends Fragment {
 
     public void mostraEstacio(int EstacioID) {
         String[] projection = {
-
+                DadesEstacions.Parametres.COLUMN_NAME_CODI,
                 DadesEstacions.Parametres.COLUMN_NAME_NOM,
                 DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
@@ -206,12 +221,54 @@ public class FragmentEstacions extends Fragment {
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
+
+        String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         nom.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
         latitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
         longitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
         altitud.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))));
         cursor.close();
-    }
 
+        String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
+        Log.i(".laUrl", laUrl);
+        Request request = new Request.Builder()
+                .url(laUrl)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                e.printStackTrace();
+/*                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                    }
+                                                });*/
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    InputStream inputStream = response.body().byteStream();
+                                                    final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            foto.setImageBitmap(bitmap);
+                                                        }
+                                                    });
+                                                }
+/*                                                else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                                }*/
+                                            }
+                                        }
+        );
+    }
 }
+
+
