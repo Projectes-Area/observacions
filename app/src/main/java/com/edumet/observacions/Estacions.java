@@ -57,15 +57,13 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         String[] projection = {
                 DadesEstacions.Parametres._ID,
- //               DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
- //               DadesEstacions.Parametres.COLUMN_NAME_NOM,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
                 DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
         };
 
         String selection = DadesEstacions.Parametres._ID+ " > ?";
         String[] selectionArgs = {"0"};
-        String sortOrder = null; //"id_edumet ASC";
+        String sortOrder = null;
 
         mDbHelper = new EstacionsHelper(this);
         db = mDbHelper.getReadableDatabase();
@@ -90,7 +88,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
             mMap.addMarker(new MarkerOptions()
                     .position(observacio)
-                    //.title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)))
                     .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
             );
         }
