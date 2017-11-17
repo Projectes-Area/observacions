@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <Spinner
-            android:id="@+id/spinner2"
+            android:id="@+id/spinnerEstacions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -30,21 +30,21 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/spinner2"
+            app:layout_constraintBottom_toBottomOf="@+id/spinnerEstacions"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinner2"
+            app:layout_constraintTop_toTopOf="@+id/spinnerEstacions"
             app:srcCompat="@android:drawable/btn_star_big_on" />
 
         <TextView
             android:id="@+id/lblNom"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
             android:text="Nom de l'estació"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner2" />
+            app:layout_constraintTop_toBottomOf="@+id/spinnerEstacions" />
 
         <TextView
             android:id="@+id/lblPoblacio"
@@ -90,10 +90,11 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/lblNom"
-            app:layout_constraintTop_toBottomOf="@+id/spinner2"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerEstacions"
             app:srcCompat="@drawable/edumet" />
     </android.support.constraint.ConstraintLayout>
 

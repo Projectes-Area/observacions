@@ -12,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -48,7 +51,10 @@ public class FragmentEstacions extends Fragment {
     private TextView altitud;
     private ImageView foto;
 
+    private Spinner spinner;
+
     List itemIdsEdumet = new ArrayList<>();
+    List itemIdsEdumet2 = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +85,8 @@ public class FragmentEstacions extends Fragment {
         altitud = (TextView) v.findViewById(R.id.lblAltitud);
         foto = (ImageView) v.findViewById(R.id.imgFoto);
 
+        spinner = (Spinner) v.findViewById(R.id.spinnerEstacions);
+
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarEstacions);
         return v;
     }
@@ -91,7 +99,58 @@ public class FragmentEstacions extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        String[] projection = {
+                DadesEstacions.Parametres._ID,
+                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
+                DadesEstacions.Parametres.COLUMN_NAME_NOM
+        };
+
+        String selection = DadesEstacions.Parametres._ID + " > ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = "id_edumet DESC";
+
+        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
+
+        List<String> categories = new ArrayList<String>();
+
+        while (cursor.moveToNext()) {
+            String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
+            categories.add(itemIdNom);
+/*            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
+            itemIds.add(itemId);
+            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            itemDies.add(itemDia);
+            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+            itemHores.add(itemHora);
+            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
+            itemLatituds.add(itemLatitud);
+            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
+            itemLongituds.add(itemLongitud);
+            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            itemFenomens.add(itemFenomen);
+            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+            itemPath_Envias.add(itemPath_icon);
+            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            itemEnviats.add(itemEnviat);*/
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,categories);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //num_fenomen = position + 1;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
+
+
+
 
     @Override
     public void onDestroy() {
