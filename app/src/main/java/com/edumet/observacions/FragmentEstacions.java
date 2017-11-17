@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 import org.json.JSONArray;
 
 import java.io.IOException;
@@ -173,6 +175,7 @@ public class FragmentEstacions extends Fragment {
                                                             public void run() {
                                                                 try {
                                                                     ompleSpinner();
+                                                                    ((Estacions) getActivity()).obreMapa();
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }
@@ -184,7 +187,7 @@ public class FragmentEstacions extends Fragment {
                                                     }
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });

@@ -6,18 +6,24 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Map;
 
 public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -37,11 +43,13 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         FragmentEstacions firstFragment = new FragmentEstacions();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_estacions_container, firstFragment).commit();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa_estacions);
-        mapFragment.getMapAsync(this);
-
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void obreMapa() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa_estacions);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -64,16 +72,34 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
         mMap = googleMap;
-        LatLng observacio=new LatLng(0,0);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.i("marker",marker.getSnippet());
+
+                FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
+                fragment.mostraEstacio(Integer.valueOf(marker.getSnippet()));
+
+                return true;
+            }
+        });
+
+
+        LatLng observacio = new LatLng(0, 0);
 
         while (cursor.moveToNext()) {
             observacio = new LatLng(Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
                     Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
-            mMap.addMarker(new MarkerOptions().position(observacio).title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM))));
+            mMap.addMarker(new MarkerOptions()
+                    .position(observacio)
+                    .title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)))
+                    .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET)))
+            );
         }
         cursor.close();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio, 7.0f));
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
