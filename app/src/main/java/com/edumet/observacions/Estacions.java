@@ -56,15 +56,16 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         String[] projection = {
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstacions.Parametres.COLUMN_NAME_NOM,
+                DadesEstacions.Parametres._ID,
+ //               DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
+ //               DadesEstacions.Parametres.COLUMN_NAME_NOM,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
                 DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
         };
 
-        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " > ?";
+        String selection = DadesEstacions.Parametres._ID+ " > ?";
         String[] selectionArgs = {"0"};
-        String sortOrder = "id_edumet ASC";
+        String sortOrder = null; //"id_edumet ASC";
 
         mDbHelper = new EstacionsHelper(this);
         db = mDbHelper.getReadableDatabase();
@@ -75,11 +76,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Log.i("marker",marker.getSnippet());
-
                 FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
-                fragment.mostraEstacio(Integer.valueOf(marker.getSnippet()));
-
+                fragment.clicaSpinner(Integer.valueOf(marker.getSnippet())-1);
                 return true;
             }
         });
@@ -92,8 +90,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
             mMap.addMarker(new MarkerOptions()
                     .position(observacio)
-                    .title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)))
-                    .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET)))
+                    //.title(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM)))
+                    .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
             );
         }
         cursor.close();

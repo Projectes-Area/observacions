@@ -34,6 +34,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.os.Build.ID;
+
 public class FragmentEstacions extends Fragment {
 
     EstacionsHelper mDbHelper;
@@ -206,6 +208,7 @@ public class FragmentEstacions extends Fragment {
 
     public void mostraEstacio(int EstacioID) {
         String[] projection = {
+                DadesEstacions.Parametres._ID,
                 DadesEstacions.Parametres.COLUMN_NAME_CODI,
                 DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
@@ -219,6 +222,8 @@ public class FragmentEstacions extends Fragment {
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
+
+        //int ID=Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)));
 
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
@@ -274,7 +279,7 @@ public class FragmentEstacions extends Fragment {
         };
         String selection = DadesEstacions.Parametres._ID + " > ?";
         String[] selectionArgs = {"0"};
-        String sortOrder = "id_edumet DESC";
+        String sortOrder = null;// "id_edumet DESC";
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                               // The sort order
 
@@ -301,6 +306,11 @@ public class FragmentEstacions extends Fragment {
             }
         });
     }
+
+    public void clicaSpinner(int posicio) {
+        spinner.setSelection(posicio);
+    }
+
 }
 
 
