@@ -53,6 +53,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         SharedPreferences sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         latitud = Double.valueOf(sharedPref.getString("latitud", "0"));
         longitud = Double.valueOf(sharedPref.getString("longitud", "0"));
+
 /*        SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("usuari", Usuari.getText().toString());
         editor.putString("nom_usuari", resposta);
@@ -102,6 +103,16 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     .position(observacio)
                     .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
             );
+
+
+            Double distancia = calculaDistancia(
+                    latitud,
+                    longitud,
+                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
+                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+
+            Log.i("km", String.valueOf(distancia));
+
         }
         cursor.close();
 
@@ -144,4 +155,24 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    public double calculaDistancia(Double lat1,Double lon1,Double lat2,Double lon2) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double dLon = deg2rad(lon2-lon1);
+        double a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2)
+                ;
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c; // Distance in km
+        return d;
+    }
+
+    public double deg2rad(double deg) {
+        return deg * (Math.PI/180);
+    }
+
+
 }
