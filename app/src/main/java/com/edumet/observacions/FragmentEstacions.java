@@ -51,7 +51,11 @@ public class FragmentEstacions extends Fragment {
     private ImageView estrella;
     private Spinner spinner;
 
+    private int id_edumet_actual;
+
     List itemIdsEdumet = new ArrayList<>();
+
+    SharedPreferences sharedPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,7 +102,11 @@ public class FragmentEstacions extends Fragment {
 
         estrella.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putInt("estacio_preferida", id_edumet_actual);
+                editor.apply();
+                estrella.setImageResource(R.mipmap.ic_star_on);
             }
         });
     }
@@ -244,11 +252,12 @@ public class FragmentEstacions extends Fragment {
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
-        SharedPreferences sharedPref;
         sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         int estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
 
-        if (estacioPreferida==Integer.valueOf(id_edumet)) {
+        id_edumet_actual=Integer.valueOf(id_edumet);
+
+        if (estacioPreferida==id_edumet_actual) {
             estrella.setImageResource(R.mipmap.ic_star_on);
         } else {
             estrella.setImageResource(R.mipmap.ic_star_off);
