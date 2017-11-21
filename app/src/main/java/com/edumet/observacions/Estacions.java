@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +42,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
     SharedPreferences sharedPref;
 
+    BottomNavigationView navigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +65,46 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         latitud = Double.valueOf(sharedPref.getString("latitud", String.valueOf(latBarcelona)));
         longitud = Double.valueOf(sharedPref.getString("longitud",  String.valueOf(lonBarcelona)));
         estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
+
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_estacions);
+
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    intent = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_estacions:
+/*                    intent = new Intent(getApplicationContext(),Estacions.class);
+                    startActivity(intent);*/
+                    return true;
+                case R.id.navigation_radar:
+                    intent = new Intent(getApplicationContext(),Radar.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_pronostic:
+                    //intent = new Intent(getApplicationContext(),Proostic.class);
+                    //startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     public void obreMapa() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa_estacions);
         mapFragment.getMapAsync(this);
+
     }
 
     @Override

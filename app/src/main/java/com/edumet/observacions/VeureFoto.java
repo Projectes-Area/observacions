@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +25,11 @@ public class VeureFoto extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_observacions);
+
         Intent intent = getIntent();
         String imagePath =intent.getStringExtra(MainActivity.EXTRA_PATH);
 
@@ -31,6 +38,30 @@ public class VeureFoto extends AppCompatActivity {
 
         Snackbar.make(findViewById(android.R.id.content), "Mou la foto amb 1 dit, fes zoom amb 2 dits", Snackbar.LENGTH_LONG).show();
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    return true;
+                case R.id.navigation_estacions:
+                    intent = new Intent(getApplicationContext(),Estacions.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_radar:
+                    return true;
+                case R.id.navigation_pronostic:
+                    //intent = new Intent(getApplicationContext(),Proostic.class);
+                    //startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

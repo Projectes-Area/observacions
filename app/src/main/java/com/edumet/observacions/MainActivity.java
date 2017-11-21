@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_observacions);
 
     }
 
@@ -101,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent;
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
-                    captura();
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getApplicationContext(),Estacions.class);

@@ -39,6 +39,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_observacions);
 
         Resources res = getResources();
         nomFenomen = res.getStringArray(R.array.nomFenomen);
@@ -60,8 +61,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent intent;
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
-                    intent = new Intent(getApplicationContext(),MainActivity.class);
-                    startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getApplicationContext(),Estacions.class);
