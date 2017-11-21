@@ -93,7 +93,6 @@ public class Login extends Fragment {
                             public void run() {
                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                 LoginOK.setEnabled(true);
-                                Context context = getActivity();
                                 SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());

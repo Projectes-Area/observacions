@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -32,6 +33,9 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     EstacionsHelper mDbHelper;
     private SQLiteDatabase db;
 
+    private double latitud;
+    private double longitud;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,14 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+
+        SharedPreferences sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
+        latitud = Double.valueOf(sharedPref.getString("latitud", "0"));
+        longitud = Double.valueOf(sharedPref.getString("longitud", "0"));
+/*        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("usuari", Usuari.getText().toString());
+        editor.putString("nom_usuari", resposta);
+        editor.apply();*/
     }
 
     public void obreMapa() {
@@ -81,7 +93,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         });
 
 
-        LatLng observacio = new LatLng(0, 0);
+        LatLng observacio;
 
         while (cursor.moveToNext()) {
             observacio = new LatLng(Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
@@ -92,7 +104,9 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             );
         }
         cursor.close();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(observacio, 7.0f));
+
+        LatLng posicio = new LatLng(latitud, longitud);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));
     }
 
 

@@ -496,6 +496,11 @@ public class Captura extends Fragment {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
                 ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 flagLocalitzada = true;
+                SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("latitud", String.valueOf(mCurrentLocation.getLatitude()));
+                editor.putString("longitud", String.valueOf(mCurrentLocation.getLongitude()));
+                editor.apply();
             }
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);

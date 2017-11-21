@@ -179,7 +179,12 @@ public class FragmentEstacions extends Fragment {
                                                                 }
                                                             }
                                                         });
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            }
+                                                        });
+
 
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
