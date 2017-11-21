@@ -1,6 +1,7 @@
 package com.edumet.observacions;
 
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -11,8 +12,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.ViewGroup;import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +48,7 @@ public class FragmentEstacions extends Fragment {
     private TextView longitud;
     private TextView altitud;
     private ImageView foto;
+    private ImageView estrella;
     private Spinner spinner;
 
     List itemIdsEdumet = new ArrayList<>();
@@ -79,6 +80,7 @@ public class FragmentEstacions extends Fragment {
         longitud = (TextView) v.findViewById(R.id.lblLongitud);
         altitud = (TextView) v.findViewById(R.id.lblAltitud);
         foto = (ImageView) v.findViewById(R.id.imgFoto);
+        estrella = (ImageView) v.findViewById(R.id.imgEstrella);
 
         spinner = (Spinner) v.findViewById(R.id.spinnerEstacions);
 
@@ -93,6 +95,12 @@ public class FragmentEstacions extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        estrella.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
     }
 
 
@@ -209,8 +217,11 @@ public class FragmentEstacions extends Fragment {
         );
     }
 
-    public void mostraEstacio(int EstacioID) {
+    public void mostraEstacio(int Edumet_ID) {
+
         String[] projection = {
+                DadesEstacions.Parametres._ID,
+                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstacions.Parametres.COLUMN_NAME_CODI,
                 DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
@@ -219,18 +230,29 @@ public class FragmentEstacions extends Fragment {
         };
 
         String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " = ?";
-        String[] selectionArgs = {String.valueOf(EstacioID)};
+        String[] selectionArgs = {String.valueOf(Edumet_ID)};
         String sortOrder = null;
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
 
+        String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
         latitud.setText("Latitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
         longitud.setText("Longitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
+
+        SharedPreferences sharedPref;
+        sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
+        int estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
+
+        if (estacioPreferida==Integer.valueOf(id_edumet)) {
+            estrella.setImageResource(R.mipmap.ic_star_on);
+        } else {
+            estrella.setImageResource(R.mipmap.ic_star_off);
+        }
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
         Log.i(".laUrl", laUrl);

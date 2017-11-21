@@ -61,7 +61,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         latitud = Double.valueOf(sharedPref.getString("latitud", String.valueOf(latBarcelona)));
         longitud = Double.valueOf(sharedPref.getString("longitud",  String.valueOf(lonBarcelona)));
         estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
-
     }
 
     public void obreMapa() {
@@ -128,9 +127,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
         cursor.close();
-
-        Log.i("Propera",String.valueOf(estacioPropera));
-        Log.i("Distancia km",String.valueOf(distanciaPropera));
 
         if(estacioPreferida==0) {
             estacioPreferida=estacioPropera;
@@ -199,6 +195,4 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public double deg2rad(double deg) {
         return deg * (Math.PI/180);
     }
-
-
 }
