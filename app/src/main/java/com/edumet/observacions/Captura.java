@@ -363,15 +363,14 @@ public class Captura extends Fragment {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
-                    //mTextMessage.setText(R.string.title_home);
                     return true;
                 case R.id.navigation_estacions:
                     Intent intent = new Intent(getActivity(), Estacions.class);
-                    //intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(laLatitud));
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    //mTextMessage.setText(R.string.title_notifications);
+                    Intent intent2 = new Intent(getActivity(), Radar.class);
+                    startActivity(intent2);
                     return true;
                 case R.id.navigation_pronostic:
                     //mTextMessage.setText(R.string.title_notifications);
