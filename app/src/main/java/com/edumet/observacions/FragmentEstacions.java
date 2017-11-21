@@ -211,7 +211,6 @@ public class FragmentEstacions extends Fragment {
 
     public void mostraEstacio(int EstacioID) {
         String[] projection = {
-                //DadesEstacions.Parametres._ID,
                 DadesEstacions.Parametres.COLUMN_NAME_CODI,
                 DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,

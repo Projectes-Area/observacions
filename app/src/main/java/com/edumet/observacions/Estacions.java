@@ -36,6 +36,9 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     private double latitud;
     private double longitud;
 
+    private int estacioPreferida;
+
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +53,15 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
-        latitud = Double.valueOf(sharedPref.getString("latitud", "0"));
-        longitud = Double.valueOf(sharedPref.getString("longitud", "0"));
+        sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
 
-/*        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("usuari", Usuari.getText().toString());
-        editor.putString("nom_usuari", resposta);
-        editor.apply();*/
+        Double latBarcelona=41.3985;
+        Double lonBarcelona=2.1398;
+
+        latitud = Double.valueOf(sharedPref.getString("latitud", String.valueOf(latBarcelona)));
+        longitud = Double.valueOf(sharedPref.getString("longitud",  String.valueOf(lonBarcelona)));
+        estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
+
     }
 
     public void obreMapa() {
@@ -70,6 +74,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         String[] projection = {
                 DadesEstacions.Parametres._ID,
+                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
                 DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
                 DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
         };
@@ -93,6 +98,9 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+        int estacioPropera=0;
+        int ID_estacioPropera=0;
+        double distanciaPropera=1000000;
 
         LatLng observacio;
 
@@ -113,8 +121,26 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
             Log.i("km", String.valueOf(distancia));
 
+            if (distancia<distanciaPropera) {
+                distanciaPropera=distancia;
+                estacioPropera=Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET)));
+                ID_estacioPropera=Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)));
+            }
         }
         cursor.close();
+
+        Log.i("Propera",String.valueOf(estacioPropera));
+        Log.i("Distancia km",String.valueOf(distanciaPropera));
+
+        if(estacioPreferida==0) {
+            estacioPreferida=estacioPropera;
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt("estacio_preferida", estacioPropera);
+            editor.apply();
+        }
+
+        FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
+        fragment.clicaSpinner(ID_estacioPropera-1);
 
         LatLng posicio = new LatLng(latitud, longitud);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));

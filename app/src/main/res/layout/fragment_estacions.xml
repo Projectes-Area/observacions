@@ -29,16 +29,16 @@
             android:layout_height="48dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:src="@mipmap/ic_star_off"
             app:layout_constraintBottom_toBottomOf="@+id/spinnerEstacions"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/spinnerEstacions"
-            app:srcCompat="@android:drawable/btn_star_big_off" />
+            app:layout_constraintTop_toTopOf="@+id/spinnerEstacions" />
 
         <TextView
             android:id="@+id/lblPoblacio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginleft="8dp"
+            android:layout_marginLeft="8dp"
             android:text="Població"
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="16sp"

@@ -97,6 +97,7 @@ public class Login extends Fragment {
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);
+                                //editor.putInt("estacio_preferida", 0);
                                 editor.apply();
 
                                 ((MainActivity) getActivity()).captura();
