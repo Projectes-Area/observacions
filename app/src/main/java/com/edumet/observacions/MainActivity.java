@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -85,7 +86,39 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             }
         }
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
+
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    captura();
+                    return true;
+                case R.id.navigation_estacions:
+                    intent = new Intent(getApplicationContext(),Estacions.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_radar:
+                    intent = new Intent(getApplicationContext(),Radar.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_pronostic:
+                    //intent = new Intent(getApplicationContext(),Proostic.class);
+                    //startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     public void onStart() {
@@ -174,14 +207,14 @@ public class MainActivity extends AppCompatActivity {
                     fragment.imatge.setImageBitmap(fragment.bitmap);
                 }
                 return true;
- //           case R.id.envia_observacio:
-   //             if (jaDesada) {
+            //           case R.id.envia_observacio:
+            //             if (jaDesada) {
 /*                    FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.updateObservacio();
                     fragment.sendPost();*/
-   //             }
-         //       return true;
+            //             }
+            //       return true;
             case R.id.mostra_imatge:
                 if (jaDesada) {
                     FragmentManager fm = getSupportFragmentManager();

@@ -150,10 +150,10 @@ public class Captura extends Fragment {
 
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
-
+/*
         BottomNavigationView navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationViewHelper.disableShiftMode(navigation);*/
 
         return v;
     }
@@ -356,7 +356,7 @@ public class Captura extends Fragment {
         imatge.setImageBitmap(bitmap);
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    /*private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
@@ -378,7 +378,7 @@ public class Captura extends Fragment {
             }
             return false;
         }
-    };
+    };*/
 
     //
     // LOCALITZACIÓ
