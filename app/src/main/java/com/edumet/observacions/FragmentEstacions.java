@@ -11,6 +11,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -61,6 +63,7 @@ public class FragmentEstacions extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_estacions, container, false);
+        setHasOptionsMenu(true);
 
         String[] projection = {
                 DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
@@ -94,6 +97,12 @@ public class FragmentEstacions extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.observacions_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
         try {
             sincronitza();
@@ -111,6 +120,7 @@ public class FragmentEstacions extends Fragment {
             }
         });
     }
+
 
 
     @Override
