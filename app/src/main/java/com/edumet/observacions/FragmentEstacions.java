@@ -122,7 +122,6 @@ public class FragmentEstacions extends Fragment {
     }
 
 
-
     @Override
     public void onDestroy() {
         mDbHelper.close();
@@ -257,9 +256,11 @@ public class FragmentEstacions extends Fragment {
 
         String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
+        String strLat=cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD));
+        String strLon=cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
-        latitud.setText("Latitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))));
-        longitud.setText("Longitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+        latitud.setText("Latitud: " + strLat);
+        longitud.setText("Longitud: " + strLon);
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
@@ -273,6 +274,8 @@ public class FragmentEstacions extends Fragment {
         } else {
             estrella.setImageResource(R.mipmap.ic_star_off);
         }
+
+        ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat),Double.valueOf(strLon));
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
         Log.i(".laUrl", laUrl);

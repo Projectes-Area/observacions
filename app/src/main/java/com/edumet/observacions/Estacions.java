@@ -209,6 +209,12 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    public void mouCamera(double lat, double lon) {
+        LatLng posicio = new LatLng(lat, lon);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));
+    }
+
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
