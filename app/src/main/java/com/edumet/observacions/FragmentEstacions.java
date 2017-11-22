@@ -275,6 +275,11 @@ public class FragmentEstacions extends Fragment {
             estrella.setImageResource(R.mipmap.ic_star_off);
         }
 
+        sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("estacio_actual", id_edumet_actual);
+        editor.apply();
+
         ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat),Double.valueOf(strLon));
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";

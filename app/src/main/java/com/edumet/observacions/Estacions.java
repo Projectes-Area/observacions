@@ -149,7 +149,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
             );
 
-
             Double distancia = calculaDistancia(
                     latitud,
                     longitud,
@@ -179,9 +178,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         LatLng posicio = new LatLng(latitud, longitud);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));
     }
-
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
