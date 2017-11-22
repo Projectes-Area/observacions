@@ -306,8 +306,8 @@ public class ObservacionsFetes extends Fragment {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    //intent = new Intent(getApplicationContext(),Proostic.class);
-                    //startActivity(intent);
+                    intent = new Intent(getActivity().getApplicationContext(),Actuals.class);
+                    startActivity(intent);
                     return true;
             }
             return false;

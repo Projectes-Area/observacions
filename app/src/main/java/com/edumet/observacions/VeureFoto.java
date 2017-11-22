@@ -55,8 +55,8 @@ public class VeureFoto extends AppCompatActivity {
                 case R.id.navigation_radar:
                     return true;
                 case R.id.navigation_pronostic:
-                    //intent = new Intent(getApplicationContext(),Proostic.class);
-                    //startActivity(intent);
+                    intent = new Intent(getApplicationContext(),Actuals.class);
+                    startActivity(intent);
                     return true;
             }
             return false;
