@@ -59,4 +59,9 @@ public class Actuals extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.observacions_toolbar, menu);
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
