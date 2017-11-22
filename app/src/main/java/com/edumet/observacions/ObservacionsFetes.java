@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -19,6 +21,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -68,6 +71,11 @@ public class ObservacionsFetes extends Fragment {
 
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+
+        BottomNavigationView navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_observacions);
 
         mDbHelper = new DadesHelper(getContext());
         db = mDbHelper.getReadableDatabase();
@@ -279,6 +287,32 @@ public class ObservacionsFetes extends Fragment {
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarObservacions);
         return v;
     }
+
+    public BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    return true;
+                case R.id.navigation_estacions:
+                    intent = new Intent(getActivity().getApplicationContext(),Estacions.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_radar:
+                    intent = new Intent(getActivity().getApplicationContext(),Radar.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_pronostic:
+                    //intent = new Intent(getApplicationContext(),Proostic.class);
+                    //startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {

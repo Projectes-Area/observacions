@@ -3,6 +3,7 @@ package com.edumet.observacions;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,6 +28,7 @@ public class Login extends Fragment {
     private EditText Usuari;
     private EditText Contrasenya;
     private ProgressBar mProgressBar;
+    private BottomNavigationView navigation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,11 +39,13 @@ public class Login extends Fragment {
         Contrasenya = (EditText) v.findViewById(R.id.txtPassword);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarLogin);
         mProgressBar.setVisibility(ProgressBar.GONE);
+
         return v;
     }
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
+
         LoginOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {

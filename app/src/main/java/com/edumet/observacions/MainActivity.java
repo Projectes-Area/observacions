@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 Login firstFragment = new Login();
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             } else {
+
                 Captura firstFragment = new Captura();
                 Bundle args = new Bundle();
                 args.putInt("AppID", AppID);
@@ -87,38 +88,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
-        navigation.setSelectedItemId(R.id.navigation_observacions);
-
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Intent intent;
-            switch (item.getItemId()) {
-                case R.id.navigation_observacions:
-                    return true;
-                case R.id.navigation_estacions:
-                    intent = new Intent(getApplicationContext(),Estacions.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(),Radar.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_pronostic:
-                    //intent = new Intent(getApplicationContext(),Proostic.class);
-                    //startActivity(intent);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     public void onStart() {

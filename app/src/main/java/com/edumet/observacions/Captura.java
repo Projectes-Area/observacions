@@ -150,13 +150,41 @@ public class Captura extends Fragment {
 
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
-/*
+
         BottomNavigationView navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);*/
+        BottomNavigationViewHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_observacions);
+
 
         return v;
     }
+
+    public BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_observacions:
+                    return true;
+                case R.id.navigation_estacions:
+                    intent = new Intent(getActivity().getApplicationContext(),Estacions.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_radar:
+                    intent = new Intent(getActivity().getApplicationContext(),Radar.class);
+                    startActivity(intent);
+                    return true;
+                case R.id.navigation_pronostic:
+                    //intent = new Intent(getApplicationContext(),Proostic.class);
+                    //startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    };
 
 
     @Override
