@@ -1,7 +1,9 @@
 package com.edumet.observacions;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
@@ -13,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+
+import org.json.JSONArray;
 
 import java.io.IOException;
 
@@ -28,7 +32,9 @@ public class Login extends Fragment {
     private EditText Usuari;
     private EditText Contrasenya;
     private ProgressBar mProgressBar;
-    private BottomNavigationView navigation;
+
+    private boolean flagAutentificat = false;
+    private boolean flagEstacions = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +57,8 @@ public class Login extends Fragment {
                 try {
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
                     LoginOK.setEnabled(false);
-                    sincronitza();
+                    baixaEstacions();
+                    autentica();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -62,21 +69,25 @@ public class Login extends Fragment {
 //
 // LOGIN
 //
-    final OkHttpClient client = new OkHttpClient();
+    public void autentica() throws Exception {
 
-    public void sincronitza() throws Exception {
-
-        String laUrl=getResources().getString(R.string.url_servidor);
-        String cadenaRequest = laUrl+"?ident=" + Usuari.getText().toString() + "&psw=" + Contrasenya.getText().toString() + "&tab=registrar_se";
+        String laUrl = getResources().getString(R.string.url_servidor);
+        String cadenaRequest = laUrl + "?ident=" + Usuari.getText().toString() + "&psw=" + Contrasenya.getText().toString() + "&tab=registrar_se";
         Log.i("Login", cadenaRequest);
         Request request = new Request.Builder()
                 .url(cadenaRequest)
                 .build();
+        final OkHttpClient client = new OkHttpClient();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                        mProgressBar.setVisibility(ProgressBar.GONE);
+                    }
+                });
             }
 
             @Override
@@ -101,10 +112,17 @@ public class Login extends Fragment {
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);
-                                //editor.putInt("estacio_preferida", 0);
                                 editor.apply();
-
-                                ((MainActivity) getActivity()).captura();
+                                Log.i(".Autentificació", "Correcta");
+                                flagAutentificat = true;
+                                if (flagEstacions) {
+                                    ((MainActivity) getActivity()).captura();
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
@@ -116,9 +134,101 @@ public class Login extends Fragment {
                             LoginOK.setEnabled(true);
                         }
                     });
-                    Log.i("Login", getString(R.string.servidor_no_disponible));
                 }
             }
         });
     }
+
+
+//
+// BAIXA ESTACIONS
+//
+
+    EstacionsHelper mDbHelper;
+    private SQLiteDatabase db;
+
+    public void baixaEstacions() throws Exception {
+        String laUrl = getResources().getString(R.string.url_servidor);
+        Request request = new Request.Builder()
+                .url(laUrl + "?tab=cnjEst")
+                .build();
+
+        Log.i("Baixa", laUrl + "?tab=cnjEst");
+
+        final OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    String resposta = response.body().string().trim();
+                                                    try {
+                                                        JSONArray jsonArray = new JSONArray(resposta);
+                                                        mDbHelper = new EstacionsHelper(getContext());
+                                                        db = mDbHelper.getWritableDatabase();
+                                                        ContentValues values = new ContentValues();
+
+                                                        for (int i = 0; i < jsonArray.length(); i++) {
+                                                            JSONArray JSONEstacio = jsonArray.getJSONArray(i);
+
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONEstacio.getString(1));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONEstacio.getString(2));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
+                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
+
+                                                            long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
+                                                        }
+                                                        Log.i(".Estacions", "Tot baixat");
+                                                        flagEstacions = true;
+                                                        if (flagAutentificat) {
+                                                            ((MainActivity) getActivity()).captura();
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                public void run() {
+                                                                    mProgressBar.setVisibility(ProgressBar.GONE);
+                                                                }
+                                                            });
+                                                        }
+                                                    } catch (Exception e) {
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                                mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            }
+                                                        });
+                                                    }
+                                                } else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+        );
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
 }
