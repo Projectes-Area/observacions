@@ -53,6 +53,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);

@@ -161,7 +161,6 @@ public class Captura extends Fragment {
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
 
-
         return v;
     }
 
@@ -170,6 +169,10 @@ public class Captura extends Fragment {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            if (flagDesada) {
+                updateObservacio();
+            }
+            flagEnEdicio = false;
             Intent intent;
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
@@ -190,7 +193,6 @@ public class Captura extends Fragment {
             return false;
         }
     };
-
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
@@ -279,12 +281,10 @@ public class Captura extends Fragment {
         if (AppID > 0) {
             flagEnEdicio = true;
             loadObservacio();
-            //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(AppID), Snackbar.LENGTH_SHORT).show();
         }
 
         int numPendents = checkPendents();
         if (numPendents > 0) {
-            //Snackbar.make(getActivity().findViewById(android.R.id.content), String.valueOf(numPendents), Snackbar.LENGTH_LONG).show();
             ObservacionsFetes.setImageResource(R.mipmap.ic_time_red);
         }
 
@@ -388,30 +388,6 @@ public class Captura extends Fragment {
         super.onConfigurationChanged(newConfig);
         imatge.setImageBitmap(bitmap);
     }
-
-    /*private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_observacions:
-                    return true;
-                case R.id.navigation_estacions:
-                    Intent intent = new Intent(getActivity(), Estacions.class);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_radar:
-                    Intent intent2 = new Intent(getActivity(), Radar.class);
-                    startActivity(intent2);
-                    return true;
-                case R.id.navigation_pronostic:
-                    //mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-    };*/
 
     //
     // LOCALITZACIÓ
