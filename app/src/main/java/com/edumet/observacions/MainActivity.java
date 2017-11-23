@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
         AppID = getIntent().getIntExtra(MainActivity.EXTRA_ID, 0);
 
         if (findViewById(R.id.fragment_container) != null) {
@@ -87,10 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             }
         }
-
     }
-
-
 
     @Override
     public void onStart() {

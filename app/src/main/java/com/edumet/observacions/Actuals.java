@@ -1,5 +1,7 @@
 package com.edumet.observacions;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -9,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,15 +44,9 @@ public class Actuals extends AppCompatActivity {
 
         sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         id_edumet = sharedPref.getInt("estacio_actual", 0);
-
-        if (id_edumet == 0) {
-            id_edumet = sharedPref.getInt("estacio_preferida", 0);
-            if (id_edumet == 0) {
-
-            }
-        }
-
     }
+
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,15 +57,20 @@ public class Actuals extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
                     intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getApplicationContext(), Estacions.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
+
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(), Radar.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
+
                     return true;
                 case R.id.navigation_pronostic:
                     return true;

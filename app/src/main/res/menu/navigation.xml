@@ -9,13 +9,13 @@
         android:icon="@drawable/ic_router_black_24dp"
         android:title="@string/title_estacions" />
 
-    <item android:id="@+id/navigation_radar"
-        android:icon="@drawable/ic_wifi_tethering_black_24dp"
-        android:title="@string/title_radar" />
-
     <item
         android:id="@+id/navigation_pronostic"
         android:icon="@drawable/ic_cloud_queue_black_24dp"
         android:title="@string/title_pronostic" />
+
+    <item android:id="@+id/navigation_radar"
+        android:icon="@drawable/ic_wifi_tethering_black_24dp"
+        android:title="@string/title_radar" />
 
 </menu>

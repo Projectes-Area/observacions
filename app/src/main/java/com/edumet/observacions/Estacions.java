@@ -71,17 +71,21 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
                     intent = new Intent(getApplicationContext(),MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(),Radar.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
                     intent = new Intent(getApplicationContext(),Actuals.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
+
                     return true;
             }
             return false;
