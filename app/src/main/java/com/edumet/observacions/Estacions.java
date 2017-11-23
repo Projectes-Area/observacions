@@ -32,18 +32,13 @@ import java.util.Map;
 public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-
-    EstacionsHelper mDbHelper;
     private SQLiteDatabase db;
 
-    private double latitud;
-    private double longitud;
+    EstacionsHelper mDbHelper;
+    SharedPreferences sharedPref;
+    BottomNavigationView navigation;
 
     private int estacioPreferida;
-
-    SharedPreferences sharedPref;
-
-    BottomNavigationView navigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,20 +53,12 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
-
-        Double latBarcelona=41.3985;
-        Double lonBarcelona=2.1398;
-
-        latitud = Double.valueOf(sharedPref.getString("latitud", String.valueOf(latBarcelona)));
-        longitud = Double.valueOf(sharedPref.getString("longitud",  String.valueOf(lonBarcelona)));
         estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_estacions);
-
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -103,7 +90,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public void obreMapa() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa_estacions);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -135,9 +121,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        int estacioPropera=0;
-        int ID_estacioPropera=0;
-        double distanciaPropera=1000000;
+        estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
+        int ID_estacioPreferida=0;
 
         LatLng observacio;
 
@@ -148,35 +133,14 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     .position(observacio)
                     .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
             );
-
-            Double distancia = calculaDistancia(
-                    latitud,
-                    longitud,
-                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
-                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
-
-            Log.i("km", String.valueOf(distancia));
-
-            if (distancia<distanciaPropera) {
-                distanciaPropera=distancia;
-                estacioPropera=Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET)));
-                ID_estacioPropera=Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)));
+            if(cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET))==estacioPreferida) {
+                ID_estacioPreferida=cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID));
             }
         }
         cursor.close();
 
-        if(estacioPreferida==0) {
-            estacioPreferida=estacioPropera;
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putInt("estacio_preferida", estacioPropera);
-            editor.apply();
-        }
-
         FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
-        fragment.clicaSpinner(ID_estacioPropera-1);
-
-        LatLng posicio = new LatLng(latitud, longitud);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));
+        fragment.clicaSpinner(ID_estacioPreferida-1);
     }
 
     @Override
@@ -208,27 +172,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicio, 11.0f));
     }
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    public double calculaDistancia(Double lat1,Double lon1,Double lat2,Double lon2) {
-        double R = 6371; // Radius of the earth in km
-        double dLat = deg2rad(lat2-lat1);  // deg2rad below
-        double dLon = deg2rad(lon2-lon1);
-        double a =
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                                Math.sin(dLon/2) * Math.sin(dLon/2)
-                ;
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = R * c; // Distance in km
-        return d;
-    }
-
-    public double deg2rad(double deg) {
-        return deg * (Math.PI/180);
     }
 }

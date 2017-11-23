@@ -230,5 +230,4 @@ public class Login extends Fragment {
         mDbHelper.close();
         super.onDestroy();
     }
-
 }
