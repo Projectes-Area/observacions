@@ -265,6 +265,8 @@ public class FragmentEstacions extends Fragment {
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
+        Log.i(".Codi",codi);
+
         mostraInfo(false);
         try {
             baixaValors(codi);
@@ -391,6 +393,7 @@ public class FragmentEstacions extends Fragment {
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     String resposta = response.body().string().trim();
+                                                    Log.i(".resposta",resposta);
                                                     valorsEstacio = new ArrayList<>();
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
