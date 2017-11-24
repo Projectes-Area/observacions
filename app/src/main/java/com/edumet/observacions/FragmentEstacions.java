@@ -57,6 +57,7 @@ public class FragmentEstacions extends Fragment {
     private int id_edumet_actual;
 
     List itemIdsEdumet = new ArrayList<>();
+    List valorsEstacio;
 
     SharedPreferences sharedPref;
 
@@ -256,20 +257,27 @@ public class FragmentEstacions extends Fragment {
 
         String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
         String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
-        String strLat=cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD));
-        String strLon=cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD));
+        String strLat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD));
+        String strLon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
         latitud.setText("Latitud: " + strLat);
         longitud.setText("Longitud: " + strLon);
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
+        mostraInfo(false);
+        try {
+            baixaValors(codi);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
-        int estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
+        int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
 
-        id_edumet_actual=Integer.valueOf(id_edumet);
+        id_edumet_actual = Integer.valueOf(id_edumet);
 
-        if (estacioPreferida==id_edumet_actual) {
+        if (estacioPreferida == id_edumet_actual) {
             estrella.setImageResource(R.mipmap.ic_star_on);
         } else {
             estrella.setImageResource(R.mipmap.ic_star_off);
@@ -280,7 +288,7 @@ public class FragmentEstacions extends Fragment {
         editor.putInt("estacio_actual", id_edumet_actual);
         editor.apply();
 
-        ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat),Double.valueOf(strLon));
+        ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat), Double.valueOf(strLon));
 
         String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
         Log.i(".laUrl", laUrl);
@@ -351,6 +359,7 @@ public class FragmentEstacions extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -361,6 +370,87 @@ public class FragmentEstacions extends Fragment {
         spinner.setSelection(posicio);
     }
 
+    public void baixaValors(String codEst) throws Exception {
+
+        String laUrl = getResources().getString(R.string.url_servidor);
+        Request request = new Request.Builder()
+                .url(laUrl + "?tab=mobil&codEst=" + codEst)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+                                            @Override
+                                            public void onFailure(Call call, IOException e) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        mostraInfo(false);
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onResponse(Call call, Response response) throws IOException {
+                                                if (response.isSuccessful()) {
+                                                    String resposta = response.body().string().trim();
+                                                    valorsEstacio = new ArrayList<>();
+                                                    try {
+                                                        JSONArray jsonArray = new JSONArray(resposta);
+                                                        JSONArray JSONEstacio = jsonArray.getJSONArray(0);
+
+                                                        for (int i = 0; i < JSONEstacio.length(); i++) {
+                                                            valorsEstacio.add(JSONEstacio.getString(i));
+                                                            Log.i(".Valor_Estació", JSONEstacio.getString(i));
+                                                        }
+
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                double pressio=Double.valueOf(valorsEstacio.get(11).toString());
+                                                                if (pressio == 0.0) {
+                                                                    mostraInfo(false);
+                                                                } else {
+                                                                    mostraInfo(true);
+                                                                }
+                                                            }
+                                                        });
+
+                                                    } catch (Exception e) {
+                                                        getActivity().runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                mostraInfo(false);
+                                                            }
+                                                        });
+                                                    }
+
+                                                } else {
+                                                    getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            mostraInfo(false);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        }
+        );
+    }
+
+    public void mostraInfo(boolean mostra) {
+        String Temperatura = "";
+        String Pressio = "";
+        String Humitat = "";
+        String Pluja = "";
+        String Vent = "";
+
+        if (mostra) {
+            Temperatura = valorsEstacio.get(4).toString() + " ºC";
+            Pressio = valorsEstacio.get(11).toString() + " HPa";
+            Humitat = valorsEstacio.get(10).toString() + " %";
+            Pluja = valorsEstacio.get(12).toString() + " mm";
+            Vent = valorsEstacio.get(15).toString() + " Km/h";
+        }
+
+        FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
+        fragmentInfo.setValues(Temperatura, Pressio, Humitat, Pluja, Vent);
+    }
 }
 
 

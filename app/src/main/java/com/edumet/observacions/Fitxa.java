@@ -1,7 +1,6 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -83,11 +82,13 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(),Radar.class);
+                    intent = new Intent(getApplicationContext(),Web_viewer.class);
+                    intent.putExtra("desti","web_viewer");
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    intent = new Intent(getApplicationContext(),Actuals.class);
+                    intent = new Intent(getApplicationContext(),Web_viewer.class);
+                    intent.putExtra("desti","pronostic");
                     startActivity(intent);
                     return true;
             }

@@ -56,13 +56,15 @@ public class VeureFoto extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(),Radar.class);
+                    intent = new Intent(getApplicationContext(),Web_viewer.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("desti","web_viewer");
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    intent = new Intent(getApplicationContext(),Actuals.class);
+                    intent = new Intent(getApplicationContext(),Web_viewer.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("desti","pronostic");
                     startActivity(intent);
                     return true;
             }

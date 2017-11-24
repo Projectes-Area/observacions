@@ -71,7 +71,7 @@
         </activity>
 
         <activity
-            android:name=".Radar"
+            android:name=".Web_viewer"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:parentActivityName="com.edumet.observacions.MainActivity"
