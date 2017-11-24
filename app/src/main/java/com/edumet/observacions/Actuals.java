@@ -27,6 +27,8 @@ public class Actuals extends AppCompatActivity {
     SharedPreferences sharedPref;
     private int id_edumet;
 
+    BottomNavigationView navigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,7 @@ public class Actuals extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_pronostic);
@@ -157,6 +159,12 @@ public class Actuals extends AppCompatActivity {
 
     public double deg2rad(double deg) {
         return deg * (Math.PI/180);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_pronostic);
     }
 }
 

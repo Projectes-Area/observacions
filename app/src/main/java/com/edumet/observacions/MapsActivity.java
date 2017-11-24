@@ -28,6 +28,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     String[] nomFenomen;
     private int numFenomen=0;
 
+    BottomNavigationView navigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +40,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
@@ -119,6 +121,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_observacions);
     }
 
 }

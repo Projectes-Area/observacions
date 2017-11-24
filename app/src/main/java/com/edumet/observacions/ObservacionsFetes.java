@@ -63,6 +63,8 @@ public class ObservacionsFetes extends Fragment {
 
     List itemIdsEdumet = new ArrayList<>();
 
+    BottomNavigationView navigation;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //super.onCreate(savedInstanceState);
@@ -72,7 +74,7 @@ public class ObservacionsFetes extends Fragment {
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        BottomNavigationView navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
@@ -552,5 +554,11 @@ public class ObservacionsFetes extends Fragment {
 //
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_observacions);
     }
 }

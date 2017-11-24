@@ -132,6 +132,8 @@ public class Captura extends Fragment {
     String[] nomFenomen;
     String usuari;
 
+    BottomNavigationView navigation;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.captura, container, false);
@@ -152,7 +154,7 @@ public class Captura extends Fragment {
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
 
-        BottomNavigationView navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
@@ -329,6 +331,7 @@ public class Captura extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_observacions);
         Log.i(".OnResume", String.valueOf(mRequestingLocationUpdates));
         if (mRequestingLocationUpdates) {
             startLocationUpdates();

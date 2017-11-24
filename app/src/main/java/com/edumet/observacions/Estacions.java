@@ -9,15 +9,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,8 +21,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.Map;
 
 public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -49,6 +42,9 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         FragmentEstacions firstFragment = new FragmentEstacions();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_estacions_container, firstFragment).commit();
+
+        FragmentInfoEstacio secFragment = new FragmentInfoEstacio();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_info_container, secFragment).commit();
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -180,5 +176,11 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_estacions);
     }
 }

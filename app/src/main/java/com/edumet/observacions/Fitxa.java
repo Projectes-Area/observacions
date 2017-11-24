@@ -36,6 +36,8 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
 
     String[] nomFenomen;
 
+    BottomNavigationView navigation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
@@ -134,5 +136,11 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onBackPressed() {
                 super.onBackPressed();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_observacions);
     }
 }

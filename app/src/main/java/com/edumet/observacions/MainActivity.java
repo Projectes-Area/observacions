@@ -419,4 +419,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentFitxa frag2 = new FragmentFitxa();
         frag2.setEnviada();
     }
+
+
 }
