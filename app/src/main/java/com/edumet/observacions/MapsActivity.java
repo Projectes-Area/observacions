@@ -71,15 +71,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(),Web_viewer.class);
+                    intent = new Intent(getApplicationContext(),Radar.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("desti","web_viewer");
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    intent = new Intent(getApplicationContext(),Web_viewer.class);
+                    intent = new Intent(getApplicationContext(),Pronostic.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("desti","pronostic");
                     startActivity(intent);
                     return true;
             }
@@ -89,7 +87,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.observacions_toolbar, menu);
         return true;
     }

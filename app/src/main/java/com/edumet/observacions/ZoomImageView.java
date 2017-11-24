@@ -46,35 +46,35 @@ package com.edumet.observacions;
  * This class requires API level >= 8
  */
 
-        import android.annotation.SuppressLint;
-        import android.content.Context;
-        import android.content.res.Configuration;
-        import android.graphics.Bitmap;
-        import android.graphics.Canvas;
-        import android.graphics.ColorFilter;
-        import android.graphics.ColorMatrix;
-        import android.graphics.ColorMatrixColorFilter;
-        import android.graphics.Matrix;
-        import android.graphics.PointF;
-        import android.graphics.Rect;
-        import android.graphics.RectF;
-        import android.graphics.drawable.Drawable;
-        import android.os.Build;
-        import android.os.Parcel;
-        import android.os.Parcelable;
-        import android.util.AttributeSet;
-        import android.util.Log;
-        import android.view.MotionEvent;
-        import android.view.View;
-        import android.view.ViewConfiguration;
-        import android.widget.ImageView;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.widget.ImageView;
 
 /**
  * ImageView with zooming/dragging/rotating image with touch
  */
 public class ZoomImageView extends android.support.v7.widget.AppCompatImageView {
 
-    private static final boolean DEBUG = false;	// TODO for debugging
+    private static final boolean DEBUG = false;    // TODO for debugging
     private static final String TAG = "ZoomImageView";
 
     // constants
@@ -136,15 +136,15 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
     /**
      * conversion factor from radian to degree
      */
-    private static final float TO_DEGREE = 57.2957795130823f;	// = (1.0f / Math.PI) * 180.0f;
+    private static final float TO_DEGREE = 57.2957795130823f;    // = (1.0f / Math.PI) * 180.0f;
     /**
      * ColorMatrix data for reversing image
      */
     private static final float[] REVERSE = {
-            -1.0f,   0.0f,   0.0f,  0.0f,  255.0f,
-            0.0f,  -1.0f,   0.0f,  0.0f,  255.0f,
-            0.0f,   0.0f,  -1.0f,  0.0f,  255.0f,
-            0.0f,   0.0f,   0.0f,  1.0f,    0.0f,
+            -1.0f, 0.0f, 0.0f, 0.0f, 255.0f,
+            0.0f, -1.0f, 0.0f, 0.0f, 255.0f,
+            0.0f, 0.0f, -1.0f, 0.0f, 255.0f,
+            0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
     };
     /**
      *
@@ -225,7 +225,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
     private float mMinScale = DEFAULT_MIN_SCALE;
     /**
      * current state, -1/STATE_NON/STATE_WATING/STATE_DRAGING/STATE_CHECKING
-     * 					/STATE_ZOOMING/STATE_ROTATING
+     * /STATE_ZOOMING/STATE_ROTATING
      */
     private int mState;
     /**
@@ -261,6 +261,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         /**
          * this method is called when rotating starts.</br>
          * you will execute feedback something like sound and/or visual effects.
+         *
          * @param view
          * @return if return false, we execute a default visual effect(color reversing)
          */
@@ -358,6 +359,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * Constructor for constructing in program
+     *
      * @param context
      */
     public ZoomImageView(final Context context) {
@@ -367,6 +369,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * Constructor for constructing from xml
+     *
      * @param context
      * @param attrs
      */
@@ -377,6 +380,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * Constructor for constructing from xml
+     *
      * @param context
      * @param attrs
      * @param defStyle
@@ -398,7 +402,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         if (DEBUG) Log.v(TAG, "onRestoreInstanceState:");
 
         if (state instanceof SavedState) {
-            final SavedState saved = (SavedState)state;
+            final SavedState saved = (SavedState) state;
             super.onRestoreInstanceState(saved.getSuperState());
             mIsRestored = true;
             System.arraycopy(saved.mMatrixCache, 0, mMatrixCache, 0, saved.mMatrixCache.length);
@@ -472,7 +476,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         // or no image assigned, skip initialization
         if (getWidth() == 0 || getHeight() == 0 || !hasImage()) return;
 
-        mState = -1;	// reset state
+        mState = -1;    // reset state
         init();
     }
 
@@ -482,15 +486,14 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         // if there is no image, leave to super class
         if (!hasImage()) return super.onTouchEvent(event);
 
-        final int actionCode = event.getActionMasked();	// >= API8
+        final int actionCode = event.getActionMasked();    // >= API8
 
         switch (actionCode) {
             case MotionEvent.ACTION_DOWN:
                 // single touch
                 startWaiting(event);
                 return true;
-            case MotionEvent.ACTION_POINTER_DOWN:
-            {
+            case MotionEvent.ACTION_POINTER_DOWN: {
                 // start multi touch, zooming/rotating
                 switch (mState) {
                     case STATE_WAITING:
@@ -504,8 +507,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
                 }
                 break;
             }
-            case MotionEvent.ACTION_MOVE:
-            {
+            case MotionEvent.ACTION_MOVE: {
                 // moving with single and multi touch
                 switch (mState) {
                     case STATE_WAITING:
@@ -550,6 +552,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * set maximum zooming scale
+     *
      * @param maxScale
      */
     public void setMaxScale(final float maxScale) {
@@ -562,6 +565,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * set minimum zooming scale
+     *
      * @param minScale
      */
     public void setMinScale(final float minScale) {
@@ -574,6 +578,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * whether ImageView has image
+     *
      * @return true if ImageView has image, false otherwise
      */
     public boolean hasImage() {
@@ -589,6 +594,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * set listener on start rotating (for visual/sound feedback)
+     *
      * @param listener
      */
     public void setOnStartRotationListener(final OnStartRotationListener listener) {
@@ -597,6 +603,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * return current listener
+     *
      * @return
      */
     public OnStartRotationListener getOnStartRotationListener() {
@@ -605,6 +612,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * return current scale
+     *
      * @return
      */
     public float getScale() {
@@ -613,6 +621,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * return current image translate values(offset)
+     *
      * @param result
      * @return
      */
@@ -633,6 +642,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * get new Bitmap image that currently displayed on this view(applied zooming/moving/rotating).
+     *
      * @return
      */
     public Bitmap getCurrentImage() {
@@ -646,6 +656,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * get new partial Bitmap image from currently displayed on this view(applied zooming/moving/rotating)
+     *
      * @param frame: framing rectangle that you want to cut image from the view (as view coordinates)
      * @return
      */
@@ -679,13 +690,14 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
             // but the behavior may change in the future implementation...
             setFrame(getLeft(), getTop(), getRight(), getBottom());
             // set the initial state to idle, get and save the internal Matrix.
-            mState = -1; setState(STATE_NON);
+            mState = -1;
+            setState(STATE_NON);
             // get the internally calculated zooming scale to fit the view
             mMinScale = getMatrixScale();
             mCurrentDegrees = 0.f;
         }
         mIsRestored = false;
-        mIsRotating = Math.abs(((int)(mCurrentDegrees / 360.f)) * 360.f - mCurrentDegrees) > EPS;
+        mIsRotating = Math.abs(((int) (mCurrentDegrees / 360.f)) * 360.f - mCurrentDegrees) > EPS;
 
         // update image size
         // current implementation of ImageView always hold its image as a Drawable
@@ -741,8 +753,9 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * set current state, get and save the internal Matrix int super class
-     * @param state:	-1/STATE_NON/STATE_DRAGING/STATECHECKING
-     * 					/STATE_ZOOMING/STATE_ROTATING
+     *
+     * @param state: -1/STATE_NON/STATE_DRAGING/STATECHECKING
+     *               /STATE_ZOOMING/STATE_ROTATING
      */
     private final void setState(final int state) {
 
@@ -759,6 +772,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * start waiting
+     *
      * @param event
      */
     private final void startWaiting(final MotionEvent event) {
@@ -774,6 +788,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * move the image
+     *
      * @param event
      */
     private final boolean processDrag(final MotionEvent event) {
@@ -790,7 +805,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         mImageMatrix.mapPoints(mTrans);
         for (int i = 0; i < 8; i += 2) {
             mTrans[i] += dx;
-            mTrans[i+1] += dy;
+            mTrans[i + 1] += dy;
         }
         // check whether the image can move
         // if we can ignore rotating, the limit check is more easy...
@@ -868,6 +883,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * start checking whether zooming/rotating
+     *
      * @param event
      */
     private final void startCheck(final MotionEvent event) {
@@ -884,7 +900,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
             // calculate the distance between first and second touch
             final float dx = mSecondX - mPrimaryX;
             final float dy = mSecondY - mPrimaryY;
-            final float distance = (float)Math.hypot(dx, dy);
+            final float distance = (float) Math.hypot(dx, dy);
             if (distance < MIN_DISTANCE) {
                 //  ignore when the touch distance is too short
                 return;
@@ -898,12 +914,13 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
             if (mStartCheckRotate == null)
                 mStartCheckRotate = new StartCheckRotate();
             postDelayed(mStartCheckRotate, CHECK_TIMEOUT);
-            setState(STATE_CHECKING); 		// start zoom/rotation check
+            setState(STATE_CHECKING);        // start zoom/rotation check
         }
     }
 
     /**
      * start zooming
+     *
      * @param event
      * @return
      */
@@ -915,6 +932,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * zooming
+     *
      * @param event
      * @return
      */
@@ -950,6 +968,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
     /**
      * calculate the zooming scale from the distance between touched position</br>
      * this method ony use the index of 0 and 1 for touched position
+     *
      * @param event
      * @return
      */
@@ -958,13 +977,14 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         final float dx = event.getX(0) - event.getX(1);
         final float dy = event.getY(0) - event.getY(1);
 
-        final float distance = (float)Math.hypot(dx, dy);
+        final float distance = (float) Math.hypot(dx, dy);
 
         return distance / mTouchDistance;
     }
 
     /**
      * check whether the touch position changed
+     *
      * @param event
      * @return true if the touch position changed
      */
@@ -997,6 +1017,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * rotating image
+     *
      * @param event
      * @return
      */
@@ -1006,7 +1027,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
             // restore the Matrix
             restoreMatrix();
             mCurrentDegrees = calcAngle(event);
-            mIsRotating = Math.abs(((int)(mCurrentDegrees / 360.f)) * 360.f - mCurrentDegrees) > EPS;
+            mIsRotating = Math.abs(((int) (mCurrentDegrees / 360.f)) * 360.f - mCurrentDegrees) > EPS;
             if (mIsRotating && mImageMatrix.postRotate(mCurrentDegrees, mPivotX, mPivotY)) {
                 // when Matrix is changed
                 mImageMatrixChanged = true;
@@ -1048,10 +1069,11 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
      * calculate the rotating angle</br>
      * first vector Za=(X0,Y0), second vector Zb=(X1,Y1), angle between two vectors=φ</br>
      * cos φ ＝ Za・Zb / (|Za| |Zb|)</br>
-     *  =(X0X1+Y0Y1) / √{(X0^2 + Y0^2)(X1^2 + Y1^2)}</br>
+     * =(X0X1+Y0Y1) / √{(X0^2 + Y0^2)(X1^2 + Y1^2)}</br>
      * ∴result angle φ=Arccos(cosφ)</br>
      * the result of Arccos if 0-π[rad] therefor we need to convert to degree
      * and adjust the rotating direction using cross-product of vector Za and Zb
+     *
      * @param event
      * @return
      */
@@ -1070,7 +1092,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
             //
             final double s = (x0 * x0 + y0 * y0) * (x1 * x1 + y1 * y1);
             final double cos = dotProduct(x0, y0, x1, y1) / Math.sqrt(s);
-            angle = TO_DEGREE * (float)Math.acos(cos) * Math.signum(crossProduct(x0, y0, x1, y1));
+            angle = TO_DEGREE * (float) Math.acos(cos) * Math.signum(crossProduct(x0, y0, x1, y1));
         }
         return angle;
     }
@@ -1089,8 +1111,10 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     private static final Vector sPtInPoly_v1 = new Vector();
     private static final Vector sPtInPoly_v2 = new Vector();
+
     /**
      * check whether the point is in the clockwise 2D polygon
+     *
      * @param x
      * @param y
      * @param poly: the array of polygon coordinates(x,y pairs)
@@ -1127,7 +1151,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         }
 
 /*		public Vector(Vector src) {
-			set(src);
+            set(src);
 		} */
 
         public Vector(final float x, final float y) {
@@ -1192,14 +1216,14 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
         public final Vector p1;
         public final Vector p2;
 
-        public LineSegment (final float x0, final float y0, final float x1, final float y1) {
+        public LineSegment(final float x0, final float y0, final float x1, final float y1) {
             p1 = new Vector(x0, y0);
             p2 = new Vector(x1, y1);
         }
 
         public LineSegment set(final float x0, final float y0, final float x1, final float y1) {
             p1.set(x0, y0);
-            p2.set(x1,  y1);
+            p2.set(x1, y1);
             return this;
         }
 
@@ -1211,6 +1235,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * check whether line segment(seg) intersects with at least one of line segments in the array
+     *
      * @param seg
      * @param segs array of segment
      * @return true if line segment intersects with at least one of other line segment.
@@ -1222,7 +1247,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
         final Vector a = seg.p2.sub(seg.p1);
         Vector b, c, d;
-        for (int i= 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             c = segs[i].p1.sub(seg.p1);
             d = segs[i].p2.sub(seg.p1);
             result = crossProduct(a, c) * crossProduct(a, d) < EPS;
@@ -1247,12 +1272,13 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
     /**
      * get the zooming scale</br>
      * return minimum one of MSCALE_X and MSCALE_Y
+     *
      * @return return DEFAULT_SCALE when the scale is smaller than or equal to zero
      */
     private final float getMatrixScale() {
         updateMatrixCache();
         final float scale = Math.min(mMatrixCache[Matrix.MSCALE_X], mMatrixCache[Matrix.MSCALE_X]);
-        if (scale <= 0f) {	// for prevent disappearing reversing
+        if (scale <= 0f) {    // for prevent disappearing reversing
             if (DEBUG) Log.w(TAG, "getMatrixScale:scale<=0, set to default");
             return DEFAULT_SCALE;
         }
@@ -1261,6 +1287,7 @@ public class ZoomImageView extends android.support.v7.widget.AppCompatImageView 
 
     /**
      * set a value to mImageMatrix
+     *
      * @param index
      * @param value
      */

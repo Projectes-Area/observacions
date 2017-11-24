@@ -1,7 +1,6 @@
 package com.edumet.observacions;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,31 +9,50 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
-public class Actuals extends AppCompatActivity {
-
-    SharedPreferences sharedPref;
-    private int id_edumet;
+public class Radar extends AppCompatActivity {
 
     BottomNavigationView navigation;
+    WebView contenidor;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.actuals);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.actuals_toolbar);
+        setContentView(R.layout.radar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.radar_toolbar);
         setSupportActionBar(myToolbar);
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        contenidor = (WebView) findViewById(R.id.web_radar);
+        WebSettings webSettings = contenidor.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
-        navigation.setSelectedItemId(R.id.navigation_pronostic);
+        navigation.setSelectedItemId(R.id.navigation_radar);
+    }
 
-        sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
-        id_edumet = sharedPref.getInt("estacio_actual", 0);
+    @Override
+    public void onStart() {
+        super.onStart();
+        String html = "<iframe src='https://edumet.cat/edumet/meteo_2/00_radar_mobil.php' style='height: 100%; width: 100%; margin: 0 auto ' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='no'></iframe>";
+        contenidor.loadData(html, "text/html", null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.observacions_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -55,9 +73,6 @@ public class Actuals extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(), Radar.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
                     intent = new Intent(getApplicationContext(), Pronostic.class);
@@ -68,16 +83,4 @@ public class Actuals extends AppCompatActivity {
             return false;
         }
     };
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.observacions_toolbar, menu);
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }
-

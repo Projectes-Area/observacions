@@ -180,13 +180,11 @@ public class Captura extends Fragment {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getActivity().getApplicationContext(), Web_viewer.class);
-                    intent.putExtra("desti","radar");
+                    intent = new Intent(getActivity().getApplicationContext(), Radar.class);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    intent = new Intent(getActivity().getApplicationContext(), Web_viewer.class);
-                    intent.putExtra("desti","pronostic");
+                    intent = new Intent(getActivity().getApplicationContext(), Pronostic.class);
                     startActivity(intent);
                     return true;
             }
