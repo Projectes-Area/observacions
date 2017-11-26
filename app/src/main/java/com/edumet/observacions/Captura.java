@@ -93,6 +93,7 @@ public class Captura extends Fragment {
     private LocationSettingsRequest mLocationSettingsRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
+    private static boolean mRequestingLocationUpdates;
 
     private ImageButton Foto;
     private ImageButton Girar;
@@ -105,7 +106,6 @@ public class Captura extends Fragment {
 
     private String timeStamp;
     private String mCurrentPhotoPath;
-    private static boolean mRequestingLocationUpdates;
     private File output = null;
     private File outputMiniatura = null;
     private int midaEnvia = 800;
@@ -116,7 +116,7 @@ public class Captura extends Fragment {
     private String hora;
     private Double laLatitud;
     private Double laLongitud;
-    private int AppID;
+    private int ID_App;
 
     private boolean flagLocalitzada = false;
     private boolean flagGirada = false;
@@ -127,7 +127,6 @@ public class Captura extends Fragment {
 
     private DadesHelper mDbHelper;
     private EstacionsHelper obsHelper;
-
 
     String[] nomFenomen;
     String usuari;
@@ -148,9 +147,6 @@ public class Captura extends Fragment {
         observacio = (EditText) v.findViewById(R.id.txtObservacions);
         spinner = (Spinner) v.findViewById(R.id.spinner);
 
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
-        usuari = sharedPref.getString("usuari", "");
-
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(false);
 
@@ -158,6 +154,9 @@ public class Captura extends Fragment {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_observacions);
+
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
+        usuari = sharedPref.getString("usuari", "");
 
         return v;
     }
@@ -194,7 +193,6 @@ public class Captura extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-
         Foto.setEnabled(false);
         Foto.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -261,7 +259,6 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -270,13 +267,12 @@ public class Captura extends Fragment {
         Bundle arguments = getArguments();
 
         if (arguments != null && !flagEditada) {
-            AppID = getArguments().getInt("AppID", 0);
+            ID_App = getArguments().getInt("ID_App", 0);
             flagEditada = true;
         } else {
-            AppID = 0;
+            ID_App = 0;
         }
-
-        if (AppID > 0) {
+        if (ID_App > 0) {
             flagEnEdicio = true;
             loadObservacio();
         }
@@ -290,7 +286,6 @@ public class Captura extends Fragment {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         mSettingsClient = LocationServices.getSettingsClient(getActivity());
-
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
@@ -355,7 +350,6 @@ public class Captura extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    // handle back button's click listener
                     Snackbar snackbar = Snackbar
                             .make(getActivity().findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
                             .setAction("SÍ", new View.OnClickListener() {
@@ -441,7 +435,7 @@ public class Captura extends Fragment {
                     galleryAddPic();
                     enableBotons();
                     ((MainActivity) getActivity()).hihaFoto();
-                    desa(); // No cal desar manualment, es desa en fer la foto Aixo es pot simplificar
+                    desa();
                     flagDesada = true;
                     flagGirada = false;
                     flagEnviada = false;
@@ -497,6 +491,20 @@ public class Captura extends Fragment {
                 });
     }
 
+    private void stopLocationUpdates() {
+        if (!mRequestingLocationUpdates) {
+            Log.i(".stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
+            return;
+        }
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mRequestingLocationUpdates = false;
+                    }
+                });
+    }
+
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
             if (!flagLocalitzada) {
@@ -510,20 +518,6 @@ public class Captura extends Fragment {
             Mapa.setImageResource(R.mipmap.ic_location_edumet);
             Mapa.setEnabled(true);
         }
-    }
-
-    private void stopLocationUpdates() {
-        if (!mRequestingLocationUpdates) {
-            Log.i(".stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
-            return;
-        }
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        mRequestingLocationUpdates = false;
-                    }
-                });
     }
 
     //
@@ -553,6 +547,7 @@ public class Captura extends Fragment {
             }
         }
     }
+
     //
     // FOTOGRAFIA
     //
@@ -658,7 +653,6 @@ public class Captura extends Fragment {
     //
 
     public void sendPost(Double latitud, Double longitud) {
-
         File fitxer_a_enviar = new File(outputMiniatura.getAbsolutePath());
 
         byte[] fotografia;
@@ -676,7 +670,7 @@ public class Captura extends Fragment {
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
         ((MainActivity) getActivity()).enviaObservacio(
-                AppID,
+                ID_App,
                 encodedFoto,
                 usuari,
                 dia,
@@ -698,7 +692,6 @@ public class Captura extends Fragment {
     //
 
     public void desa() {
-
         fesMiniatura(midaEnvia);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -706,7 +699,7 @@ public class Captura extends Fragment {
         dia = sdf.format(Calendar.getInstance().getTime());
         hora = shf.format(Calendar.getInstance().getTime());
 
-        AppID = ((MainActivity) getActivity()).desaObservacio(
+        ID_App = ((MainActivity) getActivity()).desaObservacio(
                 dia,
                 hora,
                 mCurrentLocation.getLatitude(),
@@ -716,8 +709,10 @@ public class Captura extends Fragment {
                 mCurrentPhotoPath,
                 outputMiniatura.getAbsolutePath()
         );
-
     }
+
+    //
+    // EDITA OBSERVACIO
 
     public void loadObservacio() {
         String[] projection = {
@@ -732,7 +727,7 @@ public class Captura extends Fragment {
         };
 
         String selection = DadesEstructura.Parametres._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(AppID)};
+        String[] selectionArgs = {String.valueOf(ID_App)};
         String sortOrder = null;
 
         mDbHelper = new DadesHelper(getContext());
@@ -760,7 +755,6 @@ public class Captura extends Fragment {
         imatge.setImageBitmap(bitmap);
         mCurrentPhotoPath = elPath;
 
-
         angle_foto = 0;
         enableBotons();
         ((MainActivity) getActivity()).hihaFoto();
@@ -770,7 +764,7 @@ public class Captura extends Fragment {
     }
 
     public void updateObservacio() {
-        String unlog = String.valueOf(AppID);
+        String unlog = String.valueOf(ID_App);
         Log.i(".UpdateID", unlog);
 
         mDbHelper = new DadesHelper(getContext());
@@ -791,11 +785,10 @@ public class Captura extends Fragment {
         values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, outputMiniatura.getAbsolutePath());
 
         String selection = DadesEstructura.Parametres._ID + " LIKE ?";
-        String[] selectionArgs = {String.valueOf(AppID)};
+        String[] selectionArgs = {String.valueOf(ID_App)};
 
-        int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
+        db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
-        Log.i(".UpdatedRows", String.valueOf(count));
     }
 
 //
@@ -809,10 +802,6 @@ public class Captura extends Fragment {
             startActivity(intent);
         }
     }
-
-//
-// GENERAL
-//
 
     public int checkPendents() {
         mDbHelper = new DadesHelper(getContext());
@@ -877,7 +866,6 @@ public class Captura extends Fragment {
             Log.i(".Preferida_Edumet",String.valueOf(estacioPropera));
             editor.putInt("estacio_preferida", estacioPropera);
             editor.putInt("estacio_actual", estacioPropera);
-
         }
         editor.apply();
     }

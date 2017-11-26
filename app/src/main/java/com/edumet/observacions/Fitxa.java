@@ -51,7 +51,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         latitud = Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
         longitud = Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LONGITUD));
         numFenomen = Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_NUMFENOMEN));
-        parametreID = Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_ID));
+        parametreID = Integer.valueOf(intent.getStringExtra(MainActivity.EXTRA_ID_App));
 
         FragmentFitxa firstFragment = new FragmentFitxa();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_mapa_container, firstFragment).commit();

@@ -51,10 +51,9 @@ import okhttp3.Response;
 public class ObservacionsFetes extends Fragment {
 
     DadesHelper mDbHelper;
+    private SQLiteDatabase db;
 
     private ProgressBar mProgressBar;
-
-    private SQLiteDatabase db;
 
     String[] nomFenomen;
     String usuari;
@@ -67,7 +66,6 @@ public class ObservacionsFetes extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.observacions_fetes, container, false);
         setHasOptionsMenu(true);
 
@@ -209,7 +207,7 @@ public class ObservacionsFetes extends Fragment {
                     intent.putExtra(MainActivity.EXTRA_LATITUD, parametreLAT);
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, parametreLON);
                     intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, numFenomen);
-                    intent.putExtra(MainActivity.EXTRA_ID, parametreID);
+                    intent.putExtra(MainActivity.EXTRA_ID_App, parametreID);
                     startActivityForResult(intent, 1);
                 }
             });
@@ -347,6 +345,12 @@ public class ObservacionsFetes extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        navigation.setSelectedItemId(R.id.navigation_observacions);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         ((MainActivity) getActivity()).redrawObservacionsFetes(0);
     }
@@ -403,7 +407,6 @@ public class ObservacionsFetes extends Fragment {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
-
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -413,7 +416,6 @@ public class ObservacionsFetes extends Fragment {
                                                     }
                                                 });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -465,18 +467,15 @@ public class ObservacionsFetes extends Fragment {
                                                                     e.printStackTrace();
                                                                 }
                                                             }
-
                                                         }
                                                         numNovesObservacions = numNovaObservacio;
                                                         Log.i(".NovesObs", String.valueOf(numNovesObservacions));
                                                         nous_paths = new String[numNovesObservacions];
-
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
                                                     }
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
-                                                            //Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
                                                             mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
                                                     });
@@ -530,7 +529,6 @@ public class ObservacionsFetes extends Fragment {
 
     public void inclouNousRegistres() {
         db = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
 
         for (int i = 0; i < numNovesObservacions; i++) {
@@ -554,11 +552,5 @@ public class ObservacionsFetes extends Fragment {
 //
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        navigation.setSelectedItemId(R.id.navigation_observacions);
     }
 }

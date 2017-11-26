@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -44,17 +43,17 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_LATITUD = "com.edumet.observacions.LATITUD";
     public static final String EXTRA_LONGITUD = "com.edumet.observacions.LONGITUD";
-    public static final String EXTRA_ID = "com.edumet.observacions.ID";
+    public static final String EXTRA_ID_App = "com.edumet.observacions.ID";
     public static final String EXTRA_NUMFENOMEN = "com.edumet.observacions.NUMFENOMEN";
     public static final String EXTRA_PATH = "com.edumet.observacions.PATH";
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-    private boolean jaLocalitzada = false;
-    private boolean jaDesada = false;
+    private boolean flagLocalitzada = false;
+    private boolean flagDesada = false;
     private Double latitud;
     private Double longitud;
-    private int AppID;
+    private int ID_App;
 
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
@@ -65,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        //Intent intent = getIntent();
-        AppID = getIntent().getIntExtra(MainActivity.EXTRA_ID, 0);
+        ID_App = getIntent().getIntExtra(MainActivity.EXTRA_ID_App, 0);
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -82,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Captura firstFragment = new Captura();
                 Bundle args = new Bundle();
-                args.putInt("AppID", AppID);
+                args.putInt("ID_App", ID_App);
                 firstFragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             }
@@ -94,33 +92,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if (!checkPermissions()) {
             requestPermissions();
-        }
-    }
-
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        Log.i(".requestPermissions", "Requesting permission");
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                Log.i(".FRAGonReqPermResult", "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Log.i(".FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
-
-            } else {
-                finish();
-            }
         }
     }
 
@@ -139,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.les_meves_observacions:
-                if (jaDesada) {
+                if (flagDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.updateObservacio();
@@ -147,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 observacionsFetes();
                 return true;
             case R.id.la_meva_ubicacio:
-                if (jaLocalitzada) {
+                if (flagLocalitzada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     intent = new Intent(this, MapsActivity.class);
@@ -158,14 +129,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.fotografia:
-                if (jaLocalitzada) {
+                if (flagLocalitzada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.fesFoto();
                 }
                 return true;
             case R.id.gira_imatge:
-                if (jaDesada) {
+                if (flagDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.angle_foto += 90;
@@ -176,30 +147,13 @@ public class MainActivity extends AppCompatActivity {
                     fragment.imatge.setImageBitmap(fragment.bitmap);
                 }
                 return true;
-            //           case R.id.envia_observacio:
-            //             if (jaDesada) {
-/*                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.updateObservacio();
-                    fragment.sendPost();*/
-            //             }
-            //       return true;
             case R.id.mostra_imatge:
-                if (jaDesada) {
+                if (flagDesada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     fragment.veure_foto();
                 }
                 return true;
-/*            case R.id.sincronitza:
-                FragmentManager fm2 = getSupportFragmentManager();
-                ObservacionsFetes fragment2 = (ObservacionsFetes) fm2.findFragmentById(R.id.fragment_container);
-                try {
-                    fragment2.sincronitza();
-                } catch (Exception e) {
-                    Log.i(".Exception", "error");
-                }
-                return true;*/
             case R.id.edumet_web:
                 uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
                 intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -223,6 +177,32 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    private boolean checkPermissions() {
+        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermissions() {
+        Log.i(".requestPermissions", "Requesting permission");
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length <= 0) {
+                Log.i(".FRAGonReqPermResult", "User interaction was cancelled.");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                Log.i(".FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
+
+            } else {
+                finish();
+            }
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -233,14 +213,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void ubicacio(double lat, double lon) {
-        jaLocalitzada = true;
+        flagLocalitzada = true;
         latitud = lat;
         longitud = lon;
         Log.i(".ACT-ubicació", String.valueOf(lat) + "," + String.valueOf(lon));
     }
 
     public void hihaFoto() {
-        jaDesada = true;
+        flagDesada = true;
     }
 
     public void redrawObservacionsFetes(int numNoves) {
@@ -272,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     public void captura() {
         Captura newFragment = new Captura();
         Bundle args = new Bundle();
-        args.putInt("AppID", 0);
+        args.putInt("ID_App", 0);
         newFragment.setArguments(args);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
@@ -301,11 +281,11 @@ public class MainActivity extends AppCompatActivity {
 
         long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
         mDbHelper.close();
-        Log.i(".AppID", String.valueOf(newRowId));
+        Log.i(".ID_App", String.valueOf(newRowId));
         return (int) newRowId;
     }
 
-    public static void enviaObservacio(final int AppID, String encodedFoto,
+    public static void enviaObservacio(final int ID_App, String encodedFoto,
                                        String usuari, final String dia, final String hora,
                                        final Double latitud, final Double longitud,
                                        final int num_fenomen, final String observacio,
@@ -324,20 +304,15 @@ public class MainActivity extends AppCompatActivity {
             jsonParam.put("id_feno", num_fenomen);
             jsonParam.put("descripcio", observacio);
             jsonParam.put("tab", "salvarFenoApp");
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         RequestBody body = RequestBody.create(MEDIA_TYPE, jsonParam.toString());
-
         String laUrl = context.getResources().getString(R.string.url_servidor);
 
         final Request request = new Request.Builder()
                 .url(laUrl)
-                //.url("https://edumet.cat/edumet/meteo_2/dades_recarregar_feno.php")
-                //.url("http://tecnologia.isantandreu.net/prova.php")
-                //.url("https://edumet.cat/edumet/meteo_proves/prova.php")
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "auth")
@@ -353,7 +328,6 @@ public class MainActivity extends AppCompatActivity {
         Envia.setImageResource(R.mipmap.ic_send_white);
 
         client.newCall(request).enqueue(new Callback() {
-
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 Snackbar.make(rootView, R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
@@ -366,14 +340,13 @@ public class MainActivity extends AppCompatActivity {
                                                     }
                                                 });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     String numResposta = response.body().string().trim();
                                                     Snackbar.make(rootView, R.string.dades_enviades, Snackbar.LENGTH_SHORT).show();
                                                     int nouEdumetID = Integer.valueOf(numResposta);
-                                                    updateID(AppID, nouEdumetID, context);
+                                                    updateID(ID_App, nouEdumetID, context);
 
                                                     mHandler.post(new Runnable() {
                                                         @Override
@@ -397,20 +370,17 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public static void updateID(int AppID, int EdumetID, Context context) {
-        String unlog = String.valueOf(AppID) + "-" + String.valueOf(EdumetID);
-        Log.i(".updateID", unlog);
+    public static void updateID(int ID_App, int ID_Edumet, Context context) {
         DadesHelper mDbHelper;
         mDbHelper = new DadesHelper(context);
-
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, EdumetID);
+        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, ID_Edumet);
 
         String selection = DadesEstructura.Parametres._ID + " LIKE ?";
-        String[] selectionArgs = {String.valueOf(AppID)};
+        String[] selectionArgs = {String.valueOf(ID_App)};
 
         int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();

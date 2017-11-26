@@ -54,7 +54,7 @@ public class FragmentEstacions extends Fragment {
     private ImageView estrella;
     private Spinner spinner;
 
-    private int id_edumet_actual;
+    private int ID_Edumet_actual;
 
     List itemIdsEdumet = new ArrayList<>();
     List valorsEstacio;
@@ -115,7 +115,7 @@ public class FragmentEstacions extends Fragment {
             public void onClick(View v) {
                 sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("estacio_preferida", id_edumet_actual);
+                editor.putInt("estacio_preferida", ID_Edumet_actual);
                 editor.apply();
                 estrella.setImageResource(R.mipmap.ic_star_on);
             }
@@ -138,7 +138,6 @@ public class FragmentEstacions extends Fragment {
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         client.newCall(request).enqueue(new Callback() {
-
                                             @Override
                                             public void onFailure(Call call, IOException e) {
                                                 getActivity().runOnUiThread(new Runnable() {
@@ -148,7 +147,6 @@ public class FragmentEstacions extends Fragment {
                                                     }
                                                 });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -162,7 +160,6 @@ public class FragmentEstacions extends Fragment {
                                                         Boolean flagRepetida;
 
                                                         db = mDbHelper.getWritableDatabase();
-
                                                         ContentValues values = new ContentValues();
 
                                                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -178,7 +175,6 @@ public class FragmentEstacions extends Fragment {
                                                             }
                                                             if (!flagRepetida) {
                                                                 numNovaEstacio++;
-
                                                                 values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
                                                                 values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONEstacio.getString(1));
                                                                 values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONEstacio.getString(2));
@@ -191,7 +187,7 @@ public class FragmentEstacions extends Fragment {
                                                                 values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
                                                                 long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
-                                                                Log.i(".Estacio_ID", String.valueOf(newRowId));
+                                                                Log.i(".Estacio_ID_App", String.valueOf(newRowId));
                                                             }
                                                         }
                                                         numNovesEstacions = numNovaEstacio;
@@ -211,7 +207,6 @@ public class FragmentEstacions extends Fragment {
                                                                 mProgressBar.setVisibility(ProgressBar.GONE);
                                                             }
                                                         });
-
 
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
@@ -236,7 +231,7 @@ public class FragmentEstacions extends Fragment {
         );
     }
 
-    public void mostraEstacio(int Edumet_ID) {
+    public void mostraEstacio(int ID_Edumet) {
 
         String[] projection = {
                 DadesEstacions.Parametres._ID,
@@ -249,14 +244,14 @@ public class FragmentEstacions extends Fragment {
         };
 
         String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " = ?";
-        String[] selectionArgs = {String.valueOf(Edumet_ID)};
+        String[] selectionArgs = {String.valueOf(ID_Edumet)};
         String sortOrder = null;
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
 
         String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
-        String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
+        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         String strLat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD));
         String strLon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD));
         poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
@@ -265,11 +260,9 @@ public class FragmentEstacions extends Fragment {
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
-        Log.i(".Codi",codi);
-
         mostraInfo(false);
         try {
-            baixaValors(codi);
+            baixaValors(codEst_Edumet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -277,9 +270,9 @@ public class FragmentEstacions extends Fragment {
         sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
 
-        id_edumet_actual = Integer.valueOf(id_edumet);
+        ID_Edumet_actual = Integer.valueOf(id_edumet);
 
-        if (estacioPreferida == id_edumet_actual) {
+        if (estacioPreferida == ID_Edumet_actual) {
             estrella.setImageResource(R.mipmap.ic_star_on);
         } else {
             estrella.setImageResource(R.mipmap.ic_star_off);
@@ -287,12 +280,12 @@ public class FragmentEstacions extends Fragment {
 
         sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("estacio_actual", id_edumet_actual);
+        editor.putInt("estacio_actual", ID_Edumet_actual);
         editor.apply();
 
         ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat), Double.valueOf(strLon));
 
-        String laUrl = "http://edumet.cat/edumet-data/" + codi + "/estacio/profile1/imatges/fotocentre.jpg";
+        String laUrl = "http://edumet.cat/edumet-data/" + codEst_Edumet + "/estacio/profile1/imatges/fotocentre.jpg";
         Log.i(".laUrl", laUrl);
         Request request = new Request.Builder()
                 .url(laUrl)
@@ -361,7 +354,6 @@ public class FragmentEstacions extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -372,11 +364,10 @@ public class FragmentEstacions extends Fragment {
         spinner.setSelection(posicio);
     }
 
-    public void baixaValors(String codEst) throws Exception {
-
+    public void baixaValors(String codEst_Edumet) throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url(laUrl + "?tab=mobil&codEst=" + codEst)
+                .url(laUrl + "?tab=mobil&codEst=" + codEst_Edumet)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -388,7 +379,6 @@ public class FragmentEstacions extends Fragment {
                                                     }
                                                 });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -403,7 +393,6 @@ public class FragmentEstacions extends Fragment {
                                                             valorsEstacio.add(JSONEstacio.getString(i));
                                                             Log.i(".Valor_Estació", JSONEstacio.getString(i));
                                                         }
-
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 double pressio=Double.valueOf(valorsEstacio.get(11).toString());
@@ -422,7 +411,6 @@ public class FragmentEstacions extends Fragment {
                                                             }
                                                         });
                                                     }
-
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {

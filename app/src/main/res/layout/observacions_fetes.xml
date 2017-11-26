@@ -6,39 +6,41 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-<RelativeLayout
-    android:id="@+id/linearMain"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/llCapsalera"
+    <RelativeLayout
+        android:id="@+id/linearMain"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"></LinearLayout>
-
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_below="@id/llCapsalera"
-       android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/linearLY"
+            android:id="@+id/llCapsalera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
-    </ScrollView>
-    <ProgressBar
-        android:id="@+id/progressBarObservacions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        android:visibility="gone" />
+            android:orientation="vertical"></LinearLayout>
 
-</RelativeLayout>
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llCapsalera">
+
+            <LinearLayout
+                android:id="@+id/linearLY"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"></LinearLayout>
+        </ScrollView>
+
+        <ProgressBar
+            android:id="@+id/progressBarObservacions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:visibility="gone" />
+
+    </RelativeLayout>
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"

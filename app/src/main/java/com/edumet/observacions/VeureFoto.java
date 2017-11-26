@@ -87,16 +87,12 @@ public class VeureFoto extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-
             case R.id.edumet_web:
-
                 Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
-
             case R.id.action_settings:
-                // Build intent that displays the App settings screen.
                 Intent intent2 = new Intent();
                 intent2.setAction(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -105,16 +101,7 @@ public class VeureFoto extends AppCompatActivity {
                 intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent2);
                 return true;
-
-/*            case R.id.action_favorite:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;*/
-
-
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }

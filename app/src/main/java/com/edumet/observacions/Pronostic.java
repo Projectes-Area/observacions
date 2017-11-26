@@ -51,7 +51,6 @@ public class Pronostic extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_pronostic);
-
     }
 
     @Override
@@ -59,10 +58,10 @@ public class Pronostic extends AppCompatActivity {
         super.onStart();
         SharedPreferences sharedPref;
         sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
-        int estacioActual = sharedPref.getInt("estacio_actual", 0);
-        Log.i(".estacioActual", String.valueOf(estacioActual));
+        int ID_Edumet = sharedPref.getInt("estacio_actual", 0);
+        Log.i(".estacioActual", String.valueOf(ID_Edumet));
         try {
-            baixaINE(estacioActual);
+            baixa_cINE_Edumet(ID_Edumet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,7 +107,7 @@ public class Pronostic extends AppCompatActivity {
         }
     };
 
-    public void baixaINE(int Edumet_ID) throws Exception {
+    public void baixa_cINE_Edumet(int Edumet_ID) throws Exception {
 
         EstacionsHelper mDbHelper;
         SQLiteDatabase db;
@@ -123,7 +122,7 @@ public class Pronostic extends AppCompatActivity {
 
         Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
-        String codi = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
+        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
         cursor.close();
         mDbHelper.close();
 
@@ -131,7 +130,7 @@ public class Pronostic extends AppCompatActivity {
 
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url(laUrl + "?tab=mobil&codEst=" + codi)
+                .url(laUrl + "?tab=mobil&codEst=" + codEst_Edumet)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

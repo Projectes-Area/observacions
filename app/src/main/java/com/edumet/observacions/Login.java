@@ -47,7 +47,6 @@ public class Login extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-
         LoginOK.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -135,7 +134,6 @@ public class Login extends Fragment {
         });
     }
 
-
 //
 // BAIXA ESTACIONS
 //
@@ -162,7 +160,6 @@ public class Login extends Fragment {
                                                     }
                                                 });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {

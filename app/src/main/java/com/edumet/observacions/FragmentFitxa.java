@@ -47,8 +47,8 @@ public class FragmentFitxa extends Fragment {
     private TextView descripcio;
     private ProgressBar mProgressBar;
 
-    private int numID;
-    private String id_edumet;
+    private int ID_App;
+    private String ID_Edumet;
     private String elDia;
     private String laHora;
     private double laLatitud;
@@ -104,7 +104,7 @@ public class FragmentFitxa extends Fragment {
                 } else {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra(MainActivity.EXTRA_ID, numID);
+                    intent.putExtra(MainActivity.EXTRA_ID_App, ID_App);
                     startActivity(intent);
                 }
             }
@@ -135,7 +135,7 @@ public class FragmentFitxa extends Fragment {
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
 
         activity = (Fitxa) getActivity();
-        numID = activity.getID();
+        ID_App = activity.getID();
 
         String[] projection = {
                 DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
@@ -151,12 +151,12 @@ public class FragmentFitxa extends Fragment {
         };
 
         String selection = DadesEstructura.Parametres._ID + " = ?";
-        String[] selectionArgs = {String.valueOf(numID)};
+        String[] selectionArgs = {String.valueOf(ID_App)};
         String sortOrder = null;
 
         Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
-                id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
+                ID_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
                 elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
                 laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
                 laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
@@ -216,7 +216,7 @@ public class FragmentFitxa extends Fragment {
         String encodedFoto = Base64.encodeToString(fotografia, Base64.DEFAULT);
 
         MainActivity.enviaObservacio(
-                numID,
+                ID_App,
                 encodedFoto,
                 usuari,
                 elDia,
@@ -240,7 +240,7 @@ public class FragmentFitxa extends Fragment {
     private void esborra() {
 
         db = mDbHelper.getWritableDatabase();
-        db.delete("observacions", DadesEstructura.Parametres._ID + "=" + String.valueOf(numID), null);
+        db.delete("observacions", DadesEstructura.Parametres._ID + "=" + String.valueOf(ID_App), null);
 
         File fitxer = new File(elPath);
         if (fitxer.exists()) {
@@ -257,14 +257,13 @@ public class FragmentFitxa extends Fragment {
         Esborra.setEnabled(false);
         Esborra.setImageResource(R.mipmap.ic_delete_white);
 
-        if (enviat == 1) { // esborrar del servidor
+        if (enviat == 1) {  //Esborrar del servidor
 
             mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
             final OkHttpClient client = new OkHttpClient();
 
             String laUrl = getResources().getString(R.string.url_servidor);
-            String cadenaRequest = laUrl + "?usuari=" + usuari + "&id=" + id_edumet + "&tab=eliminarFenUsu";
+            String cadenaRequest = laUrl + "?usuari=" + usuari + "&id=" + ID_Edumet + "&tab=eliminarFenUsu";
             Request request = new Request.Builder()
                     .url(cadenaRequest)
                     .build();
