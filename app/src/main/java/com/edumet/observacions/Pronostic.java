@@ -27,7 +27,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class Pronostic extends AppCompatActivity {
-
     BottomNavigationView navigation;
     WebView contenidor;
 
