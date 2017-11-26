@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -45,6 +46,7 @@ public class Pronostic extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
         String html = "<iframe src='http://m.meteo.cat/?codi=" + "' height='490px' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='1' scrolling='yes' style='font-size:0.8em'></iframe>";
         contenidor.loadData(html, "text/html", null);
+        CookieManager.getInstance().setAcceptCookie(true);
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

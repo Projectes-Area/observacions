@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/lblPoblacio"
-            android:layout_width="220dp"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:text="Població"
@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/lblAltitud"
-            android:layout_width="220dp"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Altitud"

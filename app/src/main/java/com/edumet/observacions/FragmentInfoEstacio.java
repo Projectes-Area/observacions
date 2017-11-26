@@ -19,7 +19,7 @@ public class FragmentInfoEstacio extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_info_estacio, container, false);
         temperatura=(TextView) v.findViewById(R.id.lblTemperatura);
-        pressio=(TextView) v.findViewById(R.id.lblPressio);
+        pressio=(TextView) v.findViewById(R.id.lblPressió);
         humitat=(TextView) v.findViewById(R.id.lblHumitat);
         pluja=(TextView) v.findViewById(R.id.lblPluja);
         vent=(TextView) v.findViewById(R.id.lblVent);
