@@ -26,8 +26,12 @@ import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -425,22 +429,40 @@ public class FragmentEstacions extends Fragment {
 
     public void mostraInfo(boolean mostra) {
         String Temperatura = "";
-        String Pressio = "";
+        String Max = "";
+        String Min = "";
         String Humitat = "";
+        String Pressio = "";
+        String Sunrise = "";
+        String Sunset = "";
         String Pluja = "";
         String Vent = "";
 
+        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
+        Date date;
+
         if (mostra) {
             Temperatura = valorsEstacio.get(4).toString() + " ºC";
-            Pressio = valorsEstacio.get(11).toString() + " HPa";
+            Max = valorsEstacio.get(5).toString() + " ºC";
+            Min = valorsEstacio.get(6).toString() + " ºC";
             Humitat = valorsEstacio.get(10).toString() + " %";
+            Pressio = valorsEstacio.get(11).toString() + " HPa";
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.US);
+                date = format.parse(valorsEstacio.get(2).toString());
+                Sunrise=horaCatala.format(date.getTime());
+                date= format.parse(valorsEstacio.get(3).toString());
+                Sunset=horaCatala.format(date.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             Pluja = valorsEstacio.get(12).toString() + " mm";
             Vent = valorsEstacio.get(15).toString() + " Km/h";
         }
 
         FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
                 getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
-        fragmentInfo.setValues(Temperatura, Pressio, Humitat, Pluja, Vent);
+        fragmentInfo.setValues(Temperatura, Max, Min, Humitat,Pressio,Sunrise,Sunset, Pluja, Vent);
     }
 }
 

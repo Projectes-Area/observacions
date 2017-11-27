@@ -10,8 +10,12 @@ import android.widget.TextView;
 public class FragmentInfoEstacio extends Fragment {
 
     TextView temperatura;
-    TextView pressio;
+    TextView max;
+    TextView min;
     TextView humitat;
+    TextView pressio;
+    TextView sunrise;
+    TextView sunset;
     TextView pluja;
     TextView vent;
 
@@ -19,17 +23,25 @@ public class FragmentInfoEstacio extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_info_estacio, container, false);
         temperatura=(TextView) v.findViewById(R.id.lblTemperatura);
-        pressio=(TextView) v.findViewById(R.id.lblPressió);
+        max=(TextView) v.findViewById(R.id.lblMax);
+        min=(TextView) v.findViewById(R.id.lblMin);
         humitat=(TextView) v.findViewById(R.id.lblHumitat);
+        pressio=(TextView) v.findViewById(R.id.lblPressió);
+        sunrise=(TextView) v.findViewById(R.id.lblSunrise);
+        sunset=(TextView) v.findViewById(R.id.lblSunset);
         pluja=(TextView) v.findViewById(R.id.lblPluja);
         vent=(TextView) v.findViewById(R.id.lblVent);
         return v;
     }
 
-    public void setValues(String Temperatura,String Pressio,String Humitat,String Pluja,String Vent)   {
+    public void setValues(String Temperatura,String Max, String Min, String Humitat,String Pressio,String Sunrise,String Sunset,String Pluja,String Vent)   {
         temperatura.setText(Temperatura);
-        pressio.setText(Pressio);
+        max.setText(Max);
+        min.setText(Min);
         humitat.setText(Humitat);
+        pressio.setText(Pressio);
+        sunrise.setText(Sunrise);
+        sunset.setText(Sunset);
         pluja.setText(Pluja);
         vent.setText(Vent);
     }
