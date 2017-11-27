@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -44,9 +45,14 @@ public class Pronostic extends AppCompatActivity {
         contenidor = (WebView) findViewById(R.id.web_pronostic);
         WebSettings webSettings = contenidor.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
         String html = "<iframe src='http://m.meteo.cat/?codi=" + "' height='490px' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='1' scrolling='yes' style='font-size:0.8em'></iframe>";
         contenidor.loadData(html, "text/html", null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(contenidor,true);
+        }
         CookieManager.getInstance().setAcceptCookie(true);
+
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
