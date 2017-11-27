@@ -63,6 +63,10 @@ public class FragmentEstacions extends Fragment {
     List itemIdsEdumet = new ArrayList<>();
     List valorsEstacio;
 
+    SimpleDateFormat diaCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+    SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
+    Date date;
+
     SharedPreferences sharedPref;
 
     @Override
@@ -151,6 +155,7 @@ public class FragmentEstacions extends Fragment {
                                                     }
                                                 });
                                             }
+
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -358,6 +363,7 @@ public class FragmentEstacions extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -380,14 +386,16 @@ public class FragmentEstacions extends Fragment {
                                                 getActivity().runOnUiThread(new Runnable() {
                                                     public void run() {
                                                         mostraInfo(false);
+                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
                                                     }
                                                 });
                                             }
+
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     String resposta = response.body().string().trim();
-                                                    Log.i(".resposta",resposta);
+                                                    Log.i(".resposta", resposta);
                                                     valorsEstacio = new ArrayList<>();
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
@@ -399,19 +407,34 @@ public class FragmentEstacions extends Fragment {
                                                         }
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
-                                                                double pressio=Double.valueOf(valorsEstacio.get(11).toString());
+                                                                double pressio = Double.valueOf(valorsEstacio.get(11).toString());
                                                                 if (pressio == 0.0) {
                                                                     mostraInfo(false);
+                                                                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
                                                                 } else {
                                                                     mostraInfo(true);
+                                                                    String dia="";
+                                                                    String hora="";
+                                                                    try {
+                                                                        SimpleDateFormat formatDia = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                                                        SimpleDateFormat formatHora = new SimpleDateFormat("HH:mm:ss", Locale.US);
+                                                                        date = formatDia.parse(valorsEstacio.get(0).toString());
+                                                                        dia = diaCatala.format(date.getTime());
+                                                                        date = formatHora.parse(valorsEstacio.get(1).toString());
+                                                                        hora = horaCatala.format(date.getTime());
+                                                                    } catch (ParseException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                    String dataActualitzacio = "Valors mesurats a  " + dia + "  " + hora;
+                                                                    Snackbar.make(getActivity().findViewById(android.R.id.content), dataActualitzacio, Snackbar.LENGTH_LONG).show();
                                                                 }
                                                             }
                                                         });
-
                                                     } catch (Exception e) {
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 mostraInfo(false);
+                                                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
                                                             }
                                                         });
                                                     }
@@ -419,6 +442,7 @@ public class FragmentEstacions extends Fragment {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             mostraInfo(false);
+                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_respon, Snackbar.LENGTH_SHORT).show();
                                                         }
                                                     });
                                                 }
@@ -438,9 +462,6 @@ public class FragmentEstacions extends Fragment {
         String Pluja = "";
         String Vent = "";
 
-        SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
-        Date date;
-
         if (mostra) {
             Temperatura = valorsEstacio.get(4).toString() + " ºC";
             Max = valorsEstacio.get(5).toString() + " ºC";
@@ -450,19 +471,19 @@ public class FragmentEstacions extends Fragment {
             try {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.US);
                 date = format.parse(valorsEstacio.get(2).toString());
-                Sunrise=horaCatala.format(date.getTime());
-                date= format.parse(valorsEstacio.get(3).toString());
-                Sunset=horaCatala.format(date.getTime());
+                Sunrise = horaCatala.format(date.getTime());
+                date = format.parse(valorsEstacio.get(3).toString());
+                Sunset = horaCatala.format(date.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             Pluja = valorsEstacio.get(12).toString() + " mm";
-            Vent = valorsEstacio.get(15).toString() + " Km/h";
+            Vent = valorsEstacio.get(13).toString() + " Km/h";
         }
 
         FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
                 getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
-        fragmentInfo.setValues(Temperatura, Max, Min, Humitat,Pressio,Sunrise,Sunset, Pluja, Vent);
+        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent);
     }
 }
 
