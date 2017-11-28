@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,11 +12,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 public class Radar extends AppCompatActivity {
 
     BottomNavigationView navigation;
     WebView contenidor;
+    ProgressBar mProgressBar;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,9 +32,25 @@ public class Radar extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBarRadar);
+
         contenidor = (WebView) findViewById(R.id.web_radar);
         WebSettings webSettings = contenidor.getSettings();
         webSettings.setJavaScriptEnabled(true);
+
+        contenidor.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+            public void onPageFinished(WebView view, String url) {
+                mProgressBar.setVisibility(ProgressBar.GONE);
+            }
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                mProgressBar.setVisibility(ProgressBar.GONE);
+                Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

@@ -52,8 +52,6 @@ public class Pronostic extends AppCompatActivity {
         WebSettings webSettings = contenidor.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        //String html = "<iframe src='http://m.meteo.cat/?codi=" + "' height='490px' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='1' scrolling='yes' style='font-size:0.8em'></iframe>";
-
         contenidor.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
