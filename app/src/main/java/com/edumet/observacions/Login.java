@@ -144,6 +144,7 @@ public class Login extends Fragment {
     public void baixaEstacions() throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
+                //.url(laUrl + "?tab=cnjEst&xarxaEst=meteoCat")
                 .url(laUrl + "?tab=cnjEst")
                 .build();
 
@@ -164,6 +165,7 @@ public class Login extends Fragment {
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     String resposta = response.body().string().trim();
+                                                    Log.i(".Estacions",resposta);
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
                                                         mDbHelper = new EstacionsHelper(getContext());

@@ -153,7 +153,7 @@ public class Captura extends Fragment {
         navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
-        navigation.setSelectedItemId(R.id.navigation_observacions);
+        //navigation.setSelectedItemId(R.id.navigation_observacions);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");

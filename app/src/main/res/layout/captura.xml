@@ -1,149 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/Coordinator"
+    android:id="@+id/capturaLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_editor_absoluteX="8dp"
-    tools:layout_editor_absoluteY="8dp">
+    android:fitsSystemWindows="true">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/capturaLayout"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
+        app:layout_constraintRight_toRightOf="@+id/imgFoto"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
-            app:layout_constraintRight_toRightOf="@+id/imgFoto"
-            app:layout_constraintTop_toTopOf="parent">
+        <ImageButton
+            android:id="@+id/btnFoto"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@mipmap/ic_camera_white"
+            app:srcCompat="@mipmap/ic_camera_white" />
 
-            <ImageButton
-                android:id="@+id/btnFoto"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@mipmap/ic_camera_white"
-                app:srcCompat="@mipmap/ic_camera_white" />
+        <ImageButton
+            android:id="@+id/btnGirar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@mipmap/ic_rotate_white" />
 
-            <ImageButton
-                android:id="@+id/btnGirar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:src="@mipmap/ic_rotate_white" />
+        <ImageButton
+            android:id="@+id/btnEnvia"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="fitEnd"
+            android:src="@mipmap/ic_send_white" />
 
-            <ImageButton
-                android:id="@+id/btnEnvia"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:scaleType="fitEnd"
-                android:src="@mipmap/ic_send_white" />
+        <ImageButton
+            android:id="@+id/btnMapa"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@mipmap/ic_location_edumet" />
 
-            <ImageButton
-                android:id="@+id/btnMapa"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:src="@mipmap/ic_location_edumet" />
+        <ImageButton
+            android:id="@+id/btnPendents"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@mipmap/ic_time_edumet" />
+    </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/btnPendents"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@mipmap/ic_time_edumet" />
-        </LinearLayout>
+    <ImageView
+        android:id="@+id/imgFoto"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/estacions"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-        <ImageView
-            android:id="@+id/imgFoto"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="4dp"
-            android:src="@drawable/estacions"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+    <EditText
+        android:id="@+id/txtObservacions"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:enabled="true"
+        android:hint="@string/descriu"
+        android:inputType="textMultiLine"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/spinner"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
-        <EditText
-            android:id="@+id/txtObservacions"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ems="10"
-            android:enabled="true"
-            android:hint="@string/descriu"
-            android:inputType="textMultiLine"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/spinner"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toBottomOf="@+id/spinner" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.NoActionBar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:theme="@style/AppTheme.NoActionBar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:spinnerMode="dialog"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/imgFoto"
+        app:layout_constraintStart_toStartOf="@+id/imgFoto"
+        app:layout_constraintTop_toBottomOf="@+id/imgFoto" />
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:spinnerMode="dialog"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="@+id/imgFoto"
-            app:layout_constraintStart_toStartOf="@+id/imgFoto"
-            app:layout_constraintTop_toBottomOf="@+id/imgFoto" />
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:src="@mipmap/ic_eye_edumet"
+        app:layout_constraintBottom_toBottomOf="@+id/spinner"
+        app:layout_constraintEnd_toStartOf="@+id/spinner"
+        app:layout_constraintTop_toTopOf="@+id/spinner" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="4dp"
-            android:src="@mipmap/ic_eye_edumet"
-            app:layout_constraintBottom_toBottomOf="@+id/spinner"
-            app:layout_constraintEnd_toStartOf="@+id/spinner"
-            app:layout_constraintTop_toTopOf="@+id/spinner" />
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:src="@mipmap/ic_bookmark_edumet"
+        app:layout_constraintEnd_toStartOf="@+id/txtObservacions"
+        app:layout_constraintTop_toTopOf="@+id/txtObservacions" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="8dp"
-            android:src="@mipmap/ic_bookmark_edumet"
-            app:layout_constraintEnd_toStartOf="@+id/txtObservacions"
-            app:layout_constraintTop_toTopOf="@+id/txtObservacions" />
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.445"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/navigation" />
 
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/navigation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/windowBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.445"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:menu="@menu/navigation" />
-
-
-
-    </android.support.constraint.ConstraintLayout>
-</android.support.design.widget.CoordinatorLayout>
+</android.support.constraint.ConstraintLayout>

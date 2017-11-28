@@ -75,7 +75,7 @@ public class ObservacionsFetes extends Fragment {
         navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
-        navigation.setSelectedItemId(R.id.navigation_observacions);
+        //navigation.setSelectedItemId(R.id.navigation_observacions);
 
         mDbHelper = new DadesHelper(getContext());
         db = mDbHelper.getReadableDatabase();

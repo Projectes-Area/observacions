@@ -61,7 +61,7 @@ public class Radar extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        String html = "<iframe src='https://edumet.cat/edumet/meteo_2/00_radar_mobil.php' style='height: 100%; width: 100%; margin: 0 auto ' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='no'></iframe>";
+        String html = "<iframe src='https://edumet.cat/edumet/meteo_proves/00_radar_mobil.php' style='height: 100%; width: 100%; margin: 0 auto ' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='no'></iframe>";
         contenidor.loadData(html, "text/html", null);
     }
 
