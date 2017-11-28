@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +18,8 @@ import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 
@@ -31,6 +34,7 @@ import okhttp3.Response;
 public class Pronostic extends AppCompatActivity {
     BottomNavigationView navigation;
     WebView contenidor;
+    ProgressBar mProgressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,16 +47,31 @@ public class Pronostic extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
 
         contenidor = (WebView) findViewById(R.id.web_pronostic);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBarPronostic);
+
         WebSettings webSettings = contenidor.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        String html = "<iframe src='http://m.meteo.cat/?codi=" + "' height='490px' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='1' scrolling='yes' style='font-size:0.8em'></iframe>";
-        contenidor.loadData(html, "text/html", null);
+        //String html = "<iframe src='http://m.meteo.cat/?codi=" + "' height='490px' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='1' scrolling='yes' style='font-size:0.8em'></iframe>";
+
+        contenidor.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+            public void onPageFinished(WebView view, String url) {
+                mProgressBar.setVisibility(ProgressBar.GONE);
+            }
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                mProgressBar.setVisibility(ProgressBar.GONE);
+                Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(contenidor,true);
         }
         CookieManager.getInstance().setAcceptCookie(true);
-
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -143,9 +162,13 @@ public class Pronostic extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
                                             @Override
                                             public void onFailure(Call call, IOException e) {
-                                                e.printStackTrace();
+                                                runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
+                                                    }
+                                                });
                                             }
-
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -162,10 +185,21 @@ public class Pronostic extends AppCompatActivity {
                                                         });
                                                     } catch (Exception e) {
                                                         Log.i(".jsonerror", "jsonerror");
-                                                        e.printStackTrace();
+                                                        runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                String html = "<iframe src='http://m.meteo.cat/?codi=080193' height='100%' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='yes' style='font-size:0.8em'></iframe>";
+                                                                contenidor.loadData(html, "text/html", null);
+                                                            }
+                                                        });
                                                     }
                                                 } else {
                                                     Log.i("notsuccessful", "notsuccessful");
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            Snackbar.make(findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
+                                                        }
+                                                    });
                                                 }
                                             }
                                         }
