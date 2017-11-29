@@ -12,7 +12,6 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="@+id/imgFoto"
@@ -54,9 +53,8 @@
 
     <ImageView
         android:id="@+id/imgFoto"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:src="@drawable/estacions"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -64,9 +62,9 @@
 
     <EditText
         android:id="@+id/txtObservacions"
-        android:layout_width="240dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:ems="10"
         android:enabled="true"
         android:hint="@string/descriu"
@@ -91,7 +89,7 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="240dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
