@@ -36,7 +36,7 @@ import okhttp3.Response;
 
 public class FragmentFitxa extends Fragment {
 
-    DadesHelper mDbHelper;
+    DataHelper mDbHelper;
 
     private ImageButton Envia;
     private ImageButton Esborra;
@@ -71,7 +71,7 @@ public class FragmentFitxa extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
 
-        mDbHelper = new DadesHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getReadableDatabase();
 
         fenomen = (TextView) v.findViewById(R.id.lblFenomen);
@@ -138,34 +138,34 @@ public class FragmentFitxa extends Fragment {
         ID_App = activity.getID();
 
         String[] projection = {
-                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstructura.Parametres.COLUMN_NAME_DIA,
-                DadesEstructura.Parametres.COLUMN_NAME_HORA,
-                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
-                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
+                Database.Observacions.COLUMN_NAME_ID_EDUMET,
+                Database.Observacions.COLUMN_NAME_DIA,
+                Database.Observacions.COLUMN_NAME_HORA,
+                Database.Observacions.COLUMN_NAME_LATITUD,
+                Database.Observacions.COLUMN_NAME_LONGITUD,
+                Database.Observacions.COLUMN_NAME_FENOMEN,
+                Database.Observacions.COLUMN_NAME_DESCRIPCIO,
+                Database.Observacions.COLUMN_NAME_PATH,
+                Database.Observacions.COLUMN_NAME_PATH_ENVIA,
+                Database.Observacions.COLUMN_NAME_ENVIAT
         };
 
-        String selection = DadesEstructura.Parametres._ID + " = ?";
+        String selection = Database.Observacions._ID + " = ?";
         String[] selectionArgs = {String.valueOf(ID_App)};
         String sortOrder = null;
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Observacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
-                ID_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
-                elDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-                laHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
-                laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
-                laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
-                elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-                laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
-                elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
-                elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
-                enviat = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+                ID_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ID_EDUMET));
+                elDia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_DIA));
+                laHora = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_HORA));
+                laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LATITUD)));
+                laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LONGITUD)));
+                elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_FENOMEN));
+                laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_DESCRIPCIO));
+                elPath = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH));
+                elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH_ENVIA));
+                enviat = cursor.getInt(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ENVIAT));
         cursor.close();
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
@@ -240,7 +240,7 @@ public class FragmentFitxa extends Fragment {
     private void esborra() {
 
         db = mDbHelper.getWritableDatabase();
-        db.delete("observacions", DadesEstructura.Parametres._ID + "=" + String.valueOf(ID_App), null);
+        db.delete("observacions", Database.Observacions._ID + "=" + String.valueOf(ID_App), null);
 
         File fitxer = new File(elPath);
         if (fitxer.exists()) {

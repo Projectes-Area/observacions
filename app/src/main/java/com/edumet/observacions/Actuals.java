@@ -30,7 +30,7 @@ public class Actuals extends AppCompatActivity {
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_pronostic);
 
         sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);

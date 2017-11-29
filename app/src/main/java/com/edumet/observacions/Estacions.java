@@ -27,7 +27,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private SQLiteDatabase db;
 
-    EstacionsHelper mDbHelper;
+    DataHelper mDbHelper;
     SharedPreferences sharedPref;
     BottomNavigationView navigation;
 
@@ -54,7 +54,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationHelper.disableShiftMode(navigation);
         //navigation.setSelectedItemId(R.id.navigation_estacions);
     }
 
@@ -96,20 +96,20 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         String[] projection = {
-                DadesEstacions.Parametres._ID,
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
+                Database.Estacions._ID,
+                Database.Estacions.COLUMN_NAME_ID_EDUMET,
+                Database.Estacions.COLUMN_NAME_LATITUD,
+                Database.Estacions.COLUMN_NAME_LONGITUD,
         };
 
-        String selection = DadesEstacions.Parametres._ID+ " > ?";
+        String selection = Database.Estacions._ID+ " > ?";
         String[] selectionArgs = {"0"};
         String sortOrder = null;
 
-        mDbHelper = new EstacionsHelper(this);
+        mDbHelper = new DataHelper(this);
         db = mDbHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
         mMap = googleMap;
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -127,14 +127,14 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         LatLng observacio;
 
         while (cursor.moveToNext()) {
-            observacio = new LatLng(Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
-                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+            observacio = new LatLng(Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LATITUD))),
+                    Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LONGITUD))));
             mMap.addMarker(new MarkerOptions()
                     .position(observacio)
-                    .snippet(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID)))
+                    .snippet(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions._ID)))
             );
-            if(cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET))==estacioPreferida) {
-                ID_estacioPreferida=cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres._ID));
+            if(cursor.getInt(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET))==estacioPreferida) {
+                ID_estacioPreferida=cursor.getInt(cursor.getColumnIndexOrThrow(Database.Estacions._ID));
             }
         }
         cursor.close();

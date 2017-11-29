@@ -138,7 +138,7 @@ public class Login extends Fragment {
 // BAIXA ESTACIONS
 //
 
-    EstacionsHelper mDbHelper;
+    DataHelper mDbHelper;
     private SQLiteDatabase db;
 
     public void baixaEstacions() throws Exception {
@@ -168,25 +168,25 @@ public class Login extends Fragment {
                                                     Log.i(".Estacions",resposta);
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
-                                                        mDbHelper = new EstacionsHelper(getContext());
+                                                        mDbHelper = new DataHelper(getContext());
                                                         db = mDbHelper.getWritableDatabase();
                                                         ContentValues values = new ContentValues();
 
                                                         for (int i = 0; i < jsonArray.length(); i++) {
                                                             JSONArray JSONEstacio = jsonArray.getJSONArray(i);
 
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                            values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
+                                                            values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
+                                                            values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
+                                                            values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
+                                                            values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
+                                                            values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
+                                                            values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
+                                                            values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
+                                                            values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
+                                                            values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
+                                                            values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
-                                                            long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
+                                                            long newRowId = db.insert(Database.Estacions.TABLE_NAME, null, values);
                                                         }
                                                         Log.i(".Estacions", "Tot baixat");
                                                         flagEstacions = true;

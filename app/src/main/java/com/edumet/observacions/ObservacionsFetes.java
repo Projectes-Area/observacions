@@ -50,7 +50,7 @@ import okhttp3.Response;
 
 public class ObservacionsFetes extends Fragment {
 
-    DadesHelper mDbHelper;
+    DataHelper mDbHelper;
     private SQLiteDatabase db;
 
     private ProgressBar mProgressBar;
@@ -74,10 +74,10 @@ public class ObservacionsFetes extends Fragment {
 
         navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationHelper.disableShiftMode(navigation);
         //navigation.setSelectedItemId(R.id.navigation_observacions);
 
-        mDbHelper = new DadesHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getReadableDatabase();
 
         Resources res = getResources();
@@ -88,22 +88,22 @@ public class ObservacionsFetes extends Fragment {
         usuari = sharedPref.getString("usuari", "");
 
         String[] projection = {
-                DadesEstructura.Parametres._ID,
-                DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstructura.Parametres.COLUMN_NAME_DIA,
-                DadesEstructura.Parametres.COLUMN_NAME_HORA,
-                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
-                DadesEstructura.Parametres.COLUMN_NAME_ENVIAT
+                Database.Observacions._ID,
+                Database.Observacions.COLUMN_NAME_ID_EDUMET,
+                Database.Observacions.COLUMN_NAME_DIA,
+                Database.Observacions.COLUMN_NAME_HORA,
+                Database.Observacions.COLUMN_NAME_LATITUD,
+                Database.Observacions.COLUMN_NAME_LONGITUD,
+                Database.Observacions.COLUMN_NAME_FENOMEN,
+                Database.Observacions.COLUMN_NAME_PATH_ENVIA,
+                Database.Observacions.COLUMN_NAME_ENVIAT
         };
 
-        String selection = DadesEstructura.Parametres._ID + " > ?";
+        String selection = Database.Observacions._ID + " > ?";
         String[] selectionArgs = {"0"};
         String sortOrder = "dia DESC, hora DESC";
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
+        Cursor cursor = db.query(Database.Observacions.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);                               // The sort order
 
         itemIdsEdumet = new ArrayList<>();
         List itemIds = new ArrayList<>();
@@ -115,23 +115,23 @@ public class ObservacionsFetes extends Fragment {
         List itemPath_Envias = new ArrayList<>();
         List itemEnviats = new ArrayList<>();
         while (cursor.moveToNext()) {
-            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET));
+            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ID_EDUMET));
             itemIdsEdumet.add(itemIdEdumet);
-            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres._ID));
+            String itemId = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions._ID));
             itemIds.add(itemId);
-            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
+            String itemDia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_DIA));
             itemDies.add(itemDia);
-            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
+            String itemHora = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_HORA));
             itemHores.add(itemHora);
-            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD));
+            String itemLatitud = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LATITUD));
             itemLatituds.add(itemLatitud);
-            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD));
+            String itemLongitud = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LONGITUD));
             itemLongituds.add(itemLongitud);
-            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
+            String itemFenomen = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_FENOMEN));
             itemFenomens.add(itemFenomen);
-            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+            String itemPath_icon = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH_ENVIA));
             itemPath_Envias.add(itemPath_icon);
-            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT));
+            String itemEnviat = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ENVIAT));
             itemEnviats.add(itemEnviat);
         }
         cursor.close();
@@ -532,18 +532,18 @@ public class ObservacionsFetes extends Fragment {
         ContentValues values = new ContentValues();
 
         for (int i = 0; i < numNovesObservacions; i++) {
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, id_edumet.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, latitud.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, longitud.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, numFenomen.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, descripcio.get(i).toString());
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, nous_paths[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
-            values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
+            values.put(Database.Observacions.COLUMN_NAME_ID_EDUMET, id_edumet.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_DIA, dia.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_HORA, hora.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_LATITUD, latitud.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_LONGITUD, longitud.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_FENOMEN, numFenomen.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_DESCRIPCIO, descripcio.get(i).toString());
+            values.put(Database.Observacions.COLUMN_NAME_PATH, nous_paths[i]);
+            values.put(Database.Observacions.COLUMN_NAME_PATH_ENVIA, nous_paths[i]);
+            values.put(Database.Observacions.COLUMN_NAME_ENVIAT, 1);
 
-            long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
+            long newRowId = db.insert(Database.Observacions.TABLE_NAME, null, values);
         }
     }
 

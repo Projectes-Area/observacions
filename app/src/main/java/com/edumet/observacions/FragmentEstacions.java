@@ -41,7 +41,7 @@ import okhttp3.Response;
 
 public class FragmentEstacions extends Fragment {
 
-    EstacionsHelper mDbHelper;
+    DataHelper mDbHelper;
     private SQLiteDatabase db;
 
     private ProgressBar mProgressBar;
@@ -75,19 +75,19 @@ public class FragmentEstacions extends Fragment {
         setHasOptionsMenu(true);
 
         String[] projection = {
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
+                Database.Estacions.COLUMN_NAME_ID_EDUMET,
         };
 
-        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " > ?";
+        String selection = Database.Estacions.COLUMN_NAME_ID_EDUMET + " > ?";
         String[] selectionArgs = {"0"};
         String sortOrder = "id_edumet ASC";
 
-        mDbHelper = new EstacionsHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
         while (cursor.moveToNext()) {
-            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
+            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET));
             itemIdsEdumet.add(itemIdEdumet);
         }
         cursor.close();
@@ -184,18 +184,18 @@ public class FragmentEstacions extends Fragment {
                                                             }
                                                             if (!flagRepetida) {
                                                                 numNovaEstacio++;
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                                values.put(DadesEstacions.Parametres.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
+                                                                values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
+                                                                values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
+                                                                values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
-                                                                long newRowId = db.insert(DadesEstacions.Parametres.TABLE_NAME, null, values);
+                                                                long newRowId = db.insert(Database.Estacions.TABLE_NAME, null, values);
                                                                 Log.i(".Estacio_ID_App", String.valueOf(newRowId));
                                                             }
                                                         }
@@ -243,30 +243,30 @@ public class FragmentEstacions extends Fragment {
     public void mostraEstacio(int ID_Edumet) {
 
         String[] projection = {
-                DadesEstacions.Parametres._ID,
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstacions.Parametres.COLUMN_NAME_CODI,
-                DadesEstacions.Parametres.COLUMN_NAME_POBLACIO,
-                DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
-                DadesEstacions.Parametres.COLUMN_NAME_ALTITUD,
+                Database.Estacions._ID,
+                Database.Estacions.COLUMN_NAME_ID_EDUMET,
+                Database.Estacions.COLUMN_NAME_CODI,
+                Database.Estacions.COLUMN_NAME_POBLACIO,
+                Database.Estacions.COLUMN_NAME_LATITUD,
+                Database.Estacions.COLUMN_NAME_LONGITUD,
+                Database.Estacions.COLUMN_NAME_ALTITUD,
         };
 
-        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " = ?";
+        String selection = Database.Estacions.COLUMN_NAME_ID_EDUMET + " = ?";
         String[] selectionArgs = {String.valueOf(ID_Edumet)};
         String sortOrder = null;
 
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
 
-        String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
-        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
-        String strLat = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD));
-        String strLon = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD));
-        poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_POBLACIO)));
+        String id_edumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET));
+        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_CODI));
+        String strLat = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LATITUD));
+        String strLon = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LONGITUD));
+        poblacio.setText(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_POBLACIO)));
         latitud.setText("Latitud: " + strLat);
         longitud.setText("Longitud: " + strLon);
-        altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ALTITUD))) + " metres");
+        altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
         //mostraInfo(false);
@@ -335,23 +335,23 @@ public class FragmentEstacions extends Fragment {
 
     public void ompleSpinner() {
         String[] projection = {
-                DadesEstacions.Parametres._ID,
-                DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                DadesEstacions.Parametres.COLUMN_NAME_NOM
+                Database.Estacions._ID,
+                Database.Estacions.COLUMN_NAME_ID_EDUMET,
+                Database.Estacions.COLUMN_NAME_NOM
         };
-        String selection = DadesEstacions.Parametres._ID + " > ?";
+        String selection = Database.Estacions._ID + " > ?";
         String[] selectionArgs = {"0"};
         String sortOrder = null;
 
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                               // The sort order
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                               // The sort order
 
         List<String> noms = new ArrayList<String>();
         final List IDsEdumet = new ArrayList<>();
 
         while (cursor.moveToNext()) {
-            String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_NOM));
+            String itemIdNom = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_NOM));
             noms.add(itemIdNom);
-            int ID_Edumet = cursor.getInt(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET));
+            int ID_Edumet = cursor.getInt(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET));
             IDsEdumet.add(ID_Edumet);
         }
         cursor.close();

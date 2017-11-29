@@ -263,23 +263,23 @@ public class MainActivity extends AppCompatActivity {
                               Double latitud, Double longitud,
                               int num_fenomen, String observacio,
                               String path, String pathEnvia) {
-        DadesHelper mDbHelper;
-        mDbHelper = new DadesHelper(this);
+        DataHelper mDbHelper;
+        mDbHelper = new DataHelper(this);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, 0);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_DIA, dia);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_HORA, hora);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_LATITUD, String.valueOf(latitud));
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD, String.valueOf(longitud));
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH, path);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, pathEnvia);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 0);
+        values.put(Database.Observacions.COLUMN_NAME_ID_EDUMET, 0);
+        values.put(Database.Observacions.COLUMN_NAME_DIA, dia);
+        values.put(Database.Observacions.COLUMN_NAME_HORA, hora);
+        values.put(Database.Observacions.COLUMN_NAME_LATITUD, String.valueOf(latitud));
+        values.put(Database.Observacions.COLUMN_NAME_LONGITUD, String.valueOf(longitud));
+        values.put(Database.Observacions.COLUMN_NAME_FENOMEN, num_fenomen);
+        values.put(Database.Observacions.COLUMN_NAME_DESCRIPCIO, observacio);
+        values.put(Database.Observacions.COLUMN_NAME_PATH, path);
+        values.put(Database.Observacions.COLUMN_NAME_PATH_ENVIA, pathEnvia);
+        values.put(Database.Observacions.COLUMN_NAME_ENVIAT, 0);
 
-        long newRowId = db.insert(DadesEstructura.Parametres.TABLE_NAME, null, values);
+        long newRowId = db.insert(Database.Observacions.TABLE_NAME, null, values);
         mDbHelper.close();
         Log.i(".ID_App", String.valueOf(newRowId));
         return (int) newRowId;
@@ -371,18 +371,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void updateID(int ID_App, int ID_Edumet, Context context) {
-        DadesHelper mDbHelper;
-        mDbHelper = new DadesHelper(context);
+        DataHelper mDbHelper;
+        mDbHelper = new DataHelper(context);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ENVIAT, 1);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_ID_EDUMET, ID_Edumet);
+        values.put(Database.Observacions.COLUMN_NAME_ENVIAT, 1);
+        values.put(Database.Observacions.COLUMN_NAME_ID_EDUMET, ID_Edumet);
 
-        String selection = DadesEstructura.Parametres._ID + " LIKE ?";
+        String selection = Database.Observacions._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(ID_App)};
 
-        int count = db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
+        int count = db.update(Database.Observacions.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
         Captura frag1 = new Captura();
         frag1.setEnviada();

@@ -125,8 +125,7 @@ public class Captura extends Fragment {
     private boolean flagEnEdicio = false;
     private static boolean flagEnviada = false;
 
-    private DadesHelper mDbHelper;
-    private EstacionsHelper obsHelper;
+    private DataHelper mDbHelper;
 
     String[] nomFenomen;
     String usuari;
@@ -152,7 +151,7 @@ public class Captura extends Fragment {
 
         navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationHelper.disableShiftMode(navigation);
         //navigation.setSelectedItemId(R.id.navigation_observacions);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
@@ -716,33 +715,33 @@ public class Captura extends Fragment {
 
     public void loadObservacio() {
         String[] projection = {
-                DadesEstructura.Parametres.COLUMN_NAME_DIA,
-                DadesEstructura.Parametres.COLUMN_NAME_HORA,
-                DadesEstructura.Parametres.COLUMN_NAME_LATITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_LONGITUD,
-                DadesEstructura.Parametres.COLUMN_NAME_FENOMEN,
-                DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH,
-                DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA,
+                Database.Observacions.COLUMN_NAME_DIA,
+                Database.Observacions.COLUMN_NAME_HORA,
+                Database.Observacions.COLUMN_NAME_LATITUD,
+                Database.Observacions.COLUMN_NAME_LONGITUD,
+                Database.Observacions.COLUMN_NAME_FENOMEN,
+                Database.Observacions.COLUMN_NAME_DESCRIPCIO,
+                Database.Observacions.COLUMN_NAME_PATH,
+                Database.Observacions.COLUMN_NAME_PATH_ENVIA,
         };
 
-        String selection = DadesEstructura.Parametres._ID + " = ?";
+        String selection = Database.Observacions._ID + " = ?";
         String[] selectionArgs = {String.valueOf(ID_App)};
         String sortOrder = null;
 
-        mDbHelper = new DadesHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Observacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
-        dia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DIA));
-        hora = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_HORA));
-        laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LATITUD)));
-        laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_LONGITUD)));
-        String elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN));
-        String laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO));
-        String elPath = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH));
-        String elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA));
+        dia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_DIA));
+        hora = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_HORA));
+        laLatitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LATITUD)));
+        laLongitud = Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_LONGITUD)));
+        String elFenomen = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_FENOMEN));
+        String laDescripcio = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_DESCRIPCIO));
+        String elPath = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH));
+        String elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH_ENVIA));
         cursor.close();
         mDbHelper.close();
 
@@ -767,7 +766,7 @@ public class Captura extends Fragment {
         String unlog = String.valueOf(ID_App);
         Log.i(".UpdateID", unlog);
 
-        mDbHelper = new DadesHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
 
         if (flagGirada) {
             File fitxer = new File(outputMiniatura.getAbsolutePath());
@@ -780,14 +779,14 @@ public class Captura extends Fragment {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_FENOMEN, num_fenomen);
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
-        values.put(DadesEstructura.Parametres.COLUMN_NAME_PATH_ENVIA, outputMiniatura.getAbsolutePath());
+        values.put(Database.Observacions.COLUMN_NAME_FENOMEN, num_fenomen);
+        values.put(Database.Observacions.COLUMN_NAME_DESCRIPCIO, observacio.getText().toString());
+        values.put(Database.Observacions.COLUMN_NAME_PATH_ENVIA, outputMiniatura.getAbsolutePath());
 
-        String selection = DadesEstructura.Parametres._ID + " LIKE ?";
+        String selection = Database.Observacions._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(ID_App)};
 
-        db.update(DadesEstructura.Parametres.TABLE_NAME, values, selection, selectionArgs);
+        db.update(Database.Observacions.TABLE_NAME, values, selection, selectionArgs);
         mDbHelper.close();
     }
 
@@ -804,15 +803,15 @@ public class Captura extends Fragment {
     }
 
     public int checkPendents() {
-        mDbHelper = new DadesHelper(getContext());
+        mDbHelper = new DataHelper(getContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {};
-        String selection = DadesEstructura.Parametres.COLUMN_NAME_ENVIAT + " = ?";
+        String selection = Database.Observacions.COLUMN_NAME_ENVIAT + " = ?";
         String[] selectionArgs = {"0"};
         String sortOrder = "enviat DESC";
 
-        Cursor cursor = db.query(DadesEstructura.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Observacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         int nPendents = cursor.getCount();
         cursor.close();
         mDbHelper.close();
@@ -829,21 +828,21 @@ public class Captura extends Fragment {
         int estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
         if(estacioPreferida==0){
             String[] projection = {
-                    DadesEstacions.Parametres._ID,
-                    DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET,
-                    DadesEstacions.Parametres.COLUMN_NAME_LATITUD,
-                    DadesEstacions.Parametres.COLUMN_NAME_LONGITUD,
+                    Database.Estacions._ID,
+                    Database.Estacions.COLUMN_NAME_ID_EDUMET,
+                    Database.Estacions.COLUMN_NAME_LATITUD,
+                    Database.Estacions.COLUMN_NAME_LONGITUD,
             };
 
-            String selection = DadesEstacions.Parametres._ID + " > ?";
+            String selection = Database.Estacions._ID + " > ?";
             String[] selectionArgs = {"0"};
             String sortOrder = null;
 
 
-            obsHelper = new EstacionsHelper(getContext());
-            SQLiteDatabase db = obsHelper.getReadableDatabase();
+            mDbHelper = new DataHelper(getContext());
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-            Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
             int estacioPropera=0;
             double distanciaPropera = 1000000;
@@ -852,16 +851,16 @@ public class Captura extends Fragment {
                 Double distancia = calculaDistancia(
                         mCurrentLocation.getLatitude(),
                         mCurrentLocation.getLongitude(),
-                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LATITUD))),
-                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_LONGITUD))));
+                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LATITUD))),
+                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LONGITUD))));
 
                 if (distancia < distanciaPropera) {
                     distanciaPropera = distancia;
-                    estacioPropera = Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET)));
+                    estacioPropera = Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET)));
                 }
             }
             cursor.close();
-            obsHelper.close();
+            mDbHelper.close();
 
             Log.i(".Preferida_Edumet",String.valueOf(estacioPropera));
             editor.putInt("estacio_preferida", estacioPropera);

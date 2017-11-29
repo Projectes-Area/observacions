@@ -73,7 +73,7 @@ public class Pronostic extends AppCompatActivity {
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        BottomNavigationViewHelper.disableShiftMode(navigation);
+        BottomNavigationHelper.disableShiftMode(navigation);
         navigation.setSelectedItemId(R.id.navigation_pronostic);
     }
 
@@ -133,20 +133,20 @@ public class Pronostic extends AppCompatActivity {
 
     public void baixa_cINE_Edumet(int Edumet_ID) throws Exception {
 
-        EstacionsHelper mDbHelper;
+        DataHelper mDbHelper;
         SQLiteDatabase db;
-        mDbHelper = new EstacionsHelper(this);
+        mDbHelper = new DataHelper(this);
         db = mDbHelper.getReadableDatabase();
 
-        String[] projection = {DadesEstacions.Parametres.COLUMN_NAME_CODI};
+        String[] projection = {Database.Estacions.COLUMN_NAME_CODI};
 
-        String selection = DadesEstacions.Parametres.COLUMN_NAME_ID_EDUMET + " = ?";
+        String selection = Database.Estacions.COLUMN_NAME_ID_EDUMET + " = ?";
         String[] selectionArgs = {String.valueOf(Edumet_ID)};
         String sortOrder = null;
 
-        Cursor cursor = db.query(DadesEstacions.Parametres.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
-        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(DadesEstacions.Parametres.COLUMN_NAME_CODI));
+        String codEst_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_CODI));
         cursor.close();
         mDbHelper.close();
 
