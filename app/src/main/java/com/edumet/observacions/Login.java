@@ -144,8 +144,8 @@ public class Login extends Fragment {
     public void baixaEstacions() throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                //.url(laUrl + "?tab=cnjEst&xarxaEst=meteoCat")
-                .url(laUrl + "?tab=cnjEst")
+                .url(laUrl + "?tab=cnjEst&xarxaEst=D")
+                //.url(laUrl + "?tab=cnjEst")
                 .build();
 
         Log.i("Baixa", laUrl + "?tab=cnjEst");

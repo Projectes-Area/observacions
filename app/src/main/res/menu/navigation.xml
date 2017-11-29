@@ -8,7 +8,6 @@
     <item android:id="@+id/navigation_estacions"
         android:icon="@drawable/ic_router_black_24dp"
         android:title="@string/title_estacions" />
-
     <item
         android:id="@+id/navigation_pronostic"
         android:icon="@drawable/ic_cloud_queue_black_24dp"

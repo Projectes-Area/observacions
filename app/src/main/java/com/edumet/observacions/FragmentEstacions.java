@@ -139,8 +139,8 @@ public class FragmentEstacions extends Fragment {
     public void sincronitza() throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                //.url(laUrl + "?tab=cnjEst&xarxaEst=meteoCat")
-                .url(laUrl + "?tab=cnjEst")
+                .url(laUrl + "?tab=cnjEst&xarxaEst=D")
+                //.url(laUrl + "?tab=cnjEst")
                 .build();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);

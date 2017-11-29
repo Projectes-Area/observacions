@@ -1,21 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-<!--    <item android:id="@+id/mostra_imatge"
-        android:title="@string/mostra_imatge"
-        app:showAsAction="never"/>
-    <item android:id="@+id/veure_mapa"
-        android:title="@string/veure_mapa"
-        app:showAsAction="never"/>
-    <item android:id="@+id/envia_observacio"
-        android:title="@string/envia_observacio"
-        app:showAsAction="never"/>
-    <item android:id="@+id/elimina"
-        android:title="@string/elimina"
-        app:showAsAction="never"/>
-    <item android:id="@+id/les_meves_observacions"
-        android:title="@string/les_meves_observacions"
-        app:showAsAction="never" />-->
     <item android:id="@+id/edumet_web"
         android:title="@string/edumet_web"
         app:showAsAction="never"/>
