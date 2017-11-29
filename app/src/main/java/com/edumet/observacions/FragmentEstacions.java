@@ -68,6 +68,7 @@ public class FragmentEstacions extends Fragment {
     Date date;
 
     SharedPreferences sharedPref;
+    private int estacioAnterior=0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class FragmentEstacions extends Fragment {
             itemIdsEdumet.add(itemIdEdumet);
         }
         cursor.close();
+        mDbHelper.close();
 
         poblacio = (TextView) v.findViewById(R.id.lblPoblacio);
         latitud = (TextView) v.findViewById(R.id.lblLatitud);
@@ -130,11 +132,6 @@ public class FragmentEstacions extends Fragment {
         });
     }
 
-    @Override
-    public void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
-    }
 
     public void sincronitza() throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
@@ -167,7 +164,7 @@ public class FragmentEstacions extends Fragment {
                                                         int numNovaEstacio = 0;
 
                                                         Boolean flagRepetida;
-
+                                                        mDbHelper = new DataHelper(getContext());
                                                         db = mDbHelper.getWritableDatabase();
                                                         ContentValues values = new ContentValues();
 
@@ -199,6 +196,7 @@ public class FragmentEstacions extends Fragment {
                                                                 Log.i(".Estacio_ID_App", String.valueOf(newRowId));
                                                             }
                                                         }
+                                                        mDbHelper.close();
                                                         numNovesEstacions = numNovaEstacio;
                                                         Log.i(".NovesEst", String.valueOf(numNovesEstacions));
                                                         getActivity().runOnUiThread(new Runnable() {
@@ -256,6 +254,8 @@ public class FragmentEstacions extends Fragment {
         String[] selectionArgs = {String.valueOf(ID_Edumet)};
         String sortOrder = null;
 
+        mDbHelper = new DataHelper(getContext());
+        db = mDbHelper.getWritableDatabase();
         Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
 
@@ -343,6 +343,9 @@ public class FragmentEstacions extends Fragment {
         String[] selectionArgs = {"0"};
         String sortOrder = null;
 
+        mDbHelper = new DataHelper(getContext());
+        db = mDbHelper.getWritableDatabase();
+
         Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);                               // The sort order
 
         List<String> noms = new ArrayList<String>();
@@ -355,13 +358,17 @@ public class FragmentEstacions extends Fragment {
             IDsEdumet.add(ID_Edumet);
         }
         cursor.close();
+        mDbHelper.close();
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, noms);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
+                if(estacioAnterior!=Integer.valueOf(IDsEdumet.get(position).toString())) {
+                    estacioAnterior=Integer.valueOf(IDsEdumet.get(position).toString());
+                    mostraEstacio(estacioAnterior);
+                }
             }
 
             @Override
@@ -418,14 +425,14 @@ public class FragmentEstacions extends Fragment {
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 mostraInfo(false);
-                                                                }
+                                                            }
                                                         });
                                                     }
                                                 } else {
                                                     getActivity().runOnUiThread(new Runnable() {
                                                         public void run() {
                                                             mostraInfo(false);
-                                                                }
+                                                        }
                                                     });
                                                 }
                                             }
@@ -443,7 +450,7 @@ public class FragmentEstacions extends Fragment {
         String Sunset = "";
         String Pluja = "";
         String Vent = "";
-        String dataActualitzacio="";
+        String dataActualitzacio = "";
 
         if (mostra) {
             Temperatura = valorsEstacio.get(4).toString() + " ºC";
@@ -461,8 +468,8 @@ public class FragmentEstacions extends Fragment {
                 e.printStackTrace();
             }
 
-            String dia="";
-            String hora="";
+            String dia = "";
+            String hora = "";
             try {
                 SimpleDateFormat formatDia = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 SimpleDateFormat formatHora = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -485,11 +492,17 @@ public class FragmentEstacions extends Fragment {
 
         if (mostra) {
             Snackbar.make(getActivity().findViewById(android.R.id.content), dataActualitzacio, Snackbar.LENGTH_LONG).show();
-        }
-        else {
+        } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
 }
 
 

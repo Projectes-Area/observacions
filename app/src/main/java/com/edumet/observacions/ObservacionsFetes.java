@@ -135,6 +135,7 @@ public class ObservacionsFetes extends Fragment {
             itemEnviats.add(itemEnviat);
         }
         cursor.close();
+        mDbHelper.close();
 
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -359,11 +360,6 @@ public class ObservacionsFetes extends Fragment {
         ((MainActivity) getActivity()).redrawObservacionsFetes(numNoves);
     }
 
-    @Override
-    public void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
-    }
 
     private void setPic(int targetW, int targetH, String path) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -528,6 +524,7 @@ public class ObservacionsFetes extends Fragment {
     }
 
     public void inclouNousRegistres() {
+        mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -545,6 +542,7 @@ public class ObservacionsFetes extends Fragment {
 
             long newRowId = db.insert(Database.Observacions.TABLE_NAME, null, values);
         }
+        mDbHelper.close();
     }
 
 //

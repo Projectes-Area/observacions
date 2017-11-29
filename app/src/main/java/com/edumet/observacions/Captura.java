@@ -258,6 +258,7 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -766,7 +767,6 @@ public class Captura extends Fragment {
         String unlog = String.valueOf(ID_App);
         Log.i(".UpdateID", unlog);
 
-        mDbHelper = new DataHelper(getContext());
 
         if (flagGirada) {
             File fitxer = new File(outputMiniatura.getAbsolutePath());
@@ -775,7 +775,7 @@ public class Captura extends Fragment {
             }
             fesMiniatura(midaEnvia);
         }
-
+        mDbHelper = new DataHelper(getContext());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -825,8 +825,8 @@ public class Captura extends Fragment {
         editor.putString("latitud", String.valueOf(mCurrentLocation.getLatitude()));
         editor.putString("longitud", String.valueOf(mCurrentLocation.getLongitude()));
 
-        int estacioPreferida=sharedPref.getInt("estacio_preferida", 0);
-        if(estacioPreferida==0){
+        int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
+        if (estacioPreferida == 0) {
             String[] projection = {
                     Database.Estacions._ID,
                     Database.Estacions.COLUMN_NAME_ID_EDUMET,
@@ -844,7 +844,7 @@ public class Captura extends Fragment {
 
             Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
 
-            int estacioPropera=0;
+            int estacioPropera = 0;
             double distanciaPropera = 1000000;
 
             while (cursor.moveToNext()) {
@@ -862,7 +862,7 @@ public class Captura extends Fragment {
             cursor.close();
             mDbHelper.close();
 
-            Log.i(".Preferida_Edumet",String.valueOf(estacioPropera));
+            Log.i(".Preferida_Edumet", String.valueOf(estacioPropera));
             editor.putInt("estacio_preferida", estacioPropera);
             editor.putInt("estacio_actual", estacioPropera);
         }
@@ -885,8 +885,13 @@ public class Captura extends Fragment {
     public double deg2rad(double deg) {
         return deg * (Math.PI / 180);
     }
-}
 
+    @Override
+    public void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+}
 
 
 
