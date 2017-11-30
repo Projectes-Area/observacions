@@ -71,9 +71,6 @@ public class FragmentFitxa extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_fitxa, container, false);
 
-        mDbHelper = new DataHelper(getContext());
-        db = mDbHelper.getReadableDatabase();
-
         fenomen = (TextView) v.findViewById(R.id.lblFenomen);
         Envia = (ImageButton) v.findViewById(R.id.btnEnvia);
         Envia.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +151,9 @@ public class FragmentFitxa extends Fragment {
         String[] selectionArgs = {String.valueOf(ID_App)};
         String sortOrder = null;
 
+        mDbHelper = new DataHelper(getContext());
+        db = mDbHelper.getReadableDatabase();
+
         Cursor cursor = db.query(Database.Observacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.moveToFirst();
                 ID_Edumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ID_EDUMET));
@@ -167,6 +167,7 @@ public class FragmentFitxa extends Fragment {
                 elPath_Envia = cursor.getString(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_PATH_ENVIA));
                 enviat = cursor.getInt(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ENVIAT));
         cursor.close();
+        mDbHelper.close();
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
 
@@ -239,8 +240,10 @@ public class FragmentFitxa extends Fragment {
 
     private void esborra() {
 
+        mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getWritableDatabase();
         db.delete("observacions", Database.Observacions._ID + "=" + String.valueOf(ID_App), null);
+        mDbHelper.close();
 
         File fitxer = new File(elPath);
         if (fitxer.exists()) {
@@ -313,4 +316,11 @@ public class FragmentFitxa extends Fragment {
         intent.putExtra(MainActivity.EXTRA_PATH, elPath);
         startActivity(intent);
     }
+
+    @Override
+    public void onDestroy() {
+        mDbHelper.close();
+        super.onDestroy();
+    }
+
 }

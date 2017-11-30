@@ -892,13 +892,3 @@ public class Captura extends Fragment {
         super.onDestroy();
     }
 }
-
-
-
-
-
-
-
-
-
-
