@@ -1,5 +1,6 @@
 package com.edumet.observacions;
 
+import android.app.ActivityManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,6 +48,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static android.content.Context.ACTIVITY_SERVICE;
 
 public class ObservacionsFetes extends Fragment {
 
@@ -297,6 +300,7 @@ public class ObservacionsFetes extends Fragment {
             Intent intent;
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
+                    doSomethingMemoryIntensive();
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getActivity().getApplicationContext(),Estacions.class);
@@ -551,4 +555,28 @@ public class ObservacionsFetes extends Fragment {
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
+
+    public void doSomethingMemoryIntensive() {
+        // Before doing something that requires a lot of memory,
+        // check to see whether the device is in a low memory state.
+        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+        if (!memoryInfo.lowMemory) {
+            Log.i(".Memory","Good");
+            // Do memory intensive work ...
+        } else {
+            Log.i(".Memory","Low");
+        }
+        Log.i(".Available memory (MB)",String.valueOf(memoryInfo.availMem/8/1024/1024));
+        Log.i(".Total memory (MB)",String.valueOf(memoryInfo.totalMem/8/1024/1024));
+        Log.i(".Threshold memory (MB)",String.valueOf(memoryInfo.threshold/8/1024/1024));
+    }
+    // Get a MemoryInfo object for the device's current memory status.
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
+    }
+
 }

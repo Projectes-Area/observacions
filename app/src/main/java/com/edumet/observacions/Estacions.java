@@ -1,5 +1,6 @@
 package com.edumet.observacions;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -71,6 +73,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
+                    doSomethingMemoryIntensive();
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(),Radar.class);
@@ -182,4 +185,28 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         super.onResume();
         navigation.setSelectedItemId(R.id.navigation_estacions);
     }
+
+    public void doSomethingMemoryIntensive() {
+        // Before doing something that requires a lot of memory,
+        // check to see whether the device is in a low memory state.
+        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+        if (!memoryInfo.lowMemory) {
+            Log.i(".Memory","Good");
+            // Do memory intensive work ...
+        } else {
+            Log.i(".Memory","Low");
+        }
+        Log.i(".Available memory (MB)",String.valueOf(memoryInfo.availMem/8/1024/1024));
+        Log.i(".Total memory (MB)",String.valueOf(memoryInfo.totalMem/8/1024/1024));
+        Log.i(".Threshold memory (MB)",String.valueOf(memoryInfo.threshold/8/1024/1024));
+    }
+    // Get a MemoryInfo object for the device's current memory status.
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
+    }
+
 }

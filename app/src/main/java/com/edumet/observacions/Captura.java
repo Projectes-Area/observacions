@@ -2,6 +2,7 @@ package com.edumet.observacions;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
@@ -78,6 +79,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.ACTIVITY_SERVICE;
 
 public class Captura extends Fragment {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -172,6 +174,7 @@ public class Captura extends Fragment {
             Intent intent;
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
+                    doSomethingMemoryIntensive();
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getActivity().getApplicationContext(), Estacions.class);
@@ -890,5 +893,28 @@ public class Captura extends Fragment {
     public void onDestroy() {
         mDbHelper.close();
         super.onDestroy();
+    }
+
+    public void doSomethingMemoryIntensive() {
+        // Before doing something that requires a lot of memory,
+        // check to see whether the device is in a low memory state.
+        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+        if (!memoryInfo.lowMemory) {
+            Log.i(".Memory","Good");
+            // Do memory intensive work ...
+        } else {
+            Log.i(".Memory","Low");
+        }
+        Log.i(".Available memory (MB)",String.valueOf(memoryInfo.availMem/8/1024/1024));
+        Log.i(".Total memory (MB)",String.valueOf(memoryInfo.totalMem/8/1024/1024));
+        Log.i(".Threshold memory (MB)",String.valueOf(memoryInfo.threshold/8/1024/1024));
+    }
+    // Get a MemoryInfo object for the device's current memory status.
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
     }
 }
