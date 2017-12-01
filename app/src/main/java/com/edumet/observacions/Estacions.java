@@ -73,7 +73,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
-                    doSomethingMemoryIntensive();
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(),Radar.class);
@@ -119,6 +118,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
+                //fragment.buidaInfo();
                 fragment.clicaSpinner(Integer.valueOf(marker.getSnippet())-1);
                 return true;
             }
@@ -143,6 +143,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         cursor.close();
 
         FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
+        //fragment.buidaInfo();
         fragment.clicaSpinner(ID_estacioPreferida-1);
     }
 
@@ -186,27 +187,5 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         navigation.setSelectedItemId(R.id.navigation_estacions);
     }
 
-    public void doSomethingMemoryIntensive() {
-        // Before doing something that requires a lot of memory,
-        // check to see whether the device is in a low memory state.
-        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
-
-        if (!memoryInfo.lowMemory) {
-            Log.i(".Memory","Good");
-            // Do memory intensive work ...
-        } else {
-            Log.i(".Memory","Low");
-        }
-        Log.i(".Available memory (MB)",String.valueOf(memoryInfo.availMem/8/1024/1024));
-        Log.i(".Total memory (MB)",String.valueOf(memoryInfo.totalMem/8/1024/1024));
-        Log.i(".Threshold memory (MB)",String.valueOf(memoryInfo.threshold/8/1024/1024));
-    }
-    // Get a MemoryInfo object for the device's current memory status.
-    private ActivityManager.MemoryInfo getAvailableMemory() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        return memoryInfo;
-    }
 
 }

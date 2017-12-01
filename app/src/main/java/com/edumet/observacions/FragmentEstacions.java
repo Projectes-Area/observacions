@@ -68,7 +68,7 @@ public class FragmentEstacions extends Fragment {
     Date date;
 
     SharedPreferences sharedPref;
-    private int estacioAnterior=0;
+    private int estacioAnterior = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -365,8 +365,9 @@ public class FragmentEstacions extends Fragment {
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(estacioAnterior!=Integer.valueOf(IDsEdumet.get(position).toString())) {
-                    estacioAnterior=Integer.valueOf(IDsEdumet.get(position).toString());
+                if (estacioAnterior != Integer.valueOf(IDsEdumet.get(position).toString())) {
+                    estacioAnterior = Integer.valueOf(IDsEdumet.get(position).toString());
+                    buidaInfo();
                     mostraEstacio(estacioAnterior);
                 }
             }
@@ -495,6 +496,22 @@ public class FragmentEstacions extends Fragment {
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    public void buidaInfo() {
+        String Temperatura = "";
+        String Max = "";
+        String Min = "";
+        String Humitat = "";
+        String Pressio = "";
+        String Sunrise = "";
+        String Sunset = "";
+        String Pluja = "";
+        String Vent = "";
+
+        FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
+        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent);
     }
 
     @Override

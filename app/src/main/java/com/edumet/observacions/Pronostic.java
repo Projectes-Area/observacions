@@ -126,7 +126,6 @@ public class Pronostic extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    doSomethingMemoryIntensive();
                     return true;
             }
             return false;
@@ -204,29 +203,6 @@ public class Pronostic extends AppCompatActivity {
                                             }
                                         }
         );
-    }
-
-    public void doSomethingMemoryIntensive() {
-        // Before doing something that requires a lot of memory,
-        // check to see whether the device is in a low memory state.
-        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
-
-        if (!memoryInfo.lowMemory) {
-            Log.i(".Memory","Good");
-            // Do memory intensive work ...
-        } else {
-            Log.i(".Memory","Low");
-        }
-        Log.i(".Available memory (MB)",String.valueOf(memoryInfo.availMem/8/1024/1024));
-        Log.i(".Total memory (MB)",String.valueOf(memoryInfo.totalMem/8/1024/1024));
-        Log.i(".Threshold memory (MB)",String.valueOf(memoryInfo.threshold/8/1024/1024));
-    }
-    // Get a MemoryInfo object for the device's current memory status.
-    private ActivityManager.MemoryInfo getAvailableMemory() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        return memoryInfo;
     }
 
 }
