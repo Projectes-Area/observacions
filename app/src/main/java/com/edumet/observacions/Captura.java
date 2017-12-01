@@ -80,6 +80,7 @@ import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.ACTIVITY_SERVICE;
+import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class Captura extends Fragment {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -565,7 +566,7 @@ public class Captura extends Fragment {
                     getActivity().finish();
                 }
                 if (output != null) {
-                    Uri outputUri = FileProvider.getUriForFile(getContext(), "com.edumet.observacions", output);
+                    Uri outputUri = getUriForFile(getContext(), "com.edumet.observacions", output);
                     i.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         i.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -798,9 +799,21 @@ public class Captura extends Fragment {
 
     public void veure_foto() {
         if (output != null) {
-            Intent intent = new Intent(getActivity(), VeureFoto.class);
-            intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
-            startActivity(intent);
+            Intent intent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent = new Intent(getActivity(), VeureFoto.class);
+                intent.putExtra(MainActivity.EXTRA_PATH, mCurrentPhotoPath);
+                startActivity(intent);
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri uri = getUriForFile(getContext(), "com.edumet.observacions", output);
+                intent.setDataAndType(uri, "image/jpeg");
+                PackageManager pm = getActivity().getPackageManager();
+                if (intent.resolveActivity(pm) != null) {
+                    startActivity(intent);
+                }
+            }
         }
     }
 

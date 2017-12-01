@@ -35,9 +35,9 @@ public class VeureFoto extends AppCompatActivity {
         //navigation.setSelectedItemId(R.id.navigation_observacions);
 
         Intent intent = getIntent();
-        String imagePath =intent.getStringExtra(MainActivity.EXTRA_PATH);
+        String imagePath = intent.getStringExtra(MainActivity.EXTRA_PATH);
 
-        ZoomImageView imatge=(ZoomImageView) findViewById(R.id.zoomImageView);
+        ZoomImageView imatge = (ZoomImageView) findViewById(R.id.zoomImageView);
         imatge.setImageBitmap(BitmapFactory.decodeFile(imagePath));
 
         Snackbar.make(findViewById(android.R.id.content), "Mou la foto amb 1 dit, fes zoom amb 2 dits", Snackbar.LENGTH_LONG).show();
@@ -53,17 +53,17 @@ public class VeureFoto extends AppCompatActivity {
                 case R.id.navigation_observacions:
                     return true;
                 case R.id.navigation_estacions:
-                    intent = new Intent(getApplicationContext(),Estacions.class);
+                    intent = new Intent(getApplicationContext(), Estacions.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(),Radar.class);
+                    intent = new Intent(getApplicationContext(), Radar.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
-                    intent = new Intent(getApplicationContext(),Pronostic.class);
+                    intent = new Intent(getApplicationContext(), Pronostic.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
@@ -113,4 +113,4 @@ public class VeureFoto extends AppCompatActivity {
         super.onResume();
         navigation.setSelectedItemId(R.id.navigation_observacions);
     }
-    }
+}

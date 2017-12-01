@@ -2,10 +2,13 @@ package com.edumet.observacions;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -33,6 +36,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class FragmentFitxa extends Fragment {
 
@@ -310,12 +315,24 @@ public class FragmentFitxa extends Fragment {
 //
 // VEURE FOTO
 //
-
-    public void veure_foto() {
-        Intent intent = new Intent(getActivity(), VeureFoto.class);
-        intent.putExtra(MainActivity.EXTRA_PATH, elPath);
-        startActivity(intent);
-    }
+public void veure_foto() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            intent = new Intent(getActivity(), VeureFoto.class);
+            intent.putExtra(MainActivity.EXTRA_PATH, elPath);
+            startActivity(intent);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            File newFile = new File(elPath);
+            Uri uri = getUriForFile(getContext(), "com.edumet.observacions", newFile);
+            intent.setDataAndType(uri, "image/jpeg");
+            PackageManager pm = getActivity().getPackageManager();
+            if (intent.resolveActivity(pm) != null) {
+                startActivity(intent);
+            }
+        }
+}
 
     @Override
     public void onDestroy() {
