@@ -26,14 +26,24 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|keyboard"
+            android:name=".Splash"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboard"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
@@ -94,15 +104,6 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/app_name"
-            android:parentActivityName="com.edumet.observacions.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".Actuals"
             android:label="@string/app_name"
             android:parentActivityName="com.edumet.observacions.MainActivity">
             <intent-filter>

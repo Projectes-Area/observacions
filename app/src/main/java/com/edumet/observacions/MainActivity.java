@@ -88,14 +88,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (!checkPermissions()) {
-            requestPermissions();
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_toolbar, menu);
         return true;
@@ -177,31 +169,7 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
 
-    private void requestPermissions() {
-        Log.i(".requestPermissions", "Requesting permission");
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                Log.i(".FRAGonReqPermResult", "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                Log.i(".FRAGonReqPermResult", "Permission granted, updates requested, starting location updates");
-
-            } else {
-                finish();
-            }
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
