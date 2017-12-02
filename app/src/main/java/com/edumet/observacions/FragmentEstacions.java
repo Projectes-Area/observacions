@@ -1,6 +1,5 @@
 package com.edumet.observacions;
 
-import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,16 +38,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class FragmentEstacions extends Fragment {
 
     DataHelper mDbHelper;
     private SQLiteDatabase db;
-
     private ProgressBar mProgressBar;
-
     private final OkHttpClient client = new OkHttpClient();
-
-    private int numNovesEstacions;
 
     private TextView poblacio;
     private TextView latitud;
@@ -58,9 +55,9 @@ public class FragmentEstacions extends Fragment {
     private ImageView estrella;
     private Spinner spinner;
 
+    private int ID_Edumet_preferida;
     private int ID_Edumet_actual;
 
-    List itemIdsEdumet = new ArrayList<>();
     List valorsEstacio;
 
     SimpleDateFormat diaCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
@@ -68,31 +65,13 @@ public class FragmentEstacions extends Fragment {
     Date date;
 
     SharedPreferences sharedPref;
-    private int estacioAnterior = 0;
+
+    private int visitesSpinner=0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_estacions, container, false);
         setHasOptionsMenu(true);
-
-        String[] projection = {
-                Database.Estacions.COLUMN_NAME_ID_EDUMET,
-        };
-
-        String selection = Database.Estacions.COLUMN_NAME_ID_EDUMET + " > ?";
-        String[] selectionArgs = {"0"};
-        String sortOrder = "id_edumet ASC";
-
-        mDbHelper = new DataHelper(getContext());
-        db = mDbHelper.getReadableDatabase();
-        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-
-        while (cursor.moveToNext()) {
-            String itemIdEdumet = cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET));
-            itemIdsEdumet.add(itemIdEdumet);
-        }
-        cursor.close();
-        mDbHelper.close();
 
         poblacio = (TextView) v.findViewById(R.id.lblPoblacio);
         latitud = (TextView) v.findViewById(R.id.lblLatitud);
@@ -100,10 +79,15 @@ public class FragmentEstacions extends Fragment {
         altitud = (TextView) v.findViewById(R.id.lblAltitud);
         foto = (ImageView) v.findViewById(R.id.imgFoto);
         estrella = (ImageView) v.findViewById(R.id.imgEstrella);
-
         spinner = (Spinner) v.findViewById(R.id.spinnerEstacions);
-
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressBarEstacions);
+
+        sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
+        ID_Edumet_preferida = sharedPref.getInt("estacio_preferida", 0);
+        ID_Edumet_actual= sharedPref.getInt("estacio_actual", 0);
+        Log.i("..Preferida",String.valueOf(ID_Edumet_preferida));
+        Log.i("..Actual",String.valueOf(ID_Edumet_actual));
+
         return v;
     }
 
@@ -115,11 +99,7 @@ public class FragmentEstacions extends Fragment {
 
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
-        try {
-            sincronitza();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ompleSpinner();
 
         estrella.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -132,114 +112,7 @@ public class FragmentEstacions extends Fragment {
         });
     }
 
-
-    public void sincronitza() throws Exception {
-        String laUrl = getResources().getString(R.string.url_servidor);
-        Request request = new Request.Builder()
-                .url(laUrl + "?tab=cnjEst&xarxaEst=D")
-                //.url(laUrl + "?tab=cnjEst")
-                .build();
-
-        mProgressBar.setVisibility(ProgressBar.VISIBLE);
-
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_SHORT).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                            }
-
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    String resposta = response.body().string().trim();
-                                                    try {
-                                                        JSONArray jsonArray = new JSONArray(resposta);
-
-                                                        numNovesEstacions = 0;
-                                                        int numNovaEstacio = 0;
-
-                                                        Boolean flagRepetida;
-                                                        mDbHelper = new DataHelper(getContext());
-                                                        db = mDbHelper.getWritableDatabase();
-                                                        ContentValues values = new ContentValues();
-
-                                                        for (int i = 0; i < jsonArray.length(); i++) {
-
-                                                            JSONArray JSONEstacio = jsonArray.getJSONArray(i);
-                                                            flagRepetida = false;
-                                                            for (int j = 0; j < itemIdsEdumet.size(); j++) {
-                                                                int Num1 = Integer.valueOf(itemIdsEdumet.get(j).toString());
-                                                                int Num2 = Integer.valueOf(JSONEstacio.getString(0).toString());
-                                                                if (Num1 == Num2) {
-                                                                    flagRepetida = true;
-                                                                }
-                                                            }
-                                                            if (!flagRepetida) {
-                                                                numNovaEstacio++;
-                                                                values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                                values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                                values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                                values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                                values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                                values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                                values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                                values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                                values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                                values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
-
-                                                                long newRowId = db.insert(Database.Estacions.TABLE_NAME, null, values);
-                                                                Log.i(".Estacio_ID_App", String.valueOf(newRowId));
-                                                            }
-                                                        }
-                                                        mDbHelper.close();
-                                                        numNovesEstacions = numNovaEstacio;
-                                                        Log.i(".NovesEst", String.valueOf(numNovesEstacions));
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                try {
-                                                                    ompleSpinner();
-                                                                    ((Estacions) getActivity()).obreMapa();
-                                                                } catch (Exception e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            }
-                                                        });
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            }
-                                                        });
-
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_SHORT).show();
-                                                                mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            }
-                                                        });
-                                                    }
-
-                                                } else {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_SHORT).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        }
-        );
-    }
-
     public void mostraEstacio(int ID_Edumet) {
-
         String[] projection = {
                 Database.Estacions._ID,
                 Database.Estacions.COLUMN_NAME_ID_EDUMET,
@@ -269,7 +142,6 @@ public class FragmentEstacions extends Fragment {
         altitud.setText("Altitud: " + String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ALTITUD))) + " metres");
         cursor.close();
 
-        //mostraInfo(false);
         try {
             baixaValors(codEst_Edumet);
         } catch (Exception e) {
@@ -365,13 +237,9 @@ public class FragmentEstacions extends Fragment {
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (estacioAnterior != Integer.valueOf(IDsEdumet.get(position).toString())) {
-                    estacioAnterior = Integer.valueOf(IDsEdumet.get(position).toString());
                     buidaInfo();
-                    mostraEstacio(estacioAnterior);
-                }
+                    mostraEstacio(Integer.valueOf(IDsEdumet.get(position).toString()));
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -519,7 +387,6 @@ public class FragmentEstacions extends Fragment {
         mDbHelper.close();
         super.onDestroy();
     }
-
 }
 
 

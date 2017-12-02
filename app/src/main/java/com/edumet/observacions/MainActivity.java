@@ -1,20 +1,16 @@
 package com.edumet.observacions;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -46,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_ID_App = "com.edumet.observacions.ID";
     public static final String EXTRA_NUMFENOMEN = "com.edumet.observacions.NUMFENOMEN";
     public static final String EXTRA_PATH = "com.edumet.observacions.PATH";
-
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private boolean flagLocalitzada = false;
     private boolean flagDesada = false;
@@ -168,8 +162,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

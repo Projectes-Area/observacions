@@ -3,24 +3,14 @@ package com.edumet.observacions;
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
@@ -29,21 +19,15 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.edumet.observacions.Database.Estacions.TABLE_NAME;
+
 public class Splash extends AppCompatActivity {
 
-    public static final String EXTRA_LATITUD = "com.edumet.observacions.LATITUD";
-    public static final String EXTRA_LONGITUD = "com.edumet.observacions.LONGITUD";
-    public static final String EXTRA_ID_App = "com.edumet.observacions.ID";
-    public static final String EXTRA_NUMFENOMEN = "com.edumet.observacions.NUMFENOMEN";
-    public static final String EXTRA_PATH = "com.edumet.observacions.PATH";
-
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
     private ProgressBar mProgressBar;
 
@@ -70,7 +54,6 @@ public class Splash extends AppCompatActivity {
         int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
-
     private void requestPermissions() {
         Log.i(".requestPermissions", "Requesting permission");
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -95,6 +78,13 @@ public class Splash extends AppCompatActivity {
     private SQLiteDatabase db;
 
     public void baixaEstacions() {
+
+        mDbHelper = new DataHelper(getApplicationContext());
+        db = mDbHelper.getWritableDatabase();
+        db.execSQL("delete from "+ Database.Estacions.TABLE_NAME);
+        db.close();
+        mDbHelper.close();
+
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
                 .url(laUrl + "?tab=cnjEst&xarxaEst=D")
@@ -122,7 +112,6 @@ public class Splash extends AppCompatActivity {
                                                         mDbHelper = new DataHelper(getApplicationContext());
                                                         db = mDbHelper.getWritableDatabase();
                                                         ContentValues values = new ContentValues();
-
                                                         for (int i = 0; i < jsonArray.length(); i++) {
                                                             JSONArray JSONEstacio = jsonArray.getJSONArray(i);
 
@@ -137,8 +126,9 @@ public class Splash extends AppCompatActivity {
                                                             values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
                                                             values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
 
-                                                            long newRowId = db.insert(Database.Estacions.TABLE_NAME, null, values);
+                                                            db.insert(TABLE_NAME, null, values);
                                                         }
+                                                        db.close();
                                                         mDbHelper.close();
                                                         Log.i(".Estacions", "Tot baixat");
                                                         Intent intent = new Intent(getApplicationContext(), Estacions.class);

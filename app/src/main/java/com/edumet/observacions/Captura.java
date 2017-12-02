@@ -1,13 +1,9 @@
 package com.edumet.observacions;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -23,18 +19,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,22 +41,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,24 +56,12 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.ACTIVITY_SERVICE;
 import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class Captura extends Fragment {
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 30000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
-    private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
-    private final static String KEY_LOCATION = "location";
+
     private static final int CONTENT_REQUEST = 1337; // fotos
     private static final String EXTRA_FILENAME = "com.edumet.observacions.EXTRA_FILENAME";
-    private FusedLocationProviderClient mFusedLocationClient;
-    private SettingsClient mSettingsClient;
-    private LocationRequest mLocationRequest;
-    private LocationSettingsRequest mLocationSettingsRequest;
-    private LocationCallback mLocationCallback;
-    private Location mCurrentLocation;
-    private static boolean mRequestingLocationUpdates;
 
     private ImageButton Foto;
     private ImageButton Girar;
@@ -130,6 +95,8 @@ public class Captura extends Fragment {
 
     private DataHelper mDbHelper;
 
+    private Location mCurrentLocation;
+
     String[] nomFenomen;
     String usuari;
 
@@ -155,7 +122,6 @@ public class Captura extends Fragment {
         navigation = (BottomNavigationView) v.findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationHelper.disableShiftMode(navigation);
-        //navigation.setSelectedItemId(R.id.navigation_observacions);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
@@ -261,7 +227,6 @@ public class Captura extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 num_fenomen = position + 1;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -286,12 +251,6 @@ public class Captura extends Fragment {
         }
 
         updateValuesFromBundle(savedInstanceState);
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        mSettingsClient = LocationServices.getSettingsClient(getActivity());
-        createLocationCallback();
-        createLocationRequest();
-        buildLocationSettingsRequest();
     }
 
     @Override
@@ -301,27 +260,13 @@ public class Captura extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        startLocationUpdates();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
-        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putSerializable(EXTRA_FILENAME, output);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(KEY_REQUESTING_LOCATION_UPDATES);
-            }
-            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
-                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            }
             updateLocationUI();
         }
     }
@@ -330,10 +275,6 @@ public class Captura extends Fragment {
     public void onResume() {
         super.onResume();
         navigation.setSelectedItemId(R.id.navigation_observacions);
-        Log.i(".OnResume", String.valueOf(mRequestingLocationUpdates));
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
         updateLocationUI();
         if (output != null) {
             imatge.setImageBitmap(bitmap);
@@ -343,40 +284,6 @@ public class Captura extends Fragment {
         } else {
             imatge.setImageResource(R.drawable.estacions);
         }
-
-        if (getView() == null) {
-            return;
-        }
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    Snackbar snackbar = Snackbar
-                            .make(getActivity().findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
-                            .setAction("SÍ", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    if (flagDesada) {
-                                        updateObservacio();
-                                    }
-                                    getActivity().finish();
-                                }
-                            });
-                    snackbar.show();
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-        Log.i(".OnPause", String.valueOf(mRequestingLocationUpdates));
     }
 
     @Override
@@ -385,51 +292,9 @@ public class Captura extends Fragment {
         imatge.setImageBitmap(bitmap);
     }
 
-    //
-    // LOCALITZACIÓ
-    //
-
-    private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
-    private void createLocationCallback() {
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                mCurrentLocation = locationResult.getLastLocation();
-                updateLocationUI();
-            }
-        };
-    }
-
-    private void buildLocationSettingsRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        mLocationSettingsRequest = builder.build();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
-                    case RESULT_OK:
-                        Log.i(".FRAGonActResult", "User agreed to make required location settings changes.");
-                        mRequestingLocationUpdates = true;
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        Log.i(".FRAGonActResult", "User chose not to make required location settings changes.");
-                        mRequestingLocationUpdates = false;
-                        break;
-                }
-                updateLocationUI();
-                Log.i(".FRAGonActResult", String.valueOf(mRequestingLocationUpdates));
-                break;
             case CONTENT_REQUEST:
                 if (resultCode == RESULT_OK) {
                     angle_foto = 0;
@@ -456,56 +321,6 @@ public class Captura extends Fragment {
         Girar.setEnabled(true);
         Envia.setImageResource(R.mipmap.ic_send_edumet);
         Envia.setEnabled(true);
-    }
-
-    private void startLocationUpdates() {
-        mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-                    @SuppressLint("MissingPermission")
-                    @Override
-                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i(".startLocation", "All location settings are satisfied.");
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                        mRequestingLocationUpdates = true;
-                        updateLocationUI();
-
-                    }
-                })
-                .addOnFailureListener(getActivity(), new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        int statusCode = ((ApiException) e).getStatusCode();
-                        switch (statusCode) {
-                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(".startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
-                                try {
-                                    ResolvableApiException rae = (ResolvableApiException) e;
-                                    rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
-                                } catch (IntentSender.SendIntentException sie) {
-                                    Log.i(".startUpdates", "PendingIntent unable to execute request.");
-                                }
-                                break;
-                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                Toast.makeText(getActivity(), R.string.fix_settings, Toast.LENGTH_LONG).show();
-                                mRequestingLocationUpdates = false;
-                        }
-                        updateLocationUI();
-                    }
-                });
-    }
-
-    private void stopLocationUpdates() {
-        if (!mRequestingLocationUpdates) {
-            Log.i(".stopUpdates", "stopLocationUpdates: updates never requested, no-op.");
-            return;
-        }
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        mRequestingLocationUpdates = false;
-                    }
-                });
     }
 
     private void updateLocationUI() {
@@ -535,12 +350,6 @@ public class Captura extends Fragment {
             intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, String.valueOf(num_fenomen));
             startActivity(intent);
         } else {
-
-            if (!mRequestingLocationUpdates) {
-                mRequestingLocationUpdates = true;
-                startLocationUpdates();
-            }
-
             if (mCurrentLocation != null) {
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
                 intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
@@ -589,7 +398,6 @@ public class Captura extends Fragment {
                     }
                 }
             }
-
         } else {
             Toast.makeText(super.getContext(), R.string.encara_sense_lloc, Toast.LENGTH_LONG).show();
         }
@@ -716,6 +524,7 @@ public class Captura extends Fragment {
 
     //
     // EDITA OBSERVACIO
+    //
 
     public void loadObservacio() {
         String[] projection = {
@@ -769,7 +578,6 @@ public class Captura extends Fragment {
     public void updateObservacio() {
         String unlog = String.valueOf(ID_App);
         Log.i(".UpdateID", unlog);
-
 
         if (flagGirada) {
             File fitxer = new File(outputMiniatura.getAbsolutePath());
@@ -853,7 +661,6 @@ public class Captura extends Fragment {
             String[] selectionArgs = {"0"};
             String sortOrder = null;
 
-
             mDbHelper = new DataHelper(getContext());
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -906,6 +713,4 @@ public class Captura extends Fragment {
         mDbHelper.close();
         super.onDestroy();
     }
-
-
 }
