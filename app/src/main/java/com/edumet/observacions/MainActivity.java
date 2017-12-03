@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -58,15 +59,17 @@ public class MainActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+
         ID_App = getIntent().getIntExtra(MainActivity.EXTRA_ID_App, 0);
 
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-            SharedPreferences sharedPref = this.getSharedPreferences("com.edumet.observacions", this.MODE_PRIVATE);
-            String usuariDesat = sharedPref.getString("usuari", "");
+        SharedPreferences sharedPref = this.getSharedPreferences("com.edumet.observacions", this.MODE_PRIVATE);
+        String usuariDesat = sharedPref.getString("usuari", "");
+        latitud=Double.valueOf(sharedPref.getString("latitud","0"));
+        longitud=Double.valueOf(sharedPref.getString("longitud","0"));
 
+        if (findViewById(R.id.fragment_container) != null) {
             if (usuariDesat.isEmpty()) {
                 Login firstFragment = new Login();
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
@@ -91,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         Uri uri;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
             case R.id.les_meves_observacions:
                 if (flagDesada) {
                     FragmentManager fm = getSupportFragmentManager();
@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 observacionsFetes();
                 return true;
             case R.id.la_meva_ubicacio:
-                if (flagLocalitzada) {
                     FragmentManager fm = getSupportFragmentManager();
                     Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
                     intent = new Intent(this, MapsActivity.class);
@@ -111,32 +110,29 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(longitud));
                     intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
                     startActivity(intent);
-                }
                 return true;
             case R.id.fotografia:
-                if (flagLocalitzada) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.fesFoto();
-                }
+                    FragmentManager fm1 = getSupportFragmentManager();
+                    Captura fragment1 = (Captura) fm1.findFragmentById(R.id.fragment_container);
+                    fragment1.fesFoto();
                 return true;
             case R.id.gira_imatge:
                 if (flagDesada) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.angle_foto += 90;
-                    if (fragment.angle_foto >= 360) {
-                        fragment.angle_foto = 0;
+                    FragmentManager fm2 = getSupportFragmentManager();
+                    Captura fragment2 = (Captura) fm2.findFragmentById(R.id.fragment_container);
+                    fragment2.angle_foto += 90;
+                    if (fragment2.angle_foto >= 360) {
+                        fragment2.angle_foto = 0;
                     }
-                    fragment.bitmap = fragment.rotateViaMatrix(fragment.bitmap, 90);
-                    fragment.imatge.setImageBitmap(fragment.bitmap);
+                    fragment2.bitmap = fragment2.rotateViaMatrix(fragment2.bitmap, 90);
+                    fragment2.imatge.setImageBitmap(fragment2.bitmap);
                 }
                 return true;
             case R.id.mostra_imatge:
                 if (flagDesada) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    Captura fragment = (Captura) fm.findFragmentById(R.id.fragment_container);
-                    fragment.veure_foto();
+                    FragmentManager fm3 = getSupportFragmentManager();
+                    Captura fragment3 = (Captura) fm3.findFragmentById(R.id.fragment_container);
+                    fragment3.veure_foto();
                 }
                 return true;
             case R.id.edumet_web:
@@ -169,13 +165,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         targetFragment.onActivityResult(requestCode, resultCode, data);
         transaction.commit();
-    }
-
-    public void ubicacio(double lat, double lon) {
-        flagLocalitzada = true;
-        latitud = lat;
-        longitud = lon;
-        Log.i(".ACT-ubicació", String.valueOf(lat) + "," + String.valueOf(lon));
     }
 
     public void hihaFoto() {
@@ -239,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         values.put(Database.Observacions.COLUMN_NAME_ENVIAT, 0);
 
         long newRowId = db.insert(Database.Observacions.TABLE_NAME, null, values);
+        db.close();
         mDbHelper.close();
         Log.i(".ID_App", String.valueOf(newRowId));
         return (int) newRowId;
@@ -299,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
                                                     }
                                                 });
                                             }
+
                                             @Override
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
@@ -342,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
         String[] selectionArgs = {String.valueOf(ID_App)};
 
         int count = db.update(Database.Observacions.TABLE_NAME, values, selection, selectionArgs);
+        db.close();
         mDbHelper.close();
         Captura frag1 = new Captura();
         frag1.setEnviada();

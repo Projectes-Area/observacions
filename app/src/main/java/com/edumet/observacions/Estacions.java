@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -235,6 +236,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     case Activity.RESULT_CANCELED:
                         Log.i("..OnActResult", "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
+                        finish();
                         break;
                 }
                 updateLocationUI();
@@ -271,7 +273,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                //Toast.makeText(getActivity(), R.string.fix_settings, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), R.string.fix_settings, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
                         updateLocationUI();
@@ -296,8 +298,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
             if (!flagLocalitzada) {
-                //Snackbar.make(findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
-                //((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 flagLocalitzada = true;
                 desaPreferencies();
             }

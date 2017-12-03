@@ -22,7 +22,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -86,7 +85,6 @@ public class Captura extends Fragment {
     private Double laLongitud;
     private int ID_App;
 
-    private boolean flagLocalitzada = false;
     private boolean flagGirada = false;
     private boolean flagDesada = false;
     private boolean flagEditada = false;
@@ -125,6 +123,11 @@ public class Captura extends Fragment {
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
         usuari = sharedPref.getString("usuari", "");
+        Double latDesada=Double.valueOf(sharedPref.getString("latitud","0"));
+        Double lonDesada=Double.valueOf(sharedPref.getString("longitud","0"));
+        mCurrentLocation=new Location("");
+        mCurrentLocation.setLatitude(latDesada);
+        mCurrentLocation.setLongitude(lonDesada);
 
         return v;
     }
@@ -250,7 +253,7 @@ public class Captura extends Fragment {
             ObservacionsFetes.setImageResource(R.mipmap.ic_time_red);
         }
 
-        updateValuesFromBundle(savedInstanceState);
+        //updateValuesFromBundle(savedInstanceState);
     }
 
     @Override
@@ -265,17 +268,17 @@ public class Captura extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
+    /*private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             updateLocationUI();
         }
-    }
+    }*/
 
     @Override
     public void onResume() {
         super.onResume();
         navigation.setSelectedItemId(R.id.navigation_observacions);
-        updateLocationUI();
+        //updateLocationUI();
         if (output != null) {
             imatge.setImageBitmap(bitmap);
             if (!flagEnviada) {
@@ -323,20 +326,12 @@ public class Captura extends Fragment {
         Envia.setEnabled(true);
     }
 
-    private void updateLocationUI() {
-        if (mCurrentLocation != null) {
-            if (!flagLocalitzada) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "S'ha localitzat la teva ubicació", Snackbar.LENGTH_SHORT).show();
-                ((MainActivity) getActivity()).ubicacio(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                flagLocalitzada = true;
-                desaPreferencies();
-            }
+/*    private void updateLocationUI() {
             Foto.setImageResource(R.mipmap.ic_camera_edumet);
             Foto.setEnabled(true);
             Mapa.setImageResource(R.mipmap.ic_location_edumet);
             Mapa.setEnabled(true);
-        }
-    }
+    }*/
 
     //
     // MAPA
@@ -350,13 +345,11 @@ public class Captura extends Fragment {
             intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, String.valueOf(num_fenomen));
             startActivity(intent);
         } else {
-            if (mCurrentLocation != null) {
                 Intent intent = new Intent(getActivity(), MapsActivity.class);
                 intent.putExtra(MainActivity.EXTRA_LATITUD, String.valueOf(mCurrentLocation.getLatitude()));
                 intent.putExtra(MainActivity.EXTRA_LONGITUD, String.valueOf(mCurrentLocation.getLongitude()));
                 intent.putExtra(MainActivity.EXTRA_NUMFENOMEN, "0");
                 startActivity(intent);
-            }
         }
     }
 
@@ -639,78 +632,5 @@ public class Captura extends Fragment {
         cursor.close();
         mDbHelper.close();
         return nPendents;
-    }
-
-    public void desaPreferencies() {
-
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("latitud", String.valueOf(mCurrentLocation.getLatitude()));
-        editor.putString("longitud", String.valueOf(mCurrentLocation.getLongitude()));
-
-        int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
-        if (estacioPreferida == 0) {
-            String[] projection = {
-                    Database.Estacions._ID,
-                    Database.Estacions.COLUMN_NAME_ID_EDUMET,
-                    Database.Estacions.COLUMN_NAME_LATITUD,
-                    Database.Estacions.COLUMN_NAME_LONGITUD,
-            };
-
-            String selection = Database.Estacions._ID + " > ?";
-            String[] selectionArgs = {"0"};
-            String sortOrder = null;
-
-            mDbHelper = new DataHelper(getContext());
-            SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-            Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-
-            int estacioPropera = 0;
-            double distanciaPropera = 1000000;
-
-            while (cursor.moveToNext()) {
-                Double distancia = calculaDistancia(
-                        mCurrentLocation.getLatitude(),
-                        mCurrentLocation.getLongitude(),
-                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LATITUD))),
-                        Double.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_LONGITUD))));
-
-                if (distancia < distanciaPropera) {
-                    distanciaPropera = distancia;
-                    estacioPropera = Integer.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(Database.Estacions.COLUMN_NAME_ID_EDUMET)));
-                }
-            }
-            cursor.close();
-            mDbHelper.close();
-
-            Log.i(".Preferida_Edumet", String.valueOf(estacioPropera));
-            editor.putInt("estacio_preferida", estacioPropera);
-            editor.putInt("estacio_actual", estacioPropera);
-        }
-        editor.apply();
-    }
-
-    public double calculaDistancia(Double lat1, Double lon1, Double lat2, Double lon2) {
-        double R = 6371; // Radius of the earth in km
-        double dLat = deg2rad(lat2 - lat1);  // deg2rad below
-        double dLon = deg2rad(lon2 - lon1);
-        double a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double d = R * c; // Distance in km
-        return d;
-    }
-
-    public double deg2rad(double deg) {
-        return deg * (Math.PI / 180);
-    }
-
-    @Override
-    public void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
     }
 }

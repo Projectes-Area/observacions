@@ -22,8 +22,7 @@
             android:id="@+id/btnFoto"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:src="@mipmap/ic_camera_white"
-            app:srcCompat="@mipmap/ic_camera_white" />
+            android:src="@mipmap/ic_camera_edumet" />
 
         <ImageButton
             android:id="@+id/btnGirar"

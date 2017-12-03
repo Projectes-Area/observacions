@@ -66,8 +66,6 @@ public class FragmentEstacions extends Fragment {
 
     SharedPreferences sharedPref;
 
-    private int visitesSpinner=0;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_estacions, container, false);
