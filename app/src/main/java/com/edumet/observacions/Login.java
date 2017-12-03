@@ -1,8 +1,6 @@
 package com.edumet.observacions;
 
-import android.content.ContentValues;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-
-import org.json.JSONArray;
 
 import java.io.IOException;
 
@@ -30,9 +26,6 @@ public class Login extends Fragment {
     private EditText Usuari;
     private EditText Contrasenya;
     private ProgressBar mProgressBar;
-
-    private boolean flagAutentificat = false;
-    private boolean flagEstacions = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +45,6 @@ public class Login extends Fragment {
                 try {
                     mProgressBar.setVisibility(ProgressBar.VISIBLE);
                     LoginOK.setEnabled(false);
-                    baixaEstacions();
                     autentica();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -61,7 +53,7 @@ public class Login extends Fragment {
         });
     }
 
-//
+    //
 // LOGIN
 //
     public void autentica() throws Exception {
@@ -109,15 +101,12 @@ public class Login extends Fragment {
                                 editor.putString("nom_usuari", resposta);
                                 editor.apply();
                                 Log.i(".Autentificació", "Correcta");
-                                flagAutentificat = true;
-                                if (flagEstacions) {
-                                    ((MainActivity) getActivity()).captura();
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                        }
-                                    });
-                                }
+                                ((MainActivity) getActivity()).captura();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        mProgressBar.setVisibility(ProgressBar.GONE);
+                                    }
+                                });
                             }
                         });
                     }
@@ -132,97 +121,5 @@ public class Login extends Fragment {
                 }
             }
         });
-    }
-
-//
-// BAIXA ESTACIONS
-//
-
-    DataHelper mDbHelper;
-    private SQLiteDatabase db;
-
-    public void baixaEstacions() throws Exception {
-        String laUrl = getResources().getString(R.string.url_servidor);
-        Request request = new Request.Builder()
-                .url(laUrl + "?tab=cnjEst&xarxaEst=D")
-                //.url(laUrl + "?tab=cnjEst")
-                .build();
-
-        Log.i("Baixa", laUrl + "?tab=cnjEst");
-
-        final OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                            }
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    String resposta = response.body().string().trim();
-                                                    Log.i(".Estacions",resposta);
-                                                    try {
-                                                        JSONArray jsonArray = new JSONArray(resposta);
-                                                        mDbHelper = new DataHelper(getContext());
-                                                        db = mDbHelper.getWritableDatabase();
-                                                        ContentValues values = new ContentValues();
-
-                                                        for (int i = 0; i < jsonArray.length(); i++) {
-                                                            JSONArray JSONEstacio = jsonArray.getJSONArray(i);
-
-                                                            values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                            values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                            values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                            values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                            values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                            values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                            values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                            values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                            values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                            values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
-
-                                                            long newRowId = db.insert(Database.Estacions.TABLE_NAME, null, values);
-                                                        }
-                                                        Log.i(".Estacions", "Tot baixat");
-                                                        flagEstacions = true;
-                                                        if (flagAutentificat) {
-                                                            ((MainActivity) getActivity()).captura();
-                                                            getActivity().runOnUiThread(new Runnable() {
-                                                                public void run() {
-                                                                    mProgressBar.setVisibility(ProgressBar.GONE);
-                                                                }
-                                                            });
-                                                        }
-                                                    } catch (Exception e) {
-                                                        getActivity().runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
-                                                                mProgressBar.setVisibility(ProgressBar.GONE);
-                                                            }
-                                                        });
-                                                    }
-                                                } else {
-                                                    getActivity().runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        }
-        );
-
-    }
-
-    @Override
-    public void onDestroy() {
-        mDbHelper.close();
-        super.onDestroy();
     }
 }

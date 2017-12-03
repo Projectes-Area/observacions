@@ -14,10 +14,13 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -92,9 +95,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
         FragmentInfoEstacio secFragment = new FragmentInfoEstacio();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_info_container, secFragment).commit();
-/*
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);*/
+        //ab.setDisplayHomeAsUpEnabled(true);
 
         sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
@@ -143,14 +145,14 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             switch (item.getItemId()) {
                 case R.id.navigation_observacions:
                     intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_estacions:
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(), Radar.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
@@ -317,7 +319,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if (Integer.valueOf(marker.getTag().toString())>0) {
+                if (Integer.valueOf(marker.getTag().toString()) > 0) {
                     FragmentEstacions fragment = (FragmentEstacions) getSupportFragmentManager().findFragmentById(R.id.fragment_estacions_container);
                     fragment.clicaSpinner(Integer.valueOf(marker.getTag().toString()));
                 } else {
@@ -329,20 +331,20 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         });
 
         estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
-        Log.i("..NumEstacions",String.valueOf(IDS_Edumet.size()));
+        Log.i("..NumEstacions", String.valueOf(IDS_Edumet.size()));
 
         LatLng observacio;
         Marker marcador;
         for (int i = 0; i < IDS_Edumet.size(); i++) {
-            observacio= new LatLng(Double.valueOf(latituds.get(i).toString()),Double.valueOf(longituds.get(i).toString()));
-                marcador=mMap.addMarker(new MarkerOptions()
-                        .position(observacio)
-                );
-                marcador.setTag(i);
-                if (Integer.valueOf(IDS_Edumet.get(i).toString()) == estacioPreferida) {
-                    ID_estacioPreferida = i;
-                    marcador.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                }
+            observacio = new LatLng(Double.valueOf(latituds.get(i).toString()), Double.valueOf(longituds.get(i).toString()));
+            marcador = mMap.addMarker(new MarkerOptions()
+                    .position(observacio)
+            );
+            marcador.setTag(i);
+            if (Integer.valueOf(IDS_Edumet.get(i).toString()) == estacioPreferida) {
+                ID_estacioPreferida = i;
+                //marcador.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            }
         }
     }
 
@@ -392,12 +394,25 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), "Vols sortir de l'App ?", Snackbar.LENGTH_LONG)
+                .setAction("SÍ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        finish();
+                    }
+                });
+        snackbar.show();
+    }
+
     public void desaPreferencies() {
         SharedPreferences sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("latitud", String.valueOf(mCurrentLocation.getLatitude()));
         editor.putString("longitud", String.valueOf(mCurrentLocation.getLongitude()));
-        Log.i("...latitud_actual",String.valueOf(mCurrentLocation.getLatitude()));
+        Log.i("...latitud_actual", String.valueOf(mCurrentLocation.getLatitude()));
 
         int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
         if (estacioPreferida == 0) {
@@ -421,13 +436,13 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
             Log.i("...ID_Estacio preferida", String.valueOf(ID_estacioPreferida));
             editor.putInt("estacio_preferida", estacioPropera);
             editor.putInt("estacio_actual", estacioPropera);
-            }
+        }
         editor.apply();
 
-        LatLng observacio= new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
+        LatLng observacio = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         Marker marcador;
-        marcador=mMap.addMarker(new MarkerOptions()
+        marcador = mMap.addMarker(new MarkerOptions()
                 .position(observacio)
                 .title("La teva ubicació actual")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))

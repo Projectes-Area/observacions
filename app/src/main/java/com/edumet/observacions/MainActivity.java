@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 Login firstFragment = new Login();
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
             } else {
-
                 Captura firstFragment = new Captura();
                 Bundle args = new Bundle();
                 args.putInt("ID_App", ID_App);
