@@ -303,14 +303,17 @@ public class ObservacionsFetes extends Fragment {
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getActivity().getApplicationContext(),Estacions.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getActivity().getApplicationContext(),Radar.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
                     intent = new Intent(getActivity().getApplicationContext(),Pronostic.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
             }

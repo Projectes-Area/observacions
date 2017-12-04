@@ -97,7 +97,6 @@ public class Splash extends AppCompatActivity {
         Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         int numEstacions=cursor.getCount();
         cursor.close();
-        db.close();
         mDbHelper.close();
         Log.i("..numEstacions",String.valueOf(numEstacions));
 

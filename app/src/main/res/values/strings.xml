@@ -49,4 +49,5 @@
     <string name="fix_settings">Els ajustos de localització no són els adients i no es poden canviar des d\'aquí. Canvia\'ls des dels ajustaments del sistema.</string>
     <string name="error_estacio_no_dades">L\'estació no proporciona les dades ...</string>
     <string name="error_estacio_no_respon">L\'estació no respon ...</string>
+    <string name="ubicacio_actual">Ubicació actual</string>
 </resources>

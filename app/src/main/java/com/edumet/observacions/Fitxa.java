@@ -81,14 +81,17 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                     return true;
                 case R.id.navigation_estacions:
                     intent = new Intent(getApplicationContext(),Estacions.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_radar:
                     intent = new Intent(getApplicationContext(),Radar.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_pronostic:
                     intent = new Intent(getApplicationContext(),Pronostic.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     return true;
             }

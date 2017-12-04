@@ -80,7 +80,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     private int ID_estacioPreferida = 0;
 
     List IDS_Edumet = new ArrayList<>();
-    List IDS_Spinner = new ArrayList<>();
     List latituds = new ArrayList<>();
     List longituds = new ArrayList<>();
 
@@ -143,24 +142,26 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Intent intent;
-            switch (item.getItemId()) {
-                case R.id.navigation_observacions:
-                    intent = new Intent(getApplicationContext(), MainActivity.class);
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_estacions:
-                    return true;
-                case R.id.navigation_radar:
-                    intent = new Intent(getApplicationContext(), Radar.class);
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    return true;
-                case R.id.navigation_pronostic:
-                    intent = new Intent(getApplicationContext(), Pronostic.class);
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    return true;
+            if (flagLocalitzada == true) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_observacions:
+                        intent = new Intent(getApplicationContext(), MainActivity.class);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        return true;
+                    case R.id.navigation_estacions:
+                        return true;
+                    case R.id.navigation_radar:
+                        intent = new Intent(getApplicationContext(), Radar.class);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        return true;
+                    case R.id.navigation_pronostic:
+                        intent = new Intent(getApplicationContext(), Pronostic.class);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        return true;
+                }
             }
             return false;
         }
@@ -444,7 +445,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         Marker marcador;
         marcador = mMap.addMarker(new MarkerOptions()
                 .position(observacio)
-                .title("La teva ubicació actual")
+                .title("Ubicació actual")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         );
         marcador.setTag(0);
