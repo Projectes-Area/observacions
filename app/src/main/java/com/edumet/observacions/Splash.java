@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 
+import java.io.File;
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -47,17 +49,20 @@ public class Splash extends AppCompatActivity {
             baixaEstacions();
         }
     }
-//
+
+    //
 // PERMÍS LOCALITZACIÓ
 //
     private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
+
     private void requestPermissions() {
         Log.i(".requestPermissions", "Requesting permission");
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
@@ -66,75 +71,100 @@ public class Splash extends AppCompatActivity {
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(".PermResult", "Permission granted");
                 baixaEstacions();
-            }else {
+            } else {
                 finish();
             }
         }
     }
-//
+
+    //
 // BAIXA ESTACIONS
 //
     DataHelper mDbHelper;
     private SQLiteDatabase db;
 
     public void baixaEstacions() {
+        mDbHelper = new DataHelper(this);
+        db = mDbHelper.getReadableDatabase();
+        String[] projection = {
+                Database.Estacions.COLUMN_NAME_ID_EDUMET
+        };
 
-        mDbHelper = new DataHelper(getApplicationContext());
-        db = mDbHelper.getWritableDatabase();
-        db.execSQL("delete from "+ Database.Estacions.TABLE_NAME);
+        String selection = Database.Estacions._ID + "> ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = null;
+
+        Cursor cursor = db.query(Database.Estacions.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        int numEstacions=cursor.getCount();
+        cursor.close();
         db.close();
         mDbHelper.close();
+        Log.i("..numEstacions",String.valueOf(numEstacions));
 
-        String laUrl = getResources().getString(R.string.url_servidor);
-        Request request = new Request.Builder()
-                .url(laUrl + "?tab=cnjEst&xarxaEst=D")
-                .build();
+        if (numEstacions == 0) {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                }
+            });
 
-        final OkHttpClient client = new OkHttpClient();
-        client.newCall(request).enqueue(new Callback() {
-                                            @Override
-                                            public void onFailure(Call call, IOException e) {
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
-                                                        mProgressBar.setVisibility(ProgressBar.GONE);
-                                                    }
-                                                });
-                                            }
+            String laUrl = getResources().getString(R.string.url_servidor);
+            Request request = new Request.Builder()
+                    .url(laUrl + "?tab=cnjEst&xarxaEst=D")
+                    .build();
 
-                                            @Override
-                                            public void onResponse(Call call, Response response) throws IOException {
-                                                if (response.isSuccessful()) {
-                                                    String resposta = response.body().string().trim();
-                                                    Log.i(".Estacions", resposta);
-                                                    try {
-                                                        JSONArray jsonArray = new JSONArray(resposta);
-                                                        mDbHelper = new DataHelper(getApplicationContext());
-                                                        db = mDbHelper.getWritableDatabase();
-                                                        ContentValues values = new ContentValues();
-                                                        for (int i = 0; i < jsonArray.length(); i++) {
-                                                            JSONArray JSONEstacio = jsonArray.getJSONArray(i);
-
-                                                            values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                            values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                            values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                            values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                            values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                            values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                            values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                            values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                            values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                            values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
-
-                                                            db.insert(TABLE_NAME, null, values);
+            final OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                                                @Override
+                                                public void onFailure(Call call, IOException e) {
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
                                                         }
-                                                        db.close();
-                                                        mDbHelper.close();
-                                                        Log.i(".Estacions", "Tot baixat");
-                                                        Intent intent = new Intent(getApplicationContext(), Estacions.class);
-                                                        startActivity(intent);
-                                                        finish();
-                                                    } catch (Exception e) {
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onResponse(Call call, Response response) throws IOException {
+                                                    if (response.isSuccessful()) {
+                                                        String resposta = response.body().string().trim();
+                                                        try {
+                                                            JSONArray jsonArray = new JSONArray(resposta);
+                                                            mDbHelper = new DataHelper(getApplicationContext());
+                                                            db = mDbHelper.getWritableDatabase();
+                                                            ContentValues values = new ContentValues();
+                                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                                JSONArray JSONEstacio = jsonArray.getJSONArray(i);
+
+                                                                values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
+                                                                values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
+                                                                values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
+                                                                values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
+
+                                                                db.insert(TABLE_NAME, null, values);
+                                                            }
+                                                            db.close();
+                                                            mDbHelper.close();
+                                                            Log.i("..Noves estacions", String.valueOf(jsonArray.length()));
+                                                            Intent intent = new Intent(getApplicationContext(), Estacions.class);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        } catch (Exception e) {
+                                                            runOnUiThread(new Runnable() {
+                                                                public void run() {
+                                                                    Snackbar.make(findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                                    mProgressBar.setVisibility(ProgressBar.GONE);
+                                                                }
+                                                            });
+                                                        }
+                                                    } else {
                                                         runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 Snackbar.make(findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
@@ -142,16 +172,14 @@ public class Splash extends AppCompatActivity {
                                                             }
                                                         });
                                                     }
-                                                } else {
-                                                    runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Snackbar.make(findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
-                                                            mProgressBar.setVisibility(ProgressBar.GONE);
-                                                        }
-                                                    });
                                                 }
                                             }
-                                        }
-        );
+            );
+        } else {
+            Log.i("..Estacions", "No cal baixar-les");
+            Intent intent = new Intent(getApplicationContext(), Estacions.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }
