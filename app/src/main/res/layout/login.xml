@@ -28,7 +28,6 @@
         android:ems="10"
         android:hint="@string/contrasenya"
         android:inputType="textPassword"
-        android:text="lstp2012"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtUser" />
@@ -42,7 +41,6 @@
         android:layout_marginTop="40dp"
         android:ems="10"
         android:hint="@string/usuari"
-        android:text="43900018"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblIdentifica" />
