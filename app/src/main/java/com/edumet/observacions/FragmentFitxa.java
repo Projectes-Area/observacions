@@ -28,7 +28,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -68,8 +70,9 @@ public class FragmentFitxa extends Fragment {
     private SQLiteDatabase db;
 
     Fitxa activity;
-    String[] nomFenomen;
+    //String[] nomFenomen;
     String usuari;
+    //String[] nomFenomen;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -130,8 +133,34 @@ public class FragmentFitxa extends Fragment {
     @Override
     public void onViewCreated(View v, Bundle savedInstanceState) {
 
-        Resources res = getResources();
-        nomFenomen = res.getStringArray(R.array.nomFenomen);
+        //Resources res = getResources();
+        //nomFenomen = res.getStringArray(R.array.nomFenomen);
+
+        List<String> nomFenomen0 = new ArrayList<String>();
+        //List<String> categories = new ArrayList<String>();
+
+        String[] projection0 = {
+                DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO,
+        };
+        String selection0 = DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO + " > ?";
+        String[] selectionArgs0 = {"0"};
+        String sortOrder0 = null;
+
+
+        mDbHelper = new DataHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor0 = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection0, selection0, selectionArgs0, null, null, sortOrder0);
+
+        while (cursor0.moveToNext()) {
+            nomFenomen0.add(cursor0.getString(cursor0.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
+            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
+        }
+        cursor0.close();
+        mDbHelper.close();
+
+
+
+
 
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -173,6 +202,8 @@ public class FragmentFitxa extends Fragment {
                 enviat = cursor.getInt(cursor.getColumnIndexOrThrow(Database.Observacions.COLUMN_NAME_ENVIAT));
         cursor.close();
         mDbHelper.close();
+
+        String[] nomFenomen = nomFenomen0.toArray(new String[0]);
 
         fenomen.setText(nomFenomen[Integer.valueOf(elFenomen)]);
 

@@ -34,8 +34,18 @@ public class DataHelper extends SQLiteOpenHelper {
                     Database.Estacions.COLUMN_NAME_ESTACIO + " TEXT," +
                     Database.Estacions.COLUMN_NAME_CLIMA+ " TEXT)";
 
+    private static final String SQL_CREATE_ENTRIES_FENOLOGIES =
+            "CREATE TABLE " + DatabaseFeno.Fenologies.TABLE_NAME_FENO + " (" +
+                    DatabaseFeno.Fenologies._ID + " INTEGER PRIMARY KEY," +
+                    DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO + " TEXT," +
+                    DatabaseFeno.Fenologies.COLUMN_NAME_BLOC_FENO + " TEXT," +
+                    DatabaseFeno.Fenologies.COLUMN_NAME_CODI_FENO + " TEXT," +
+                    DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO + " TEXT)";
+
+
     private static final String SQL_DELETE_ENTRIES_PARAMETRES ="DROP TABLE IF EXISTS " + Database.Observacions.TABLE_NAME;
     private static final String SQL_DELETE_ENTRIES_ESTACIONS ="DROP TABLE IF EXISTS " + Database.Estacions.TABLE_NAME;
+    private static final String SQL_DELETE_ENTRIES_FENOLOGIES ="DROP TABLE IF EXISTS " + DatabaseFeno.Fenologies.TABLE_NAME_FENO;
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Database.db";
@@ -47,11 +57,13 @@ public class DataHelper extends SQLiteOpenHelper {
         
         db.execSQL(SQL_CREATE_ENTRIES_PARAMETRES);
         db.execSQL(SQL_CREATE_ENTRIES_ESTACIONS);
+        db.execSQL(SQL_CREATE_ENTRIES_FENOLOGIES);
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES_PARAMETRES);
         db.execSQL(SQL_DELETE_ENTRIES_ESTACIONS);
+        db.execSQL(SQL_DELETE_ENTRIES_FENOLOGIES);
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

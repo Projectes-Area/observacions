@@ -58,7 +58,7 @@ public class ObservacionsFetes extends Fragment {
 
     private ProgressBar mProgressBar;
 
-    String[] nomFenomen;
+    //String[] nomFenomen;
     String usuari;
 
     Bitmap bitmap;
@@ -80,11 +80,37 @@ public class ObservacionsFetes extends Fragment {
         BottomNavigationHelper.disableShiftMode(navigation);
         //navigation.setSelectedItemId(R.id.navigation_observacions);
 
+        List<String> nomFenomen0 = new ArrayList<String>();
+        //List<String> categories = new ArrayList<String>();
+
+        String[] projection0 = {
+                DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO,
+        };
+        String selection0 = DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO + " > ?";
+        String[] selectionArgs0 = {"0"};
+        String sortOrder0 = null;
+
+
+        mDbHelper = new DataHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor0 = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection0, selection0, selectionArgs0, null, null, sortOrder0);
+
+        while (cursor0.moveToNext()) {
+            nomFenomen0.add(cursor0.getString(cursor0.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
+            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
+        }
+        cursor0.close();
+        mDbHelper.close();
+
+        String[] nomFenomen = nomFenomen0.toArray(new String[0]);
+
+
+
         mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getReadableDatabase();
 
-        Resources res = getResources();
-        nomFenomen = res.getStringArray(R.array.nomFenomen);
+        //Resources res = getResources();
+        //nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
 
@@ -261,6 +287,7 @@ public class ObservacionsFetes extends Fragment {
             ll.addView(llData);
 
             // FENOMEN
+
 
             TextView lblFen = new TextView(getContext());
             lblFen.setText(nomFenomen[Integer.parseInt(itemFenomens.get(j).toString())]);

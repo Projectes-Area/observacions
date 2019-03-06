@@ -15,6 +15,7 @@ import android.util.Log;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.edumet.observacions.Database.Estacions.TABLE_NAME;
+import static com.edumet.observacions.DatabaseFeno.Fenologies.TABLE_NAME_FENO;
+
 
 public class Splash extends AppCompatActivity {
 
@@ -47,6 +50,8 @@ public class Splash extends AppCompatActivity {
             requestPermissions();
         } else {
             baixaEstacions();
+            baixaFeno();
+
         }
     }
 
@@ -71,13 +76,13 @@ public class Splash extends AppCompatActivity {
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(".PermResult", "Permission granted");
                 baixaEstacions();
+                baixaFeno();
             } else {
                 finish();
             }
         }
     }
-
-    //
+//
 // BAIXA ESTACIONS
 //
     DataHelper mDbHelper;
@@ -130,11 +135,15 @@ public class Splash extends AppCompatActivity {
                                                         String resposta = response.body().string().trim();
                                                         try {
                                                             JSONArray jsonArray = new JSONArray(resposta);
+
+
                                                             mDbHelper = new DataHelper(getApplicationContext());
                                                             db = mDbHelper.getWritableDatabase();
                                                             ContentValues values = new ContentValues();
+
                                                             for (int i = 0; i < jsonArray.length(); i++) {
                                                                 JSONArray JSONEstacio = jsonArray.getJSONArray(i);
+
 
                                                                 values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
                                                                 values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
@@ -180,5 +189,115 @@ public class Splash extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
     }
+
+    // BAIXA FENO
+
+    DataHelper mDbHelperFeno;
+    private SQLiteDatabase dbFeno;
+
+
+    public void baixaFeno() {
+        mDbHelperFeno = new DataHelper(this);
+        dbFeno = mDbHelperFeno.getReadableDatabase();
+        String[] projection = {
+                DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO
+        };
+
+        String selection = DatabaseFeno.Fenologies._ID + "> ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = null;
+
+        Cursor cursor = dbFeno.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection, selection, selectionArgs, null, null, sortOrder);
+        int numFenologies=cursor.getCount();
+        cursor.close();
+        mDbHelperFeno.close();
+        Log.i("..numFenologies",String.valueOf(numFenologies));
+
+        if (numFenologies == 0) {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    mProgressBar.setVisibility(ProgressBar.VISIBLE);
+                }
+            });
+
+            String laUrl = getResources().getString(R.string.url_servidor);
+            Request request = new Request.Builder()
+                    .url(laUrl + "?tab=llistaFenoFenologics")
+                    .build();
+
+            final OkHttpClient client = new OkHttpClient();
+            client.newCall(request).enqueue(new Callback() {
+                                                @Override
+                                                public void onFailure(Call call, IOException e) {
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Snackbar.make(findViewById(android.R.id.content), R.string.error_connexio, Snackbar.LENGTH_LONG).show();
+                                                            mProgressBar.setVisibility(ProgressBar.GONE);
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onResponse(Call call, Response response) throws IOException {
+                                                    if (response.isSuccessful()) {
+                                                        String resposta = response.body().string().trim();
+                                                        try {
+                                                            JSONArray jsonArray = new JSONArray(resposta);
+
+
+                                                            mDbHelperFeno = new DataHelper(getApplicationContext());
+                                                            dbFeno = mDbHelperFeno.getWritableDatabase();
+                                                            ContentValues values = new ContentValues();
+
+                                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                                JSONArray JSONFenologia = jsonArray.getJSONArray(i);
+
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO, JSONFenologia.getString(0));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_BLOC_FENO, JSONFenologia.getString(1));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_CODI_FENO, JSONFenologia.getString(2));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO, JSONFenologia.getString(3));
+
+                                                                dbFeno.insert(TABLE_NAME_FENO, null, values);
+                                                            }
+                                                            dbFeno.close();
+                                                            mDbHelperFeno.close();
+                                                            Log.i("..Noves fenologies", String.valueOf(jsonArray.length()));
+                                                            //Intent intent = new Intent(getApplicationContext(), Estacions.class);
+                                                            //startActivity(intent);
+                                                            //finish();
+                                                        } catch (Exception e) {
+                                                            runOnUiThread(new Runnable() {
+                                                                public void run() {
+                                                                    Snackbar.make(findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                                    mProgressBar.setVisibility(ProgressBar.GONE);
+                                                                }
+                                                            });
+                                                        }
+                                                    } else {
+                                                        runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                Snackbar.make(findViewById(android.R.id.content), R.string.servidor_no_disponible, Snackbar.LENGTH_LONG).show();
+                                                                mProgressBar.setVisibility(ProgressBar.GONE);
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+            );
+        } else {
+            Log.i("..Fenologies", "No cal baixar-les");
+            //Intent intent = new Intent(getApplicationContext(), Estacions.class);
+            //startActivity(intent);
+            //finish();
+        }
+    }
+
+
+
+
+
 }
+
+

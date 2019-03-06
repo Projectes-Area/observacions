@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -276,7 +277,7 @@ public class FragmentEstacions extends Fragment {
 
                                                         for (int i = 0; i < JSONEstacio.length(); i++) {
                                                             valorsEstacio.add(JSONEstacio.getString(i));
-                                                            Log.i(".Valor_Estació", JSONEstacio.getString(i));
+                                                            //Log.i(".Valor_Estació", JSONEstacio.getString(i));
                                                         }
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
@@ -318,6 +319,7 @@ public class FragmentEstacions extends Fragment {
         String Pluja = "";
         String Vent = "";
         String dataActualitzacio = "";
+        int colorData = Color.RED;
 
         if (mostra) {
             Temperatura = valorsEstacio.get(4).toString() + " ºC";
@@ -336,32 +338,43 @@ public class FragmentEstacions extends Fragment {
             }
 
             String dia = "";
-            String hora = "";
             try {
                 SimpleDateFormat formatDia = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                SimpleDateFormat formatHora = new SimpleDateFormat("HH:mm:ss", Locale.US);
                 date = formatDia.parse(valorsEstacio.get(0).toString());
                 dia = diaCatala.format(date.getTime());
-                date = formatHora.parse(valorsEstacio.get(1).toString());
-                hora = horaCatala.format(date.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             Pluja = valorsEstacio.get(12).toString() + " mm";
             Vent = valorsEstacio.get(13).toString() + " Km/h";
+            dataActualitzacio = "Valors mesurats a " + dia + " " + valorsEstacio.get(1).toString();
+            Date Avui = new java.util.Date();
+            Double interval=0.0;
 
-            dataActualitzacio = "Valors mesurats a  " + dia + "  " + hora;
+
+            try {
+                SimpleDateFormat formatComplet = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                String dataLlarga = valorsEstacio.get(0).toString() + " " + valorsEstacio.get(1).toString();
+                date = formatComplet.parse(dataLlarga);
+                interval=(Avui.getTime() - date.getTime())/3600000.0;
+                Log.i("dif", interval.toString());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(interval<3.0) {
+                colorData= Color.GREEN;
+            } else {
+                colorData= android.graphics.Color.argb(255, 255, 165, 0); // taronja
+            }
         }
 
         FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
                 getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
-        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent);
-
-        if (mostra) {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), dataActualitzacio, Snackbar.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.error_estacio_no_dades, Snackbar.LENGTH_SHORT).show();
+        if(!mostra) {
+            dataActualitzacio="L\'estació no proporciona les dades ...";
         }
+            fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent, dataActualitzacio, colorData);
     }
 
     public void buidaInfo() {
@@ -377,7 +390,8 @@ public class FragmentEstacions extends Fragment {
 
         FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
                 getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_info_container);
-        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent);
+        int colorDefecte = Color.TRANSPARENT;
+        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent,"", colorDefecte);
     }
 
     @Override

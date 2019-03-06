@@ -112,6 +112,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         BottomNavigationHelper.disableShiftMode(navigation);
+        navigation.setSelectedItemId(R.id.navigation_estacions);
 
         String[] projection = {
                 Database.Estacions.COLUMN_NAME_ID_EDUMET,
@@ -142,7 +143,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Intent intent;
-            if (flagLocalitzada == true) {
+            if (flagLocalitzada) {
                 switch (item.getItemId()) {
                     case R.id.navigation_observacions:
                         intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -170,6 +171,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
+  //      navigation.setSelectedItemId(R.id.navigation_estacions);
         startLocationUpdates();
     }
 

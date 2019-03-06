@@ -95,7 +95,7 @@ public class Captura extends Fragment {
 
     private Location mCurrentLocation;
 
-    String[] nomFenomen;
+    //String[] nomFenomen;
     String usuari;
 
     BottomNavigationView navigation;
@@ -217,15 +217,37 @@ public class Captura extends Fragment {
             }
         });
 
-        Resources res = getResources();
-        nomFenomen = res.getStringArray(R.array.nomFenomen);
+        //Resources res = getResources();
+        //nomFenomen = res.getStringArray(R.array.nomFenomen);
 
-        List<String> categories = new ArrayList<String>();
-        for (int i = 1; i < nomFenomen.length; i++) {
-            categories.add(nomFenomen[i]);
+
+        List<String> nomFenomen = new ArrayList<String>();
+        //List<String> categories = new ArrayList<String>();
+
+        String[] projection = {
+                DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO,
+        };
+        String selection = DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO + " > ?";
+        String[] selectionArgs = {"0"};
+        String sortOrder = null;
+
+
+        mDbHelper = new DataHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection, selection, selectionArgs, null, null, sortOrder);
+
+        while (cursor.moveToNext()) {
+            nomFenomen.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
+            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
         }
+        cursor.close();
+        mDbHelper.close();
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, categories);
+        /*for (int i = 1; i < nomFenomen.length; i++) {
+            categories.add(nomFenomen[i]);
+        }*/
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, nomFenomen);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
