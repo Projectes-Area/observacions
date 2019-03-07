@@ -27,8 +27,8 @@ public final class Database {
         public static final String COLUMN_NAME_LONGITUD = "longitud";
         public static final String COLUMN_NAME_ALTITUD = "altitud";
         public static final String COLUMN_NAME_SITUACIO = "situacio";
-        public static final String COLUMN_NAME_ESTACIO = "estacio";
         public static final String COLUMN_NAME_CLIMA = "clima";
+        public static final String COLUMN_NAME_ESTACIO = "estacio";
     }
 }
 

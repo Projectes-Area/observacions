@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -114,7 +115,7 @@ public class Splash extends AppCompatActivity {
 
             String laUrl = getResources().getString(R.string.url_servidor);
             Request request = new Request.Builder()
-                    .url(laUrl + "?tab=cnjEst&xarxaEst=D")
+                    .url(laUrl + "?tab=cnjEstApp&xarxaEst=D")
                     .build();
 
             final OkHttpClient client = new OkHttpClient();
@@ -136,25 +137,23 @@ public class Splash extends AppCompatActivity {
                                                         try {
                                                             JSONArray jsonArray = new JSONArray(resposta);
 
-
                                                             mDbHelper = new DataHelper(getApplicationContext());
                                                             db = mDbHelper.getWritableDatabase();
                                                             ContentValues values = new ContentValues();
 
                                                             for (int i = 0; i < jsonArray.length(); i++) {
-                                                                JSONArray JSONEstacio = jsonArray.getJSONArray(i);
+                                                                JSONObject JSONEstacio=jsonArray.getJSONObject(i);
 
-
-                                                                values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString(0));
-                                                                values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString(1));
-                                                                values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString(2));
-                                                                values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString(3));
-                                                                values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString(4));
-                                                                values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString(5));
-                                                                values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString(6));
-                                                                values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString(7));
-                                                                values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString(8));
-                                                                values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString(9));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ID_EDUMET, JSONEstacio.getString("Id_estacio"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CODI, JSONEstacio.getString("Codi_estacio"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_NOM, JSONEstacio.getString("Nom_centre"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_POBLACIO, JSONEstacio.getString("Poblacio"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LATITUD, JSONEstacio.getString("Latitud"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_LONGITUD, JSONEstacio.getString("Longitud"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ALTITUD, JSONEstacio.getString("Altitud"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_SITUACIO, JSONEstacio.getString("Situacio_estacio"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_CLIMA, JSONEstacio.getString("Codi_clima"));
+                                                                values.put(Database.Estacions.COLUMN_NAME_ESTACIO, JSONEstacio.getString("Abreviatura"));
 
                                                                 db.insert(TABLE_NAME, null, values);
                                                             }
@@ -246,18 +245,17 @@ public class Splash extends AppCompatActivity {
                                                         try {
                                                             JSONArray jsonArray = new JSONArray(resposta);
 
-
                                                             mDbHelperFeno = new DataHelper(getApplicationContext());
                                                             dbFeno = mDbHelperFeno.getWritableDatabase();
                                                             ContentValues values = new ContentValues();
 
                                                             for (int i = 0; i < jsonArray.length(); i++) {
-                                                                JSONArray JSONFenologia = jsonArray.getJSONArray(i);
+                                                                JSONObject JSONFenologia=jsonArray.getJSONObject(i);
 
-                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO, JSONFenologia.getString(0));
-                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_BLOC_FENO, JSONFenologia.getString(1));
-                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_CODI_FENO, JSONFenologia.getString(2));
-                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO, JSONFenologia.getString(3));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_ID_FENO, JSONFenologia.getString("Id_feno"));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_BLOC_FENO, JSONFenologia.getString("Bloc_feno"));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_CODI_FENO, JSONFenologia.getString("Codi_feno"));
+                                                                values.put(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO, JSONFenologia.getString("Titol_feno"));
 
                                                                 dbFeno.insert(TABLE_NAME_FENO, null, values);
                                                             }

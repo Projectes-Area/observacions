@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -155,7 +156,7 @@ public class Pronostic extends AppCompatActivity {
 
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url(laUrl + "?tab=mobil&codEst=" + codEst_Edumet)
+                .url(laUrl + "?tab=mobilApp&codEst=" + codEst_Edumet)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -174,8 +175,8 @@ public class Pronostic extends AppCompatActivity {
                                                     String resposta = response.body().string().trim();
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
-                                                        JSONArray JSONEstacio = jsonArray.getJSONArray(0);
-                                                        final String INE = JSONEstacio.getString(20);
+                                                        JSONObject JSONEstacio=jsonArray.getJSONObject(0);
+                                                        final String INE = JSONEstacio.getString("Codi_INE");
                                                         runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 String html = "<iframe src='http://m.meteo.cat/?codi=" + INE + "' height='100%' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='yes' style='font-size:0.8em'></iframe>";

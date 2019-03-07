@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -430,7 +431,7 @@ public class ObservacionsFetes extends Fragment {
     public void sincronitza() throws Exception {
         String laUrl=getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url(laUrl+"?usuari=" + usuari + "&tab=visuFeno")
+                .url(laUrl+"?usuari=" + usuari + "&tab=visuFenoApp")
                 .build();
 
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
@@ -460,25 +461,27 @@ public class ObservacionsFetes extends Fragment {
 
                                                         for (int i = 0; i < jsonArray.length(); i++) {
 
-                                                            JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+                                                            //JSONArray JSONobservacio = jsonArray.getJSONArray(i);
+                                                            JSONObject JSONobservacio=jsonArray.getJSONObject(i);
                                                             flagRepetida = false;
                                                             for (int j = 0; j < itemIdsEdumet.size(); j++) {
                                                                 int Num1=Integer.valueOf(itemIdsEdumet.get(j).toString());
-                                                                int Num2=Integer.valueOf(JSONobservacio.getString(0).toString());
+                                                                int Num2=Integer.valueOf(JSONobservacio.getString("ID").toString());
                                                                 if (Num1 == Num2) {
                                                                     flagRepetida = true;
                                                                 }
                                                             }
                                                             if (!flagRepetida) {
                                                                 numNovaObservacio++;
-                                                                id_edumet.add(JSONobservacio.getString(0));
-                                                                dia.add(JSONobservacio.getString(2));
-                                                                hora.add(JSONobservacio.getString(3));
-                                                                latitud.add(JSONobservacio.getString(4));
-                                                                longitud.add(JSONobservacio.getString(5));
-                                                                numFenomen.add(JSONobservacio.getString(7));
-                                                                descripcio.add(JSONobservacio.getString(8));
-                                                                nom_remot.add(JSONobservacio.getString(9));
+
+                                                                id_edumet.add(JSONobservacio.getString("ID"));
+                                                                dia.add(JSONobservacio.getString("Data_observacio"));
+                                                                hora.add(JSONobservacio.getString("Hora_observacio"));
+                                                                latitud.add(JSONobservacio.getString("Latitud"));
+                                                                longitud.add(JSONobservacio.getString("Longitud"));
+                                                                numFenomen.add(JSONobservacio.getString("Id_feno"));
+                                                                descripcio.add(JSONobservacio.getString("Descripcio_observacio"));
+                                                                nom_remot.add(JSONobservacio.getString("Fotografia_observacio"));
 
                                                                 SimpleDateFormat formatDiaEdumet = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                                                                 SimpleDateFormat formatHoraEdumet = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -486,12 +489,12 @@ public class ObservacionsFetes extends Fragment {
                                                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
                                                                 SimpleDateFormat shf = new SimpleDateFormat("HHmmss", Locale.US);
 
-                                                                String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString(2)));
-                                                                String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString(3)));
+                                                                String diaString = sdf.format(formatDiaEdumet.parse(JSONobservacio.getString("Data_observacio")));
+                                                                String horaString = shf.format(formatHoraEdumet.parse(JSONobservacio.getString("Hora_observacio")));
                                                                 String nomFitxer = diaString + horaString;
 
                                                                 try {
-                                                                    downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString(9), nomFitxer);
+                                                                    downloadFileAsync(numNovaObservacio, "https://edumet.cat/edumet/meteo_proves/imatges/fenologia/" + JSONobservacio.getString("Fotografia_observacio"), nomFitxer);
                                                                 } catch (Exception e) {
                                                                     e.printStackTrace();
                                                                 }

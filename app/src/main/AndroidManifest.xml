@@ -94,7 +94,7 @@
             android:name=".Pronostic"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="com.edumet.observacions.Estacions">
+            android:parentActivityName="com.edumet.observacions.Estacions"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

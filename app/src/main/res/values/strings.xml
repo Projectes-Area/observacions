@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="nomFenomen">
-        <item>Genèric</item>
-        <item>Papallona</item>
-        <item>Oreneta</item>
-        <item>Ametller</item>
-        <item>Cirerer</item>
-    </string-array>
     <string name="app_name">Edumet</string>
     <string name="location_settings_inadequate_warning">S\'ha d\'activar la localització</string>
     <string name="permission_rationale">Es necesita el permís de localització</string>
@@ -41,7 +34,7 @@
     <string name="elimina">Elimina aquesta observació</string>
     <string name="mostra_imatge">Mostra la fotografia</string>
     <string name="sincronitza">Sincronitza amb el servidor</string>
-    <string name="url_servidor">https://edumet.cat/edumet/meteo_proves/dades_recarregar.php</string>
+    <string name="url_servidor">https://edumet.cat/edumet/meteo_2/dades_recarregar.php</string>
     <string name="title_observacions">Observació</string>
     <string name="title_estacions">Estacions</string>
     <string name="title_radar">Radar</string>

@@ -31,8 +31,8 @@ public class DataHelper extends SQLiteOpenHelper {
                     Database.Estacions.COLUMN_NAME_LONGITUD + " TEXT," +
                     Database.Estacions.COLUMN_NAME_ALTITUD + " TEXT," +
                     Database.Estacions.COLUMN_NAME_SITUACIO+ " TEXT," +
-                    Database.Estacions.COLUMN_NAME_ESTACIO + " TEXT," +
-                    Database.Estacions.COLUMN_NAME_CLIMA+ " TEXT)";
+                    Database.Estacions.COLUMN_NAME_CLIMA + " TEXT," +
+                    Database.Estacions.COLUMN_NAME_ESTACIO+ " TEXT)";
 
     private static final String SQL_CREATE_ENTRIES_FENOLOGIES =
             "CREATE TABLE " + DatabaseFeno.Fenologies.TABLE_NAME_FENO + " (" +

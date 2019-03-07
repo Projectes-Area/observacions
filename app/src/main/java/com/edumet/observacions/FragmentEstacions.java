@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +60,17 @@ public class FragmentEstacions extends Fragment {
     private int ID_Edumet_preferida;
     private int ID_Edumet_actual;
 
-    List valorsEstacio;
+    String temperatura;
+    String max;
+    String min;
+    String humitat;
+    String pressio;
+    String sunrise;
+    String sunset;
+    String pluja;
+    String vent ;
+    String dataAct;
+    String horaAct;
 
     SimpleDateFormat diaCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
     SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm", Locale.US);
@@ -252,7 +263,7 @@ public class FragmentEstacions extends Fragment {
     public void baixaValors(String codEst_Edumet) throws Exception {
         String laUrl = getResources().getString(R.string.url_servidor);
         Request request = new Request.Builder()
-                .url(laUrl + "?tab=mobil&codEst=" + codEst_Edumet)
+                .url(laUrl + "?tab=mobilApp&codEst=" + codEst_Edumet)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -269,20 +280,27 @@ public class FragmentEstacions extends Fragment {
                                             public void onResponse(Call call, Response response) throws IOException {
                                                 if (response.isSuccessful()) {
                                                     String resposta = response.body().string().trim();
-                                                    Log.i(".resposta", resposta);
-                                                    valorsEstacio = new ArrayList<>();
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
-                                                        JSONArray JSONEstacio = jsonArray.getJSONArray(0);
+                                                        //JSONArray JSONEstacio = jsonArray.getJSONArray(0);
+                                                        JSONObject JSONEstacio=jsonArray.getJSONObject(0);
 
-                                                        for (int i = 0; i < JSONEstacio.length(); i++) {
-                                                            valorsEstacio.add(JSONEstacio.getString(i));
-                                                            //Log.i(".Valor_Estació", JSONEstacio.getString(i));
-                                                        }
+                                                        temperatura = JSONEstacio.getString("Temp_ext_actual");
+                                                        max = JSONEstacio.getString("Temp_ext_max_avui");
+                                                        min = JSONEstacio.getString("Temp_ext_min_avui");
+                                                        humitat = JSONEstacio.getString("Hum_ext_actual");
+                                                        pressio = JSONEstacio.getString("Pres_actual");
+                                                        sunrise = JSONEstacio.getString("Sortida_sol");
+                                                        sunset = JSONEstacio.getString("Posta_sol");
+                                                        pluja  = JSONEstacio.getString("Precip_acum_avui");
+                                                        vent =  JSONEstacio.getString("Vent_vel_actual");
+                                                        dataAct =  JSONEstacio.getString("Data_UTC");
+                                                        horaAct =  JSONEstacio.getString("Hora_UTC");
+
                                                         getActivity().runOnUiThread(new Runnable() {
                                                             public void run() {
-                                                                double pressio = Double.valueOf(valorsEstacio.get(11).toString());
-                                                                if (pressio == 0.0) {
+                                                                double presion = Double.valueOf(pressio);
+                                                                if (presion == 0.0) {
                                                                     mostraInfo(false);
                                                                 } else {
                                                                     mostraInfo(true);
@@ -322,16 +340,16 @@ public class FragmentEstacions extends Fragment {
         int colorData = Color.RED;
 
         if (mostra) {
-            Temperatura = valorsEstacio.get(4).toString() + " ºC";
-            Max = valorsEstacio.get(5).toString() + " ºC";
-            Min = valorsEstacio.get(6).toString() + " ºC";
-            Humitat = valorsEstacio.get(10).toString() + " %";
-            Pressio = valorsEstacio.get(11).toString() + " HPa";
+            Temperatura = temperatura + " ºC";
+            Max = max + " ºC";
+            Min = min + " ºC";
+            Humitat = humitat + " %";
+            Pressio = pressio + " HPa";
             try {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.US);
-                date = format.parse(valorsEstacio.get(2).toString());
+                date = format.parse(sunrise);
                 Sunrise = horaCatala.format(date.getTime());
-                date = format.parse(valorsEstacio.get(3).toString());
+                date = format.parse(sunset);
                 Sunset = horaCatala.format(date.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -340,21 +358,21 @@ public class FragmentEstacions extends Fragment {
             String dia = "";
             try {
                 SimpleDateFormat formatDia = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                date = formatDia.parse(valorsEstacio.get(0).toString());
+                date = formatDia.parse(dataAct);
                 dia = diaCatala.format(date.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Pluja = valorsEstacio.get(12).toString() + " mm";
-            Vent = valorsEstacio.get(13).toString() + " Km/h";
-            dataActualitzacio = "Valors mesurats a " + dia + " " + valorsEstacio.get(1).toString();
+            Pluja = pluja + " mm";
+            Vent = vent + " Km/h";
+            dataActualitzacio = "Valors mesurats a " + dia + " " + horaAct;
             Date Avui = new java.util.Date();
             Double interval=0.0;
 
 
             try {
                 SimpleDateFormat formatComplet = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                String dataLlarga = valorsEstacio.get(0).toString() + " " + valorsEstacio.get(1).toString();
+                String dataLlarga = dataAct + " " + horaAct;
                 date = formatComplet.parse(dataLlarga);
                 interval=(Avui.getTime() - date.getTime())/3600000.0;
                 Log.i("dif", interval.toString());
@@ -362,11 +380,11 @@ public class FragmentEstacions extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if(interval<3.0) {
-                colorData= Color.GREEN;
-            } else {
-                colorData= android.graphics.Color.argb(255, 255, 165, 0); // taronja
-            }
+            if(interval<2.0) {
+                colorData= android.graphics.Color.argb(255, 0, 102, 51);
+            }/* else {
+                colorData= Color.RED; //android.graphics.Color.argb(255, 255, 165, 0); // taronja
+            }*/
         }
 
         FragmentInfoEstacio fragmentInfo = (FragmentInfoEstacio)
