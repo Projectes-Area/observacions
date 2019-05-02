@@ -110,7 +110,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 onBackPressed();
                 return true;
             case R.id.edumet_web:
-                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_proves/index.php");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;

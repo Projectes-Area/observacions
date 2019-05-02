@@ -229,6 +229,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("..onActResult", "Done");
+        Log.i("resultCode", String.valueOf(resultCode));
+
         switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
@@ -250,38 +252,38 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
 
     private void startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
-                    @SuppressLint("MissingPermission")
-                    @Override
-                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                        Log.i("..startLocation", "All location settings are satisfied.");
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                        mRequestingLocationUpdates = true;
-                        updateLocationUI();
+            .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                    Log.i("..startLocation", "All location settings are satisfied.");
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                    mRequestingLocationUpdates = true;
+                    updateLocationUI();
 
+                }
+            })
+            .addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    int statusCode = ((ApiException) e).getStatusCode();
+                    switch (statusCode) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            Log.i("..startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
+                            try {
+                                ResolvableApiException rae = (ResolvableApiException) e;
+                                rae.startResolutionForResult(Estacions.this, REQUEST_CHECK_SETTINGS);
+                            } catch (IntentSender.SendIntentException sie) {
+                                Log.i("..startUpdates", "PendingIntent unable to execute request.");
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            Toast.makeText(getApplicationContext(), R.string.fix_settings, Toast.LENGTH_LONG).show();
+                            mRequestingLocationUpdates = false;
                     }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        int statusCode = ((ApiException) e).getStatusCode();
-                        switch (statusCode) {
-                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i("..startUpdates", "Location settings are not satisfied. Attempting to upgrade location settings.");
-                                try {
-                                    ResolvableApiException rae = (ResolvableApiException) e;
-                                    rae.startResolutionForResult(Estacions.this, REQUEST_CHECK_SETTINGS);
-                                } catch (IntentSender.SendIntentException sie) {
-                                    Log.i("..startUpdates", "PendingIntent unable to execute request.");
-                                }
-                                break;
-                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                Toast.makeText(getApplicationContext(), R.string.fix_settings, Toast.LENGTH_LONG).show();
-                                mRequestingLocationUpdates = false;
-                        }
-                        updateLocationUI();
-                    }
-                });
+                    updateLocationUI();
+                }
+            });
     }
 
     private void stopLocationUpdates() {
@@ -358,7 +360,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                 onBackPressed();
                 return true;
             case R.id.edumet_web:
-                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_proves/index.php");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
@@ -391,7 +393,7 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         navigation.setSelectedItemId(R.id.navigation_estacions);
-        Log.i(".OnResume", String.valueOf(mRequestingLocationUpdates));
+        Log.i("..OnResume", String.valueOf(mRequestingLocationUpdates));
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
@@ -415,7 +417,6 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("latitud", String.valueOf(mCurrentLocation.getLatitude()));
         editor.putString("longitud", String.valueOf(mCurrentLocation.getLongitude()));
-        Log.i("...latitud_actual", String.valueOf(mCurrentLocation.getLatitude()));
 
         int estacioPreferida = sharedPref.getInt("estacio_preferida", 0);
         if (estacioPreferida == 0) {
@@ -435,8 +436,8 @@ public class Estacions extends AppCompatActivity implements OnMapReadyCallback {
                     ID_estacioPreferida = i;
                 }
             }
-            Log.i("...Estacio propera", String.valueOf(estacioPropera));
-            Log.i("...ID_Estacio preferida", String.valueOf(ID_estacioPreferida));
+            Log.i("..Estacio propera", String.valueOf(estacioPropera));
+            Log.i("..ID_Estacio preferida", String.valueOf(ID_estacioPreferida));
             editor.putInt("estacio_preferida", estacioPropera);
             editor.putInt("estacio_actual", estacioPropera);
         }

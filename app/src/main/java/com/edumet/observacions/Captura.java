@@ -238,14 +238,9 @@ public class Captura extends Fragment {
 
         while (cursor.moveToNext()) {
             nomFenomen.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
-            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
         }
         cursor.close();
         mDbHelper.close();
-
-        /*for (int i = 1; i < nomFenomen.length; i++) {
-            categories.add(nomFenomen[i]);
-        }*/
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, nomFenomen);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -335,7 +330,7 @@ public class Captura extends Fragment {
                     flagGirada = false;
                     flagEnviada = false;
                     flagEnEdicio = false;
-                    Log.i(".onActivityResult", "Foto");
+                    Log.i("..onActivityResult", "Foto");
                 } else {
                     imatge.setImageResource(R.drawable.estacions);
                 }
@@ -594,7 +589,7 @@ public class Captura extends Fragment {
 
     public void updateObservacio() {
         String unlog = String.valueOf(ID_App);
-        Log.i(".UpdateID", unlog);
+        Log.i("..UpdateID", unlog);
 
         if (flagGirada) {
             File fitxer = new File(outputMiniatura.getAbsolutePath());

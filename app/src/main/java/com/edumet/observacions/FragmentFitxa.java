@@ -3,7 +3,6 @@ package com.edumet.observacions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
@@ -150,17 +149,12 @@ public class FragmentFitxa extends Fragment {
         mDbHelper = new DataHelper(getContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         Cursor cursor0 = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection0, selection0, selectionArgs0, null, null, sortOrder0);
-
+        nomFenomen0.add("");
         while (cursor0.moveToNext()) {
             nomFenomen0.add(cursor0.getString(cursor0.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
-            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
         }
         cursor0.close();
         mDbHelper.close();
-
-
-
-
 
         SimpleDateFormat dateCatala = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         SimpleDateFormat horaCatala = new SimpleDateFormat("HH:mm:ss", Locale.US);
@@ -317,7 +311,6 @@ public class FragmentFitxa extends Fragment {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String resposta = response.body().string().trim();
-                    Log.i(".Resposta", resposta);
                     if (response.isSuccessful()) {
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {

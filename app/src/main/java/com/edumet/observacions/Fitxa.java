@@ -1,8 +1,6 @@
 package com.edumet.observacions;
 
-import android.app.ActivityManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -13,7 +11,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -70,19 +67,14 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
         mDbHelper = new DataHelper(this);
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         Cursor cursor0 = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection0, selection0, selectionArgs0, null, null, sortOrder0);
-
+        nomFenomen0.add("");
         while (cursor0.moveToNext()) {
             nomFenomen0.add(cursor0.getString(cursor0.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
-            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
         }
         cursor0.close();
         mDbHelper.close();
 
         nomFenomen = nomFenomen0.toArray(new String[0]);
-
-
-
-
 
         Intent intent = getIntent();
         latitud = Double.valueOf(intent.getStringExtra(MainActivity.EXTRA_LATITUD));
@@ -155,7 +147,7 @@ public class Fitxa extends AppCompatActivity implements OnMapReadyCallback {
                 onBackPressed();
                 return true;
             case R.id.edumet_web:
-                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                Uri uri = Uri.parse("https://edumet.cat/edumet/meteo_proves/index.php");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;

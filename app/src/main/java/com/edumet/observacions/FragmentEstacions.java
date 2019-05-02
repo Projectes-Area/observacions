@@ -177,7 +177,7 @@ public class FragmentEstacions extends Fragment {
         ((Estacions) getActivity()).mouCamera(Double.valueOf(strLat), Double.valueOf(strLon));
 
         String laUrl = "http://edumet.cat/edumet-data/" + codEst_Edumet + "/estacio/profile1/imatges/fotocentre.jpg";
-        Log.i(".laUrl", laUrl);
+
         Request request = new Request.Builder()
                 .url(laUrl)
                 .build();
@@ -375,8 +375,6 @@ public class FragmentEstacions extends Fragment {
                 String dataLlarga = dataAct + " " + horaAct;
                 date = formatComplet.parse(dataLlarga);
                 interval=(Avui.getTime() - date.getTime())/3600000.0;
-                Log.i("dif", interval.toString());
-
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -392,7 +390,7 @@ public class FragmentEstacions extends Fragment {
         if(!mostra) {
             dataActualitzacio="L\'estació no proporciona les dades ...";
         }
-            fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent, dataActualitzacio, colorData);
+        fragmentInfo.setValues(Temperatura, Max, Min, Humitat, Pressio, Sunrise, Sunset, Pluja, Vent, dataActualitzacio, colorData);
     }
 
     public void buidaInfo() {

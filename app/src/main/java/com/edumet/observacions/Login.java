@@ -100,7 +100,7 @@ public class Login extends Fragment {
                                 editor.putString("usuari", Usuari.getText().toString());
                                 editor.putString("nom_usuari", resposta);
                                 editor.apply();
-                                Log.i(".Autentificació", "Correcta");
+                                Log.i("..Autentificació", "Correcta");
                                 ((MainActivity) getActivity()).captura();
                                 getActivity().runOnUiThread(new Runnable() {
                                     public void run() {

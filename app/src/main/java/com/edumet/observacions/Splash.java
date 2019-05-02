@@ -65,7 +65,7 @@ public class Splash extends AppCompatActivity {
     }
 
     private void requestPermissions() {
-        Log.i(".requestPermissions", "Requesting permission");
+        Log.i("..requestPermissions", "Requesting permission");
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
 
@@ -73,9 +73,9 @@ public class Splash extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
-                Log.i(".PermResult", "User interaction was cancelled.");
+                Log.i("..PermResult", "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(".PermResult", "Permission granted");
+                Log.i("..PermResult", "Permission granted");
                 baixaEstacions();
                 baixaFeno();
             } else {

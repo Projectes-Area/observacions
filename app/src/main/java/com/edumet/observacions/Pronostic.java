@@ -85,7 +85,7 @@ public class Pronostic extends AppCompatActivity {
         SharedPreferences sharedPref;
         sharedPref = getSharedPreferences("com.edumet.observacions", MODE_PRIVATE);
         int ID_Edumet = sharedPref.getInt("estacio_actual", 0);
-        Log.i(".estacioActual", String.valueOf(ID_Edumet));
+        Log.i("..estacioActual", String.valueOf(ID_Edumet));
         try {
             baixa_cINE_Edumet(ID_Edumet);
         } catch (Exception e) {
@@ -176,15 +176,16 @@ public class Pronostic extends AppCompatActivity {
                                                     try {
                                                         JSONArray jsonArray = new JSONArray(resposta);
                                                         JSONObject JSONEstacio=jsonArray.getJSONObject(0);
-                                                        final String INE = JSONEstacio.getString("Codi_INE");
+                                                        final String INE = JSONEstacio.getString("codi_INE");
                                                         runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 String html = "<iframe src='http://m.meteo.cat/?codi=" + INE + "' height='100%' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='yes' style='font-size:0.8em'></iframe>";
                                                                 contenidor.loadData(html, "text/html", null);
+                                                                Log.i("..Pronòstic:",html);
                                                             }
                                                         });
                                                     } catch (Exception e) {
-                                                        Log.i(".jsonerror", "jsonerror");
+                                                        Log.i("..jsonerror", e.toString());
                                                         runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 String html = "<iframe src='http://m.meteo.cat/?codi=080193' height='100%' width='100%' hspace='0' marginheight='0' marginwidth='0' vspace='0' frameborder='0' scrolling='yes' style='font-size:0.8em'></iframe>";

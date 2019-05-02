@@ -1,6 +1,5 @@
 package com.edumet.observacions;
 
-import android.app.ActivityManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -95,23 +94,17 @@ public class ObservacionsFetes extends Fragment {
         mDbHelper = new DataHelper(getContext());
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         Cursor cursor0 = db.query(DatabaseFeno.Fenologies.TABLE_NAME_FENO, projection0, selection0, selectionArgs0, null, null, sortOrder0);
-
+        nomFenomen0.add("");
         while (cursor0.moveToNext()) {
             nomFenomen0.add(cursor0.getString(cursor0.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
-            //categories.add(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseFeno.Fenologies.COLUMN_NAME_TITOL_FENO)));
         }
         cursor0.close();
         mDbHelper.close();
 
         String[] nomFenomen = nomFenomen0.toArray(new String[0]);
 
-
-
         mDbHelper = new DataHelper(getContext());
         db = mDbHelper.getReadableDatabase();
-
-        //Resources res = getResources();
-        //nomFenomen = res.getStringArray(R.array.nomFenomen);
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences("com.edumet.observacions", getActivity().MODE_PRIVATE);
 
@@ -501,7 +494,7 @@ public class ObservacionsFetes extends Fragment {
                                                             }
                                                         }
                                                         numNovesObservacions = numNovaObservacio;
-                                                        Log.i(".NovesObs", String.valueOf(numNovesObservacions));
+                                                        Log.i("..NovesObs", String.valueOf(numNovesObservacions));
                                                         nous_paths = new String[numNovesObservacions];
                                                     } catch (Exception e) {
                                                         e.printStackTrace();

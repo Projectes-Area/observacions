@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.edumet_web:
-                uri = Uri.parse("https://edumet.cat/edumet/meteo_2/index.php");
+                uri = Uri.parse("https://edumet.cat/edumet/meteo_proves/index.php");
                 intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
                 return true;
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         long newRowId = db.insert(Database.Observacions.TABLE_NAME, null, values);
         db.close();
         mDbHelper.close();
-        Log.i(".ID_App", String.valueOf(newRowId));
+        Log.i("..ID_App", String.valueOf(newRowId));
         return (int) newRowId;
     }
 
